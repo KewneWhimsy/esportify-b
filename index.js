@@ -29,6 +29,19 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
+// Route pour récupérer tous les événements
+app.get('/api/events', async (req, res) => {
+  try {
+    // Requête SQL pour sélectionner tous les événements
+    const result = await pool.query('SELECT * FROM events');
+    // Envoyer les données sous forme de JSON
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Erreur lors de la récupération des événements', err);
+    res.status(500).json({ error: 'Erreur lors de la récupération des événements' });
+  }
+});
+
 // Démarrer le serveur
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

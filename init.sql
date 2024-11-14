@@ -24,4 +24,13 @@ CREATE TABLE IF NOT EXISTS images-events (
     created_at TIMESTAMP DEFAULT NOW()-- Date de création
 );
 
-INSERT INTO users (username, email) VALUES ('admin', 'admin@example.com');
+-- Insérer plusieurs événements seulement si la table 'events' est vide
+INSERT INTO events (title, description, players_count, is_approved, start_datetime, end_datetime, user_pseudo)
+SELECT 'Tournoi CSS GO', 'Go go go go comme ils disent', 10, TRUE, '2024-12-01 10:00', '2024-12-01 12:00', 'User1'
+UNION ALL
+SELECT 'Tournoi de pétanque', 'Marcel sera de la partie ! Venez nombreux, venez joyeux !', 8, FALSE, '2024-12-02 15:00', '2024-12-02 18:00', 'User2'
+UNION ALL
+SELECT 'Tournoi de League of Legend', 'Description for Event 3', 30, TRUE, '2024-12-03 09:00', '2024-12-03 11:00', 'User3'
+WHERE (SELECT COUNT(*) FROM events) = 0;
+
+
