@@ -25,14 +25,19 @@ CREATE TABLE IF NOT EXISTS imagesevents (
 );
 
 -- Insérer plusieurs événements seulement si la table 'events' est vide
-INSERT INTO events (title, description, players_count, is_approved, start_datetime, end_datetime, user_pseudo)
-SELECT 'Tournoi CSS GO', 'Go go go go comme ils disent', 10, TRUE, 
-       '2024-12-01 10:00'::timestamp, '2024-12-01 12:00'::timestamp, 'User1'
-UNION ALL
-SELECT 'Tournoi de pétanque', 'Marcel sera de la partie ! Venez nombreux, venez joyeux !', 8, FALSE, 
-       '2024-12-02 15:00'::timestamp, '2024-12-02 18:00'::timestamp, 'User2'
-UNION ALL
-SELECT 'Tournoi de League of Legend', 'rejoignez nous pour notre compétition hebdomadaire', 30, TRUE, 
-       '2024-12-03 09:00'::timestamp, '2024-12-03 11:00'::timestamp, 'User3'
-WHERE (SELECT COUNT(*) FROM events) = 0;
+DO $$
+BEGIN
+    IF (SELECT COUNT(*) FROM events) = 0 THEN
+        INSERT INTO events (title, description, players_count, is_approved, start_datetime, end_datetime, user_pseudo)
+        SELECT 'Tournoi CSS GO', 'Go go go go comme ils disent', 10, TRUE, 
+               '2024-12-01 10:00'::timestamp, '2024-12-01 12:00'::timestamp, 'User1'
+        UNION ALL
+        SELECT 'Tournoi de pétanque', 'Marcel sera de la partie ! Venez nombreux, venez joyeux !', 8, FALSE, 
+               '2024-12-02 15:00'::timestamp, '2024-12-02 18:00'::timestamp, 'User2'
+        UNION ALL
+        SELECT 'Tournoi de League of Legend', 'rejoignez nous pour notre compétition hebdomadaire', 30, TRUE, 
+               '2024-12-03 09:00'::timestamp, '2024-12-03 11:00'::timestamp, 'User3';
+    END IF;
+END $$;
+
 
