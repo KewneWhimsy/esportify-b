@@ -33,11 +33,12 @@ mongoose
   .then(() => console.log("Connected to MongoDB Atlas"))
   .catch((err) => console.error("MongoDB connection error", err));
 
-  const corsOptions = {
-    origin: '*', // Autorise toutes les origines temporairement
-  };
-  app.use(cors(corsOptions));
-  
+// Configuration de CORS
+const corsOptions = {
+  origin: 'http://localhost:4321', // Remplacez par l'URL de votre frontend local
+  methods: ['GET', 'POST'],
+  credentials: true, // Si vous utilisez des cookies ou de l'authentification
+};
 
 app.use(cors(corsOptions));
 
