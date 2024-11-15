@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require('cors');
 const { Client } = require("pg"); // Pour la connexion à PostgreSQL
 const mongoose = require("mongoose"); // Pour la connexion à MongoDB Atlas
 const fs = require("fs");
@@ -31,6 +32,15 @@ mongoose
   .connect(process.env.MONGODB_URI)
   .then(() => console.log("Connected to MongoDB Atlas"))
   .catch((err) => console.error("MongoDB connection error", err));
+
+// Configuration de CORS
+const corsOptions = {
+  origin: 'http://localhost:4321', // Remplacez par l'URL de votre frontend local
+  methods: ['GET', 'POST'],
+  credentials: true, // Si vous utilisez des cookies ou de l'authentification
+};
+
+app.use(cors(corsOptions));
 
 // Middleware Express pour gérer les requêtes
 app.get("/", (req, res) => {
