@@ -37,8 +37,8 @@ mongoose
 const corsOptions = {
   origin: 'http://localhost:4321',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'HX-Request', 'HX-Trigger', 'HX-Target', 'HX-Trigger-Name', 'HX-Current-URL'],
-  credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization', 'HX-Request', 'HX-Trigger', 'HX-Target', 'HX-Trigger-Name', 'HX-Current-URL'], // entêtes spécifiques de HTMX
+  credentials: true, // en prévision des cookies pour les sessions d'utilisation
 };
 
 app.use(cors(corsOptions));
