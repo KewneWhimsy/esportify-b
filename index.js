@@ -28,9 +28,7 @@ pgClient
 
 // Se connecter à MongoDB Atlas
 mongoose
-  .connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-  })
+  .connect(process.env.MONGODB_URI)
   .then(() => console.log("Connected to MongoDB Atlas"))
   .catch((err) => console.error("MongoDB connection error", err));
 
