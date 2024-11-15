@@ -1,6 +1,7 @@
-const express = require('express');
-const { Client } = require('pg'); // Pour la connexion à PostgreSQL
-const mongoose = require('mongoose'); // Pour la connexion à MongoDB Atlas
+const express = require("express");
+const { Client } = require("pg"); // Pour la connexion à PostgreSQL
+const mongoose = require("mongoose"); // Pour la connexion à MongoDB Atlas
+const fs = require("fs");
 
 const app = express();
 
@@ -13,28 +14,40 @@ const pgClient = new Client({
   port: process.env.PG_PORT || 5432, // Port PostgreSQL (par défaut 5432)
 });
 
-pgClient.connect()
-  .then(() => console.log('Connected to PostgreSQL database'))
-  .catch(err => console.error('PostgreSQL connection error', err.stack));
+pgClient
+  .connect()
+  .then(() => console.log("Connected to PostgreSQL database"))
+  .catch((err) => console.error("PostgreSQL connection error", err.stack));
+
+const initSql = fs.readFileSync("./init.sql").toString();
+
+pgClient
+  .query(initSql)
+  .then(() => console.log("Database initialized with init.sql"))
+  .catch((err) => console.error("Error initializing database", err));
 
 // Se connecter à MongoDB Atlas
-mongoose.connect(process.env.MONGODB_URI, { 
-  useNewUrlParser: true, 
-})
-  .then(() => console.log('Connected to MongoDB Atlas'))
-  .catch(err => console.error('MongoDB connection error', err));
+mongoose
+  .connect(process.env.MONGODB_URI, {
+    useNewUrlParser: true,
+  })
+  .then(() => console.log("Connected to MongoDB Atlas"))
+  .catch((err) => console.error("MongoDB connection error", err));
 
 // Middleware Express pour gérer les requêtes
-app.get('/', (req, res) => {
-  res.send('Hello World!');
+app.get("/", (req, res) => {
+  res.send("Hello World!");
 });
 
-app.get('/api/events', async (req, res) => {
+app.get("/api/events", async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM events');
+    const result = await pgClient.query("SELECT * FROM events");
+    console.log(result.rows);
     const events = result.rows;
 
-    const eventsHtml = events.map(event => `
+    const eventsHtml = events
+      .map(
+        (event) => `
       <div class="flex bg-blue-200 p-6 rounded-lg w-80 flex-shrink-0">
         <div class="w-24 h-24 bg-blue-300 rounded-lg overflow-hidden">
           <img src="https://via.placeholder.com/150" alt="Image de l'événement" class="object-cover w-full h-full">
@@ -44,7 +57,9 @@ app.get('/api/events', async (req, res) => {
           <p class="text-sm text-gray-700">${event.description}</p>
         </div>
       </div>
-    `).join('');
+    `
+      )
+      .join("");
 
     const responseHtml = `
       <div id="loading-message" hx-swap-oob="true:outerHTML"></div>
@@ -55,8 +70,12 @@ app.get('/api/events', async (req, res) => {
 
     res.send(responseHtml);
   } catch (err) {
-    console.error('Erreur lors de la récupération des événements', err);
-    res.status(500).send('<div id="loading-message" hx-swap-oob="true:outerHTML">Erreur de chargement</div>');
+    console.error("Erreur lors de la récupération des événements", err);
+    res
+      .status(500)
+      .send(
+        '<div id="loading-message" hx-swap-oob="true:outerHTML">Erreur de chargement</div>'
+      );
   }
 });
 
