@@ -49,16 +49,34 @@ app.get("/", (req, res) => {
 
 app.get("/api/events", async (req, res) => {
   try {
-    const result = await pgClient.query("SELECT * FROM events");
-    console.log(result.rows);
-    const events = result.rows;
+    // Récupérer les événements depuis PostgreSQL
+    const result = await pgClient.query("SELECT * FROM events LIMIT 10");
+    const events = result.rows; // Récupérer les événements sous forme de tableau
 
-    res.json(events);
+    // Générer du HTML pour chaque événement
+    let eventsHtml = "";
+    events.forEach(event => {
+      eventsHtml += `
+        <div class="flex bg-blue-200 p-6 rounded-lg w-80 flex-shrink-0">
+          <div class="w-24 h-24 bg-blue-300 rounded-lg overflow-hidden">
+            <img src="https://via.placeholder.com/150" alt="Image de l'événement" class="object-cover w-full h-full">
+          </div>
+          <div class="ml-4">
+            <h2 class="text-lg font-semibold">${event.title}</h2>
+            <p class="text-sm text-gray-700">${event.description}</p>
+          </div>
+        </div>
+      `;
+    });
+
+    // Renvoyer le fragment HTML à HTMX
+    res.send(eventsHtml);
   } catch (err) {
     console.error("Erreur lors de la récupération des événements", err);
     res.status(500).json({ error: "Erreur lors de la récupération des événements" });
   }
 });
+
 
 // Démarrer le serveur
 const PORT = process.env.PORT || 3000;
