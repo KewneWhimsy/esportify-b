@@ -35,9 +35,10 @@ mongoose
 
 // Configuration de CORS
 const corsOptions = {
-  origin: 'http://localhost:4321', // Remplacez par l'URL de votre frontend local
-  methods: ['GET', 'POST'],
-  credentials: true, // Si vous utilisez des cookies ou de l'authentification
+  origin: 'http://localhost:4321',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'HX-Request', 'HX-Trigger', 'HX-Target', 'HX-Trigger-Name'],
+  credentials: true,
 };
 
 app.use(cors(corsOptions));
