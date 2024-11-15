@@ -29,16 +29,34 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
-// Route pour récupérer tous les événements
 app.get('/api/events', async (req, res) => {
   try {
-    // Requête SQL pour sélectionner tous les événements
     const result = await pool.query('SELECT * FROM events');
-    // Envoyer les données sous forme de JSON
-    res.json(result.rows);
+    const events = result.rows;
+
+    const eventsHtml = events.map(event => `
+      <div class="flex bg-blue-200 p-6 rounded-lg w-80 flex-shrink-0">
+        <div class="w-24 h-24 bg-blue-300 rounded-lg overflow-hidden">
+          <img src="https://via.placeholder.com/150" alt="Image de l'événement" class="object-cover w-full h-full">
+        </div>
+        <div class="ml-4">
+          <h2 class="text-lg font-semibold">${event.name}</h2>
+          <p class="text-sm text-gray-700">${event.description}</p>
+        </div>
+      </div>
+    `).join('');
+
+    const responseHtml = `
+      <div id="loading-message" hx-swap-oob="true:outerHTML"></div>
+      <div id="events-list" hx-swap="outerHTML settle:end">
+        ${eventsHtml}
+      </div>
+    `;
+
+    res.send(responseHtml);
   } catch (err) {
     console.error('Erreur lors de la récupération des événements', err);
-    res.status(500).json({ error: 'Erreur lors de la récupération des événements' });
+    res.status(500).send('<div id="loading-message" hx-swap-oob="true:outerHTML">Erreur de chargement</div>');
   }
 });
 

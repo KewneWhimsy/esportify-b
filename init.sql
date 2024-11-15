@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS events (
     updated_at TIMESTAMP DEFAULT NOW() -- Date de dernière mise à jour
 );
 
-CREATE TABLE IF NOT EXISTS images-events (
+CREATE TABLE IF NOT EXISTS imagesevents (
     id SERIAL PRIMARY KEY,           -- Identifiant unique de l'image
     event_id INT REFERENCES events(id) ON DELETE CASCADE, -- Référence à l'événement
     image_url VARCHAR(255) NOT NULL,  -- URL de l'image
@@ -32,5 +32,3 @@ SELECT 'Tournoi de pétanque', 'Marcel sera de la partie ! Venez nombreux, venez
 UNION ALL
 SELECT 'Tournoi de League of Legend', 'Description for Event 3', 30, TRUE, '2024-12-03 09:00', '2024-12-03 11:00', 'User3'
 WHERE (SELECT COUNT(*) FROM events) = 0;
-
-
