@@ -51,7 +51,7 @@ app.get("/api/events", async (req, res) => {
           <img src="https://via.placeholder.com/150" alt="Image de l'événement" class="object-cover w-full h-full">
         </div>
         <div class="ml-4">
-          <h2 class="text-lg font-semibold">${event.name}</h2>
+          <h2 class="text-lg font-semibold">${event.title}</h2>
           <p class="text-sm text-gray-700">${event.description}</p>
         </div>
       </div>

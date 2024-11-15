@@ -32,7 +32,7 @@ UNION ALL
 SELECT 'Tournoi de pétanque', 'Marcel sera de la partie ! Venez nombreux, venez joyeux !', 8, FALSE, 
        '2024-12-02 15:00'::timestamp, '2024-12-02 18:00'::timestamp, 'User2'
 UNION ALL
-SELECT 'Tournoi de League of Legend', 'Description for Event 3', 30, TRUE, 
+SELECT 'Tournoi de League of Legend', 'rejoignez nous pour notre compétition hebdomadaire', 30, TRUE, 
        '2024-12-03 09:00'::timestamp, '2024-12-03 11:00'::timestamp, 'User3'
 WHERE (SELECT COUNT(*) FROM events) = 0;
 
