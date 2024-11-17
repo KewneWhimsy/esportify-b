@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS users (
     updated_at TIMESTAMP DEFAULT NOW() -- Date de dernière mise à jour du compte
 );
 -- Index pour accélérer les recherches par nom d'utilisateur
+DROP INDEX IF EXISTS idx_users_username;
 CREATE INDEX idx_users_username ON users (username);
 
 -- Contrainte pour s'assurer que l'email est unique
@@ -31,6 +32,7 @@ CREATE TABLE IF NOT EXISTS events (
     updated_at TIMESTAMP DEFAULT NOW() -- Date de dernière mise à jour
 );
 -- Index pour accélérer les recherches par plage de dates
+DROP INDEX IF EXISTS idx_datetime_range;
 CREATE INDEX idx_datetime_range ON events (start_datetime, end_datetime);
 
 -- Contrainte pour s'assurer que la date de fin est après la date de début
@@ -68,6 +70,7 @@ CREATE TABLE IF NOT EXISTS imagesevents (
     created_at TIMESTAMP DEFAULT NOW() -- Date et heure d'ajout de l'image dans la base de données
 );
 -- Index pour accélérer les recherches par event_id
+DROP INDEX IF EXISTS idx_event_id;
 CREATE INDEX idx_event_id ON imagesevents (event_id);
 
 -- Insertion des données initiales de manière idempotente
