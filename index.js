@@ -81,7 +81,7 @@ app.get("/api/events", async (req, res) => {
     let eventsHtml = "";
     events.forEach(event => {
       eventsHtml += `
-        <div class="flex flex-col justify-between bg-[#26232A] border border-[#E5E7EB] p-4 rounded-lg w-64 shadow-md hover:shadow-lg transition-transform hover:scale-105 cursor-pointer flex-shrink-0">
+        <div class="bevents-container">
           <div>
             <h2 class="text-lg font-heading text-heading truncate-2-lines leading-tight mb-2">${event.title}</h2>
           </div>
