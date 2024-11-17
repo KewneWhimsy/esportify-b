@@ -82,9 +82,6 @@ app.get("/api/events", async (req, res) => {
     events.forEach(event => {
       eventsHtml += `
         <div class="flex bg-blue-200 p-6 rounded-lg w-80 flex-shrink-0">
-          <div class="w-24 h-24 bg-blue-300 rounded-lg overflow-hidden">
-            <img src="/img/logoevent.png" alt="Image de l'événement" class="object-cover w-full h-full">
-          </div>
           <div class="ml-4">
             <h2 class="text-lg font-semibold">${event.title}</h2>
             <p class="text-sm text-gray-700">${event.description}</p>
