@@ -7,16 +7,13 @@
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY, -- Identifiant unique de l'utilisateur
     username VARCHAR(30) NOT NULL, -- Nom d'utilisateur
-    email VARCHAR(100) NOT NULL CHECK (email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'), -- Vérification adresse email valide
+    email VARCHAR(100) NOT NULL UNIQUE CHECK (email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'), -- adresse email unique et valide
     created_at TIMESTAMP DEFAULT NOW(), -- Date de création du compte
     updated_at TIMESTAMP DEFAULT NOW() -- Date de dernière mise à jour du compte
 );
 -- Index pour accélérer les recherches par nom d'utilisateur
 DROP INDEX IF EXISTS idx_users_username;
 CREATE INDEX idx_users_username ON users (username);
-
--- Contrainte pour s'assurer que l'email est unique
-ALTER TABLE users ADD CONSTRAINT unique_email UNIQUE (email);
 
 -- Table des événements
 CREATE TABLE IF NOT EXISTS events (
@@ -36,9 +33,11 @@ DROP INDEX IF EXISTS idx_datetime_range;
 CREATE INDEX idx_datetime_range ON events (start_datetime, end_datetime);
 
 -- Contrainte pour s'assurer que la date de fin est après la date de début
+ALTER TABLE users DROP CONSTRAINT IF EXISTS check_dates;
 ALTER TABLE events ADD CONSTRAINT check_dates CHECK (start_datetime < end_datetime);
 
 -- Contrainte pour s'assurer que le nombre de joueurs est supérieur à 1
+ALTER TABLE users DROP CONSTRAINT IF EXISTS check_players_count;
 ALTER TABLE events ADD CONSTRAINT check_players_count CHECK (players_count > 1);
 
 -- Fonction pour mettre à jour le champ updated_at automatiquement
