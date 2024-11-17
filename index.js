@@ -81,11 +81,12 @@ app.get("/api/events", async (req, res) => {
     let eventsHtml = "";
     events.forEach(event => {
       eventsHtml += `
-        <div class="flex bg-blue-200 p-6 rounded-lg w-80 flex-shrink-0">
-          <div class="ml-4">
-            <h2 class="text-lg font-semibold">${event.title}</h2>
-            <p class="text-sm text-gray-700">${event.description}</p>
-            <p class="text-sm text-gray-500">Joueurs : ${event.players_count}</p>
+        <div class="flex flex-col justify-between bg-[#26232A] border border-[#333] p-6 rounded-lg w-80 shadow-md hover:shadow-lg transition cursor-pointer">
+          <div>
+            <h2 class="text-xl font-heading text-heading">${event.title}</h2>
+            <p class="text-sm text-gray-400">Joueurs : ${event.players_count}</p>
+            <p class="text-sm text-gray-500">Début : ${new Date(event.start_datetime).toLocaleString()}</p>
+            <p class="text-sm text-gray-500">Fin : ${new Date(event.end_datetime).toLocaleString()}</p>
           </div>
         </div>
       `;
