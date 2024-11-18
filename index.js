@@ -66,12 +66,13 @@ app.get("/api/testHtmx", (req, res) => {
 app.get("/api/events", async (req, res) => {
   try {
     const sortField = req.query.sort || "start_datetime"; // Trie par défaut : date
-    const validSortFields = ["players_count", "start_datetime", "proposer"];
+    const validSortFields = ["players_count", "start_datetime", "organisateur"];
     const orderBy = validSortFields.includes(sortField) ? sortField : "start_datetime";
+    const sortColumn = (orderBy === "organisateur") ? "u.username" : `e.${orderBy}`;
 
     // Récupére les événements depuis PostgreSQL
     const result = await pgClient.query(`
-      SELECT e.id, e.title, e.description, e.players_count, e.start_datetime, e.end_datetime, u.username AS proposer
+      SELECT e.id, e.title, e.description, e.players_count, e.start_datetime, e.end_datetime, u.username AS organisateur
       FROM events e
       JOIN users u ON e.user_id = u.id
       WHERE e.is_approved = TRUE
@@ -116,7 +117,7 @@ app.get("/api/event/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const result = await pgClient.query(`
-      SELECT e.id, e.title, e.description, e.players_count, e.start_datetime, e.end_datetime, u.username AS proposer
+      SELECT e.id, e.title, e.description, e.players_count, e.start_datetime, e.end_datetime, u.username AS organisateur
       FROM events e
       JOIN users u ON e.user_id = u.id
       WHERE e.id = $1
@@ -133,7 +134,7 @@ app.get("/api/event/:id", async (req, res) => {
         <h2 class="text-2xl font-bold mb-4">${event.title}</h2>
         <p class="mb-4">${event.description}</p>
         <p><strong>Joueurs :</strong> ${event.players_count}</p>
-        <p><strong>Organisateur :</strong> ${event.proposer}</p>
+        <p><strong>Organisateur :</strong> ${event.organisateur}</p>
         <p><strong>Début :</strong> ${new Date(event.start_datetime).toLocaleString()}</p>
         <p><strong>Fin :</strong> ${new Date(event.end_datetime).toLocaleString()}</p>
         <button onclick="document.getElementById('event-popup').innerHTML = ''" 
