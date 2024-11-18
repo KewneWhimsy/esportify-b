@@ -86,7 +86,7 @@ app.get("/api/events", async (req, res) => {
       eventsHtml += `
         <div class="flex flex-col justify-between bg-[#26232A] border 
         border-[#E5E7EB] p-4 rounded-lg w-64 shadow-md hover:shadow-lg transition-transform hover:scale-105 cursor-pointer flex-shrink-0 gap-0.5"
-        hx-get="${apiUrl}/api/event/${event.id}" 
+        hx-get="https://esportify-backend.onrender.com/api/event/${event.id}" 
         hx-target="#event-popup" 
         hx-trigger="click"
         >
