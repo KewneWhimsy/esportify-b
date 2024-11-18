@@ -75,7 +75,7 @@ app.get("/api/events", async (req, res) => {
       FROM events e
       JOIN users u ON e.user_id = u.id
       WHERE e.is_approved = TRUE
-      ORDER BY e.start_datetime ASC
+      ORDER BY e.${orderBy}  ASC
       LIMIT 10
     `);
     
