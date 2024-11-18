@@ -115,15 +115,15 @@ app.get("/api/event/:id", async (req, res) => {
     const event = result.rows[0];
 
     const eventHtml = `
-      <div class="bg-[#26232A] border p-6 rounded-lg shadow-lg max-w-md mx-auto">
+      <div class="bg-[#26232A] border p-6 rounded-lg shadow-lg h-full w-full">
         <h2 class="text-2xl font-bold mb-4 font-heading text-heading truncate-2-lines">${event.title}</h2>
         <p class="mb-4">${event.description}</p>
         <p><strong>Joueurs :</strong> ${event.players_count}</p>
         <p><strong>Organisateur :</strong> ${event.organisateur}</p>
         <p><strong>Début :</strong> ${new Date(event.start_datetime).toLocaleString()}</p>
         <p><strong>Fin :</strong> ${new Date(event.end_datetime).toLocaleString()}</p>
-        <button onclick="document.getElementById('event-popup').innerHTML = ''" 
-          class="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+        <button class="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700" 
+        @click="isOpen = false">
           Fermer
         </button>
       </div>
