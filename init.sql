@@ -98,7 +98,10 @@ VALUES
      '2024-12-03 09:00'::timestamp, '2024-12-03 11:00'::timestamp, 3),
     ('Kermesse du village', 'Chers amis, nous vous attendont nombreux le 10 Janvier.', 100, FALSE, 
      '2025-01-10 09:00'::timestamp, '2025-01-11 05:00'::timestamp, 5),
-    ('Petite partie d''échec ?', 'alléééééé !!!! :sparkles:', 2, TRUE,
+    ('Petite partie d''échec ?', 'alléééééé !!!! rejoignez moi pour une 
+    loooooogue parti d''échec, toute la journée, toute la  nuit, on refait 
+    ça chaque semaine si vous voulez, venez nombreux ! J''essaye de faire 
+    une description vraiment longue pour tester comment ça va rendre sur la page', 2, TRUE,
      '2024-11-15 09:00'::timestamp, '2024-12-20 12:00'::timestamp, 2),
     ('événement test', 'à accepter', 20, FALSE, 
      '2024-11-17 00:00'::timestamp, '2024-12-17 23:59'::timestamp, 7)

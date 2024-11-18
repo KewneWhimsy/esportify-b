@@ -115,7 +115,7 @@ app.get("/api/event/:id", async (req, res) => {
     const event = result.rows[0];
 
     const eventHtml = `
-      <div class="bg-[#26232A] border p-6 rounded-lg shadow-lg h-full w-full">
+      <div class="bg-[#26232A] border rounded-lg shadow-lg h-full w-full">
         <h2 class="text-2xl font-bold mb-4 font-heading text-heading truncate-2-lines">${event.title}</h2>
         <p class="mb-4">${event.description}</p>
         <p><strong>Joueurs :</strong> ${event.players_count}</p>
