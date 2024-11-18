@@ -101,7 +101,9 @@ VALUES
     ('Petite partie d''échec ?', 'alléééééé !!!! rejoignez moi pour une 
     loooooogue parti d''échec, toute la journée, toute la  nuit, on refait 
     ça chaque semaine si vous voulez, venez nombreux ! J''essaye de faire 
-    une description vraiment longue pour tester comment ça va rendre sur la page', 2, TRUE,
+    une description vraiment longue pour tester comment ça va rendre sur la page dzjdzj jzdpzoj dz djzpodjz jdzpojdzpo dzjpd jz
+    zdjzpojdzd zjjd zjdz dzopjd zpdjzodp zdjzpo dpzojdz dzpjd zjdzpjdpzopjdzd zpood jzpodjzpjdzpoojdz djzpjdzpojdzpj
+    zpjdpzojdpojzjd zopodjz poodjzo dzpoojdoz jdzjpojd zpojd zpojd zpodj zpojdzpojd zpojdzpjdzjdjzpjdzpojdzpojd', 2, TRUE,
      '2024-11-15 09:00'::timestamp, '2024-12-20 12:00'::timestamp, 2),
     ('événement test', 'à accepter', 20, FALSE, 
      '2024-11-17 00:00'::timestamp, '2024-12-17 23:59'::timestamp, 7)
