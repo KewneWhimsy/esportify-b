@@ -72,7 +72,7 @@ app.get("/api/events", async (req, res) => {
       eventsHtml += `
         <div class="flex flex-col justify-between bg-[#26232A] border 
         border-[#E5E7EB] p-4 rounded-lg w-64 shadow-md hover:shadow-lg transition-transform hover:scale-105 cursor-pointer flex-shrink-0 gap-0.5" 
-        @click="isOpen = true"
+        @click="setTimeout(() => { isOpen = true }, 200)"
         hx-get="https://esportify-backend.onrender.com/api/event/${event.id}"
         hx-target="#popup-content"
         hx-swap="innerHTML"
@@ -122,7 +122,7 @@ app.get("/api/event/:id", async (req, res) => {
         <p><strong>Organisateur :</strong> ${event.organisateur}</p>
         <p><strong>Début :</strong> ${new Date(event.start_datetime).toLocaleString()}</p>
         <p><strong>Fin :</strong> ${new Date(event.end_datetime).toLocaleString()}</p>
-        <button class="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700" 
+        <button class="mt-4 px-4 py-2 bg-red-700 text-white rounded hover:bg-red-800" 
         @click="isOpen = false">
           Fermer
         </button>
