@@ -48,21 +48,6 @@ app.get("/", (req, res) => {
   res.send("Hello World!"); // Répond avec "Hello World!" pour la route racine
 });
 
-app.get("/api/testHtmx", (req, res) => {
-  res.send(`
-    <div class="flex bg-blue-200 p-6 rounded-lg w-80 flex-shrink-0">
-      <div class="w-24 h-24 bg-blue-300 rounded-lg overflow-hidden">
-        <img src="/img/logoevent.png" alt="Image de l'événement" class="object-cover w-full h-full">
-      </div>
-      <div class="ml-4">
-        <h2 class="text-lg font-semibold">Exemple statique</h2>
-        <p class="text-sm text-gray-700">Ceci est un exemple d'événement statique.</p>
-      </div>
-    </div>
-  `); // Répond avec un exemple statique d'événement en HTML
-});
-
-
 app.get("/api/events", async (req, res) => {
   try {
     const sortField = req.query.sort || "start_datetime"; // Trie par défaut : date
@@ -76,7 +61,7 @@ app.get("/api/events", async (req, res) => {
       FROM events e
       JOIN users u ON e.user_id = u.id
       WHERE e.is_approved = TRUE
-      ORDER BY e.${orderBy}  ASC
+      ORDER BY ${sortColumn}  ASC
       LIMIT 10
     `);
     
