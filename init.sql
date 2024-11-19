@@ -82,7 +82,7 @@ VALUES
     ('Gigi', 'gigilafleche@sportific.com','orga'),
     ('league_fan', 'lol@esportify.com','orga'),
     ('Mclaire', 'mclaire@edu.fr','orga'),
-    ('testuser', 'esportifymailtest@yopmail.com','orga')
+    ('testuser', 'esportifymailtest@yopmail.com','orga'),
     ('PlayerMan', 'player@yopmail.com', 'joueur')
 ON CONFLICT DO NOTHING;
 
