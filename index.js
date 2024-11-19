@@ -45,7 +45,42 @@ const corsOptions = {
 
 app.use(cors(corsOptions)); // L'app Express utilise CORS avec ses options configurées
 
-// Middleware Express pour gérer les requêtes
+// Middleware pour vérifier le token JWT
+function authenticateToken(req, res, next) {
+  const token = req.headers.authorization?.split(" ")[1]; // Récupère le token de l'en-tête Authorization
+
+  if (!token) {
+    return res.status(401).json({ error: "Token manquant" });
+  }
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(401).json({ error: "Token invalide" });
+    }
+    req.user = decoded; // Ajoute l'utilisateur décodé à la requête
+    next();
+  });
+}
+
+// Middleware pour vérifier les rôles
+function checkRole(allowedRoles) {
+  return (req, res, next) => {
+    if (!Array.isArray(allowedRoles)) {
+      allowedRoles = [allowedRoles]; // Si on passe un seul rôle, le transforme en tableau
+    }
+
+    // Vérifie si le rôle de l'utilisateur est dans la liste des rôles autorisés
+    if (!allowedRoles.includes(req.user.role)) {
+      return res.status(403).json({ error: "Accès refusé" });
+    }
+
+    next();
+  };
+}
+
+
+
+// Middleware pour gérer les requêtes
 app.get("/", (req, res) => {
   res.send("Hello World!"); // Répond avec "Hello World!" pour la route racine
 });
@@ -81,7 +116,7 @@ app.get("/api/events", async (req, res) => {
 
         >
           <div>
-            <h2 class="text-lg font-heading text-heading truncate-2-lines leading-tight mb-2">${event.title}</h2>
+            <h2 class="text-lg font-heading text-heading leading-tight mb-2">${event.title}</h2>
           </div>
           <div>
             <p class="text-sm text-gray-400">Joueurs : ${event.players_count}</p>
@@ -118,7 +153,7 @@ app.get("/api/event/:id", async (req, res) => {
 
     const eventHtml = `
       <div class="bg-[#26232A] border border-[#E5E7EB] p-6 rounded-lg shadow-lg h-full w-full">
-        <h2 class="text-2xl font-bold mb-4 font-heading text-heading truncate-2-lines leading-tight">${event.title}</h2>
+        <h2 class="text-2xl font-bold mb-4 font-heading text-heading leading-tight">${event.title}</h2>
         <p class="mb-4">${event.description}</p>
         <p><strong>Joueurs :</strong> ${event.players_count}</p>
         <p><strong>Organisateur :</strong> ${event.organisateur}</p>
@@ -138,6 +173,7 @@ app.get("/api/event/:id", async (req, res) => {
   }
 });
 
+//inscription
 app.post("/api/register", async (req, res) => {
   const { username, email, password } = req.body;
 
@@ -163,6 +199,7 @@ app.post("/api/register", async (req, res) => {
   res.status(201).json({ message: "Utilisateur créé avec succès" });
 });
 
+// Connexion
 app.post("/api/login", async (req, res) => {
   const { email, password } = req.body;
 
@@ -175,16 +212,55 @@ app.post("/api/login", async (req, res) => {
   const user = result.rows[0];
 
   // Vérification du mot de passe
-  const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) {
-    return res.status(400).json({ error: "Mot de passe incorrect" });
+  if (password === user.password) {
+    console.log('Connexion réussie (mot de passe en clair)');
+  } else {
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (isMatch) {
+      console.log('Connexion réussie (mot de passe haché)');
+    } else {
+      return res.status(400).json({ error: "Mot de passe incorrect" });
+    }
   }
-
   // Création du token JWT
   const token = jwt.sign({ userId: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1h" });
 
+  // Renvoi du token JWT dans la réponse
   res.json({ message: "Connexion réussie", token });
 });
+
+// Route pour les joueurs - inscription à un événement
+app.post("/api/events/:id/join", authenticateToken, checkRole(['player', 'organizer', 'admin']), async (req, res) => {
+  const eventId = req.params.id;
+  const userId = req.user.userId;
+
+  // Logique pour inscrire le joueur à l'événement
+  await pgClient.query("INSERT INTO event_participants (event_id, user_id) VALUES ($1, $2)", [eventId, userId]);
+  res.json({ message: "Inscription réussie" });
+});
+
+// Route pour les organisateurs - créer un événement
+app.post("/api/events", authenticateToken, checkRole(['organizer', 'admin']), async (req, res) => {
+  const { title, description, players_count, start_datetime, end_datetime } = req.body;
+  const userId = req.user.userId;
+
+  // Logique pour créer un événement
+  await pgClient.query(
+    "INSERT INTO events (title, description, players_count, start_datetime, end_datetime, user_id) VALUES ($1, $2, $3, $4, $5, $6)",
+    [title, description, players_count, start_datetime, end_datetime, userId]
+  );
+  res.json({ message: "Événement créé avec succès, en attente de validation" });
+});
+
+// Route pour les administrateurs - approuver un événement
+app.post("/api/events/:id/approve", authenticateToken, checkRole('admin'), async (req, res) => {
+  const eventId = req.params.id;
+
+  // Logique pour approuver l'événement
+  await pgClient.query("UPDATE events SET is_approved = TRUE WHERE id = $1", [eventId]);
+  res.json({ message: "Événement approuvé" });
+});
+
 
 
 // Démarrer le serveur
