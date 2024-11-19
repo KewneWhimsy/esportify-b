@@ -3,6 +3,8 @@ const cors = require('cors'); //  Middleware CORS pour gérer les requêtes cros
 const { Client } = require("pg"); // Pour la connexion à PostgreSQL
 const mongoose = require("mongoose"); // Pour la connexion à MongoDB Atlas
 const fs = require("fs"); // Module Node.js pour interagir avec le système de fichiers
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 const app = express(); // Crée une instance d'application Express
 
@@ -135,9 +137,6 @@ app.get("/api/event/:id", async (req, res) => {
     res.status(500).json({ error: "Erreur lors de la récupération des détails de l'événement" });
   }
 });
-
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 
 app.post("/api/register", async (req, res) => {
   const { username, email, password } = req.body;
