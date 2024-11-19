@@ -8,6 +8,9 @@ const jwt = require("jsonwebtoken");
 
 const app = express(); // Crée une instance d'application Express
 
+// Middleware pour parser le JSON
+app.use(express.json());
+
 // Se connecter à la base de données PostgreSQL
 const pgClient = new Client({
   host: process.env.PG_HOST, // Adresse privée PostgreSQL (configurée dans Render)
@@ -230,7 +233,7 @@ app.post("/api/login", async (req, res) => {
 });
 
 // Route pour les joueurs - inscription à un événement
-app.post("/api/events/:id/join", authenticateToken, checkRole(['player', 'organizer', 'admin']), async (req, res) => {
+app.post("/api/events/:id/join", authenticateToken, checkRole(['joueur', 'orga', 'admin']), async (req, res) => {
   const eventId = req.params.id;
   const userId = req.user.userId;
 
@@ -239,8 +242,8 @@ app.post("/api/events/:id/join", authenticateToken, checkRole(['player', 'organi
   res.json({ message: "Inscription réussie" });
 });
 
-// Route pour les organisateurs - créer un événement
-app.post("/api/events", authenticateToken, checkRole(['organizer', 'admin']), async (req, res) => {
+// Route pour les orga - créer un événement
+app.post("/api/events", authenticateToken, checkRole(['orga', 'admin']), async (req, res) => {
   const { title, description, players_count, start_datetime, end_datetime } = req.body;
   const userId = req.user.userId;
 
