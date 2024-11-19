@@ -6,9 +6,10 @@ DROP TABLE IF EXISTS imagesevents, events, users CASCADE;
 -- Table des utilisateurs
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY, -- Identifiant unique de l'utilisateur
-    username VARCHAR(30) NOT NULL, -- Nom d'utilisateur
+    username VARCHAR(30) NOT NULL UNIQUE, -- Nom d'utilisateur
     email VARCHAR(100) NOT NULL UNIQUE CHECK (email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'), -- adresse email unique et valide
-    score INT NOT NULL, --score du joueur
+    role VARCHAR(20) DEFAULT 'visiteur',
+    score INT, --score du joueur
     created_at TIMESTAMP DEFAULT NOW(), -- Date de création du compte
     updated_at TIMESTAMP DEFAULT NOW() -- Date de dernière mise à jour du compte
 );
@@ -74,14 +75,15 @@ DROP INDEX IF EXISTS idx_event_id;
 CREATE INDEX idx_event_id ON imagesevents (event_id);
 
 -- Insertion des données initiales de manière idempotente
-INSERT INTO users (username, email)
+INSERT INTO users (username, email, role)
 VALUES 
-    ('admin', 'admin@esportify.com'),
-    ('GoMAN', 'gogogo@gomail.gom'),
-    ('Gigi', 'gigilafleche@sportific.com'),
-    ('league_fan', 'lol@esportify.com'),
-    ('Mclaire', 'mclaire@edu.fr'),
-    ('testuser', 'esportifymailtest@yopmail.com')
+    ('admin', 'admin@esportify.com', 'admin'),
+    ('GoMAN', 'gogogo@gomail.gom','orga'),
+    ('Gigi', 'gigilafleche@sportific.com','orga'),
+    ('league_fan', 'lol@esportify.com','orga'),
+    ('Mclaire', 'mclaire@edu.fr','orga'),
+    ('testuser', 'esportifymailtest@yopmail.com','orga')
+    ('PlayerMan', 'player@yopmail.com', 'joueur')
 ON CONFLICT DO NOTHING;
 
 INSERT INTO events (title, description, players_count, is_approved, start_datetime, end_datetime, user_id)
