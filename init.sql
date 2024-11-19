@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY, -- Identifiant unique de l'utilisateur
     username VARCHAR(30) NOT NULL, -- Nom d'utilisateur
     email VARCHAR(100) NOT NULL UNIQUE CHECK (email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'), -- adresse email unique et valide
+    score INT NOT NULL, --score du joueur
     created_at TIMESTAMP DEFAULT NOW(), -- Date de création du compte
     updated_at TIMESTAMP DEFAULT NOW() -- Date de dernière mise à jour du compte
 );
@@ -80,7 +81,6 @@ VALUES
     ('Gigi', 'gigilafleche@sportific.com'),
     ('league_fan', 'lol@esportify.com'),
     ('Mclaire', 'mclaire@edu.fr'),
-    ('Marcel GAMING', 'marcel.le.boss@gmail.com'),
     ('testuser', 'esportifymailtest@yopmail.com')
 ON CONFLICT DO NOTHING;
 
@@ -101,12 +101,14 @@ VALUES
     ('Petite partie d''échec ?', 'alléééééé !!!! rejoignez moi pour une 
     loooooogue parti d''échec, toute la journée, toute la  nuit, on refait 
     ça chaque semaine si vous voulez, venez nombreux ! J''essaye de faire 
-    une description vraiment longue pour tester comment ça va rendre sur la page dzjdzj jzdpzoj dz djzpodjz jdzpojdzpo dzjpd jz
-    zdjzpojdzd zjjd zjdz dzopjd zpdjzodp zdjzpo dpzojdz dzpjd zjdzpjdpzopjdzd zpood jzpodjzpjdzpoojdz djzpjdzpojdzpj
-    zpjdpzojdpojzjd zopodjz poodjzo dzpoojdoz jdzjpojd zpojd zpojd zpodj zpojdzpojd zpojdzpjdzjdjzpjdzpojdzpojd', 2, TRUE,
+    une description vraiment longue pour tester comment ça va rendre sur la page 
+    dzjdzj jzdpzoj dz djzpodjz jdzpojdzpo dzjpd zdjzpojdzd zjjd zjdz dzopjd zpdjzodp 
+    zdjzpo dpzojdz dzpjd zjdzpjdpzopjdzd zpood jzpodjzpjdzpoojdz djzpjdzpojdzpj
+    zpjdpzojdpojzjd zopodjz poodjzo dzpoojdoz jdzjpojd zpojd zpojd zpodj zpojdzpojd 
+    zpojdzpjdzjdjzpjdzpojdzpojd et dnj qjen sjjd qnnb ebbd bdbjs bdjsbd bjsbd ', 3, TRUE,
      '2024-11-15 09:00'::timestamp, '2024-12-20 12:00'::timestamp, 2),
     ('événement test', 'à accepter', 20, FALSE, 
-     '2024-11-17 00:00'::timestamp, '2024-12-17 23:59'::timestamp, 7)
+     '2024-11-17 00:00'::timestamp, '2024-12-17 23:59'::timestamp, 6)
 ON CONFLICT DO NOTHING;
 
 
