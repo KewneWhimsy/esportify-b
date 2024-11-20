@@ -126,7 +126,11 @@ app.get("/api/events", async (req, res) => {
         hx-get="https://esportify-backend.onrender.com/api/event/${event.id}"
         hx-target="#popup-content"
         hx-swap="innerHTML"
-        hx-headers='{"Authorization": "Bearer ${token}"}'
+        ${
+          token
+            ? `hx-headers='{"Authorization": "Bearer ${token}"}'`
+            : "" // Pas d'en-tête Authorization si le token n'est pas défini
+        }
         >
           <div>
             <h2 class="text-lg font-heading text-heading leading-tight mb-2">${
