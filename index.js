@@ -116,6 +116,7 @@ app.get("/api/events", async (req, res) => {
 
     const events = result.rows; // Récupére les événements sous forme d'un tableau d'objets JavaScript
     let eventsHtml = "";
+    const token = sessionStorage.getItem("jwt"); // Récupérer le token stocké dans sessionStorage
     // Génére du HTML pour chaque événement
     events.forEach((event) => {
       eventsHtml += `
@@ -125,7 +126,7 @@ app.get("/api/events", async (req, res) => {
         hx-get="https://esportify-backend.onrender.com/api/event/${event.id}"
         hx-target="#popup-content"
         hx-swap="innerHTML"
-
+        hx-headers='{"Authorization": "Bearer ${token}"}'
         >
           <div>
             <h2 class="text-lg font-heading text-heading leading-tight mb-2">${
@@ -313,7 +314,8 @@ app.post("/api/login", async (req, res) => {
   const token = jwt.sign(
     { userId: user.id, role: user.role },
     process.env.JWT_SECRET,
-    { expiresIn: "1h" }
+    { expiresIn: "1h" },
+    console.log("token créé")
   );
 
   // Renvoi du token JWT dans la réponse
