@@ -106,32 +106,26 @@ VALUES
     ('PlayerMan', 'player@yopmail.com', '123456', 'joueur', 0)
 ON CONFLICT DO NOTHING;
 
-INSERT INTO events (title, description, players_count, is_approved, start_datetime, end_datetime, user_id)
+INSERT INTO events (title, description, players_count, is_approved, start_datetime, end_datetime, user_id, created_at, updated_at)
 VALUES
     ('Playtest exclusif esportify', 'Accéder au lien dans vos mail pour tester gratuitement LE nouveau jeu', 16, TRUE, 
-     '2025-01-01 15:00'::timestamp, '2025-01-01 18:00'::timestamp, 1),
+     '2025-01-01 15:00'::timestamp, '2025-01-01 18:00'::timestamp, 1, NOW(), NOW()),
     ('Tournoi CSS GO', 'Go go go go comme ils disent', 12, TRUE, 
-     '2024-12-01 10:00'::timestamp, '2024-12-01 12:00'::timestamp, 2),
+     '2024-12-01 10:00'::timestamp, '2024-12-01 12:00'::timestamp, 2, NOW(), NOW()),
     ('Tournoi de pétanque', 'Marcel sera de la partie ! Venez nombreux, venez joyeux !', 8, FALSE, 
-     '2024-12-02 15:00'::timestamp, '2024-12-02 18:00'::timestamp, 3),
+     '2024-12-02 15:00'::timestamp, '2024-12-02 18:00'::timestamp, 3, NOW(), NOW()),
     ('Tournoi de League of Legend', 'Rejoignez-nous pour notre compétition hebdomadaire', 32, TRUE, 
-     '2024-12-03 09:00'::timestamp, '2024-12-03 11:00'::timestamp, 4),
+     '2024-12-03 09:00'::timestamp, '2024-12-03 11:00'::timestamp, 4, NOW(), NOW()),
     ('Tournoi de League of Legend mieux', 'Venez sur MON événement', 40, TRUE, 
-     '2024-12-03 09:00'::timestamp, '2024-12-03 11:00'::timestamp, 3),
+     '2024-12-03 09:00'::timestamp, '2024-12-03 11:00'::timestamp, 3, NOW(), NOW()),
     ('Kermesse du village', 'Chers amis, nous vous attendont nombreux le 10 Janvier.', 100, FALSE, 
-     '2025-01-10 09:00'::timestamp, '2025-01-11 05:00'::timestamp, 5),
-    ('Petite partie d''échec ?', 'alléééééé !!!! rejoignez moi pour une 
-    loooooogue parti d''échec, toute la journée, toute la  nuit, on refait 
-    ça chaque semaine si vous voulez, venez nombreux ! J''essaye de faire 
-    une description vraiment longue pour tester comment ça va rendre sur la page 
-    dzjdzj jzdpzoj dz djzpodjz jdzpojdzpo dzjpd zdjzpojdzd zjjd zjdz dzopjd zpdjzodp 
-    zdjzpo dpzojdz dzpjd zjdzpjdpzopjdzd zpood jzpodjzpjdzpoojdz djzpjdzpojdzpj
-    zpjdpzojdpojzjd zopodjz poodjzo dzpoojdoz jdzjpojd zpojd zpojd zpodj zpojdzpojd 
-    zpojdzpjdzjdjzpjdzpojdzpojd et dnj qjen sjjd qnnb ebbd bdbjs bdjsbd bjsbd ', 3, TRUE,
-     '2024-11-15 09:00'::timestamp, '2024-12-20 12:00'::timestamp, 2),
+     '2025-01-10 09:00'::timestamp, '2025-01-11 05:00'::timestamp, 5, NOW(), NOW()),
+    ('Petite partie d''échec ?', 'alléééééé !!!! rejoignez moi pour une loooooogue partie...', 3, TRUE,
+     '2024-11-15 09:00'::timestamp, '2024-12-20 12:00'::timestamp, 2, NOW(), NOW()),
     ('événement test', 'à accepter', 20, FALSE, 
-     '2024-11-17 00:00'::timestamp, '2024-12-17 23:59'::timestamp, 6)
+     '2024-11-17 00:00'::timestamp, '2024-12-17 23:59'::timestamp, 6, NOW(), NOW())
 ON CONFLICT DO NOTHING;
+
 
 
 
