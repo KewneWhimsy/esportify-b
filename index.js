@@ -175,7 +175,22 @@ app.get("/api/event/:id", async (req, res) => {
     }
 
     const event = result.rows[0];
-    const userRole = req.user.role;
+    
+    // Tenter de décoder le token JWT si présent
+    let userRole = 'visiteur';
+    let userId = null;
+    const authHeader = req.headers.authorization;
+    if (authHeader) {
+      const token = authHeader.split(" ")[1];
+      try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        userRole = decoded.role;
+        userId = decoded.userId;
+      } catch (err) {
+        console.error("Erreur lors du décodage du token JWT", err);
+      }
+    }
+
     const eventHtml = `
       <div class="bg-[#26232A] border border-[#E5E7EB] p-6 rounded-lg shadow-lg h-full w-full">
         <h2 class="text-2xl font-bold mb-4 font-heading text-heading leading-tight">${
@@ -201,6 +216,7 @@ app.get("/api/event/:id", async (req, res) => {
                 hx-get="/api/favorites/{{ userId }}/{{ event.id }}" 
                 hx-target="#favorite-button" 
                 hx-trigger="load"
+                hx-vals='{ "eventId": "${event.id}", "userId": "${userId}" }'
                 id="favorite-button"
                 class="px-4 py-2 rounded hover:bg-opacity-80 mt-4"
               >
