@@ -108,6 +108,7 @@ END $$;
 
 
 -- Insertion des données initiales de manière idempotente
+
 INSERT INTO users (username, email, password, role, score)
 VALUES 
     ('admin', 'admin@esportify.com', 'admin', 'admin', 0),
@@ -139,6 +140,9 @@ VALUES
      '2024-11-17 00:00'::timestamp, '2024-12-17 23:59'::timestamp, 6, NOW(), NOW())
 ON CONFLICT DO NOTHING;
 
-
+INSERT INTO favorites (user_id, event_id, created_at)
+VALUES 
+    ('1', '1', 'admin', 'admin', NOW()),
+ON CONFLICT DO NOTHING;
 
 

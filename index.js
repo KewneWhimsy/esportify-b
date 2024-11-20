@@ -214,7 +214,7 @@ app.get("/api/event/:id", async (req, res) => {
         <!-- Boutons dynamiques selon le rôle -->
         <div x-show="role !== 'visiteur'" class="mt-6">
   <button 
-    hx-get="/api/favorites/{{ userId }}/{{ event.id }}" 
+    hx-get="/api/favorites/:userId/:eventId" 
     hx-target="#favorite-button" 
     hx-trigger="load"
     hx-vals='{ "eventId": "${event.id}", "userId": "${userId}" }'
