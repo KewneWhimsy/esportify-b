@@ -40,7 +40,7 @@ mongoose
 
 // Configuration de CORS
 const corsOptions = {
-  origin: ['http://localhost:4321', 'https://kewnewhimsy.github.io/esportify-f/'], // Origines autorisées pour les requêtes CORS
+  origin: ['http://localhost:4321', 'https://kewnewhimsy.github.io'], // Origines autorisées pour les requêtes CORS
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], // Méthodes HTTP autorisées
   allowedHeaders: ['Content-Type', 'Authorization', 'HX-Request', 'HX-Trigger', 'HX-Target', 'HX-Trigger-Name', 'HX-Current-URL'], // entêtes spécifiques de HTMX
   credentials: true, // en prévision des cookies pour les sessions d'utilisation
