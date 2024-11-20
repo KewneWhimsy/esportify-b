@@ -175,7 +175,7 @@ app.get("/api/event/:id", async (req, res) => {
     }
 
     const event = result.rows[0];
-
+    const userRole = req.user.role;
     const eventHtml = `
       <div class="bg-[#26232A] border border-[#E5E7EB] p-6 rounded-lg shadow-lg h-full w-full">
         <h2 class="text-2xl font-bold mb-4 font-heading text-heading leading-tight">${
@@ -190,10 +190,6 @@ app.get("/api/event/:id", async (req, res) => {
         <p><strong>Fin :</strong> ${new Date(
           event.end_datetime
         ).toLocaleString()}</p>
-        <button class="mt-4 px-4 py-2 bg-red-700 rounded hover:bg-red-800" 
-        @click="isOpen = false">
-          Fermer
-        </button>
 
         <!-- Boutons dynamiques selon le rôle -->
         <div class="mt-6">
@@ -213,36 +209,7 @@ app.get("/api/event/:id", async (req, res) => {
             : ""
           }
 
-    <!-- Actions pour un organisateur -->
-    ${
-      userRole === "organisateur" && event.organisateur_id === userId
-        ? `
-        <button class="px-4 py-2 bg-yellow-500 rounded hover:bg-yellow-600 mr-2">
-          Modifier
-        </button>
-        <button class="px-4 py-2 bg-green-500 rounded hover:bg-green-600">
-          Démarrer l'événement
-        </button>
-        `
-        : ""
-    }
-
-    <!-- Actions pour un admin -->
-    ${
-      userRole === "admin"
-        ? `
-        <button class="px-4 py-2 bg-green-500 rounded hover:bg-green-600 mr-2">
-          Valider
-        </button>
-        <button class="px-4 py-2 bg-red-500 rounded hover:bg-red-600 mr-2">
-          Suspendre
-        </button>
-        <button class="px-4 py-2 bg-red-700 rounded hover:bg-red-800">
-          Supprimer
-        </button>
-        `
-        : ""
-    }
+    
   </div>
 
   <button class="mt-6 px-4 py-2 bg-red-700 rounded hover:bg-red-800" @click="isOpen = false">
@@ -440,13 +407,6 @@ app.get(
     }
   }
 );
-
-// Route pour vérifier si un événement est déjà favori pour un utilisateur
-app.get('/api/favorites/:userId/:eventId', async (req, res) => {
-  const { userId, eventId } = req.params;
-  
-});
-
 
 // Route pour les administrateurs - approuver un événement
 app.post(
