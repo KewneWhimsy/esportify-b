@@ -212,26 +212,15 @@ app.get("/api/event/:id", async (req, res) => {
         ).toLocaleString()}</p>
 
         <!-- Boutons dynamiques selon le rôle -->
-        <div class="mt-6">
+        <div x-show="role !== 'visiteur'" class="mt-6">
           <!-- Actions pour un joueur -->
-          ${
-            ["joueur", "orga", "admin"].includes(userRole)
-              ? `
-              <button 
-                hx-get="/api/favorites/{{ userId }}/{{ event.id }}" 
-                hx-target="#favorite-button" 
-                hx-trigger="load"
-                hx-vals='{ "eventId": "${event.id}", "userId": "${userId}" }'
-                id="favorite-button"
-                class="px-4 py-2 rounded hover:bg-opacity-80 mt-4"
-              >
-              </button>
-              `
-            : "pas de bouton favoris"
-          }
-
-    
-  </div>
+          hx-get="/api/favorites/{{ userId }}/{{ event.id }}" 
+          hx-target="#favorite-button" 
+          hx-trigger="load"
+          hx-vals='{ "eventId": "${event.id}", "userId": "${userId}" }'
+          id="favorite-button"
+          class="px-4 py-2 rounded hover:bg-opacity-80 mt-4" 
+        </div>
 
   <button class="mt-6 px-4 py-2 bg-red-700 rounded hover:bg-red-800" @click="isOpen = false">
     Fermer
