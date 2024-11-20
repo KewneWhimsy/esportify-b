@@ -7,22 +7,19 @@ DROP TABLE IF EXISTS imagesevents, events, users CASCADE;
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY, -- Identifiant unique de l'utilisateur
     username VARCHAR(30) NOT NULL UNIQUE, -- Nom d'utilisateur
-    email VARCHAR(100) NOT NULL UNIQUE CHECK (email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'), -- adresse email unique et valide
+    email VARCHAR(100) NOT NULL UNIQUE CHECK (email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,63}$'), -- adresse email unique et valide
     password VARCHAR(255) NOT NULL,
     role VARCHAR(20) DEFAULT 'visiteur',
-    score INT, --score du joueur
+    score INT DEFAULT 0, -- Score du joueur, initialisé à 0
     created_at TIMESTAMP DEFAULT NOW(), -- Date de création du compte
     updated_at TIMESTAMP DEFAULT NOW() -- Date de dernière mise à jour du compte
 );
--- Index pour accélérer les recherches par nom d'utilisateur
-DROP INDEX IF EXISTS idx_users_username;
-CREATE INDEX idx_users_username ON users (username);
 
 -- Table des événements
 CREATE TABLE IF NOT EXISTS events (
     id SERIAL PRIMARY KEY,            -- Identifiant unique de l'événement
     title VARCHAR(100) NOT NULL,       -- Titre de l'événement
-    description TEXT,                  -- Description de l'événement
+    description VARCHAR (500) NOT NULL,                  -- Description de l'événement
     players_count INT CHECK (players_count > 1), -- Nombre de joueurs
     is_approved BOOLEAN DEFAULT FALSE, -- Statut de l'événement par défaut (non approuvé)
     start_datetime TIMESTAMP NOT NULL, -- Date et heure de début
@@ -31,9 +28,30 @@ CREATE TABLE IF NOT EXISTS events (
     created_at TIMESTAMP DEFAULT NOW(),-- Date de création
     updated_at TIMESTAMP DEFAULT NOW() -- Date de dernière mise à jour
 );
--- Index pour accélérer les recherches par plage de dates
-DROP INDEX IF EXISTS idx_datetime_range;
-CREATE INDEX idx_datetime_range ON events (start_datetime, end_datetime);
+
+-- Table des images d'événements
+CREATE TABLE IF NOT EXISTS imagesevents (
+    id SERIAL PRIMARY KEY,           -- Identifiant unique de l'image
+    event_id INT REFERENCES events(id) ON DELETE CASCADE, -- Référence à l'événement
+    image_url VARCHAR(255) NOT NULL CHECK (image_url ~* '^(https?:\/\/)[\w\-]+(\.[\w\-]+)+[/#?]?.*$'),  -- Vérification URL de l'image
+    created_at TIMESTAMP DEFAULT NOW() -- Date et heure d'ajout de l'image dans la base de données
+);
+
+-- Index pour les performances
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_users_username') THEN
+        CREATE INDEX idx_users_username ON users (username);
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_datetime_range') THEN
+        CREATE INDEX idx_datetime_range ON events (start_datetime, end_datetime);
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_event_id') THEN
+        CREATE INDEX idx_event_id ON imagesevents (event_id);
+    END IF;
+END $$;
 
 -- Contrainte pour s'assurer que la date de fin est après la date de début
 ALTER TABLE users DROP CONSTRAINT IF EXISTS check_dates;
@@ -53,30 +71,31 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Trigger pour appeler la fonction update_updated_at avant chaque mise à jour de la table users
-CREATE TRIGGER trg_update_updated_at_users
-BEFORE UPDATE ON users
-FOR EACH ROW
-EXECUTE FUNCTION update_updated_at();
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.triggers WHERE trigger_name = 'trg_update_updated_at_users') THEN
+        CREATE TRIGGER trg_update_updated_at_users
+        BEFORE UPDATE ON users
+        FOR EACH ROW
+        EXECUTE FUNCTION update_updated_at();
+    END IF;
+END $$;
 
 -- Trigger pour appeler la fonction update_updated_at avant chaque mise à jour de la table events
-CREATE TRIGGER trg_update_updated_at
-BEFORE UPDATE ON events
-FOR EACH ROW
-EXECUTE FUNCTION update_updated_at();
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.triggers WHERE trigger_name = 'trg_update_updated_at_events') THEN
+        CREATE TRIGGER trg_update_updated_at_events
+        BEFORE UPDATE ON events
+        FOR EACH ROW
+        EXECUTE FUNCTION update_updated_at();
+    END IF;
+END $$;
 
--- Table des images d'événements
-CREATE TABLE IF NOT EXISTS imagesevents (
-    id SERIAL PRIMARY KEY,           -- Identifiant unique de l'image
-    event_id INT REFERENCES events(id) ON DELETE CASCADE, -- Référence à l'événement
-    image_url VARCHAR(255) NOT NULL CHECK (image_url ~* '^(http|https)://'),  -- Vérification URL de l'image, doit commencer par http ou https
-    created_at TIMESTAMP DEFAULT NOW() -- Date et heure d'ajout de l'image dans la base de données
-);
--- Index pour accélérer les recherches par event_id
-DROP INDEX IF EXISTS idx_event_id;
-CREATE INDEX idx_event_id ON imagesevents (event_id);
+
 
 -- Insertion des données initiales de manière idempotente
-INSERT INTO users (username, email, password, role)
+INSERT INTO users (username, email, password, role, score)
 VALUES 
     ('admin', 'admin@esportify.com', 'admin', 'admin'),
     ('GoMAN', 'gogogo@gomail.gom', '123456', 'orga'),
