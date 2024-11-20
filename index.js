@@ -116,7 +116,6 @@ app.get("/api/events", async (req, res) => {
 
     const events = result.rows; // Récupére les événements sous forme d'un tableau d'objets JavaScript
     let eventsHtml = "";
-    const token = sessionStorage.getItem("jwt"); // Récupérer le token stocké dans sessionStorage
     // Génére du HTML pour chaque événement
     events.forEach((event) => {
       eventsHtml += `
