@@ -182,6 +182,9 @@ app.get("/api/event/:id", async (req, res) => {
     const authHeader = req.headers.authorization;
     if (authHeader) {
       const token = authHeader.split(" ")[1];
+      if (!process.env.JWT_SECRET) {
+        console.error("JWT_SECRET non défini dans les variables d'environnement");
+      }
       try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         userRole = decoded.role;
@@ -190,6 +193,8 @@ app.get("/api/event/:id", async (req, res) => {
       } catch (err) {
         console.error("Erreur lors du décodage du token JWT", err);
       }
+    } else {
+      console.log("En-tête Authorization non présent");
     }
 
     const eventHtml = `
