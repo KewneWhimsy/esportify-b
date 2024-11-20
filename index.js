@@ -174,71 +174,83 @@ app.get("/api/event/:id", async (req, res) => {
     }
 
     const event = result.rows[0];
-    
-    // Tenter de décoder le token JWT si présent
+
+    // Tentative de décoder le token JWT si présent pour savoir si l'utilisateur est connecté
     let userRole = 'visiteur';
     let userId = null;
     const authHeader = req.headers.authorization;
     if (authHeader) {
       const token = authHeader.split(" ")[1];
-      if (!process.env.JWT_SECRET) {
-        console.error("JWT_SECRET non défini dans les variables d'environnement");
-      }
       try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         userRole = decoded.role;
         userId = decoded.userId;
-        console.log("Décodage du JWT réussi)");
       } catch (err) {
         console.error("Erreur lors du décodage du token JWT", err);
       }
-    } else {
-      console.log("En-tête Authorization non présent");
+    }
+
+    // Vérifier si l'utilisateur a déjà favorisé cet événement
+    let isFavorited = false;
+    if (userId) {
+      const favoriteCheck = await pgClient.query(
+        "SELECT * FROM favorites WHERE user_id = $1 AND event_id = $2",
+        [userId, id]
+      );
+      if (favoriteCheck.rowCount > 0) {
+        isFavorited = true; // L'événement est déjà un favori de cet utilisateur
+      }
     }
 
     const eventHtml = `
       <div class="bg-[#26232A] border border-[#E5E7EB] p-6 rounded-lg shadow-lg h-full w-full">
-        <h2 class="text-2xl font-bold mb-4 font-heading text-heading leading-tight">${
-          event.title
-        }</h2>
+        <h2 class="text-2xl font-bold mb-4 font-heading text-heading leading-tight">${event.title}</h2>
         <p class="mb-4">${event.description}</p>
         <p><strong>Joueurs :</strong> ${event.players_count}</p>
         <p><strong>Organisateur :</strong> ${event.organisateur}</p>
-        <p><strong>Début :</strong> ${new Date(
-          event.start_datetime
-        ).toLocaleString()}</p>
-        <p><strong>Fin :</strong> ${new Date(
-          event.end_datetime
-        ).toLocaleString()}</p>
+        <p><strong>Début :</strong> ${new Date(event.start_datetime).toLocaleString()}</p>
+        <p><strong>Fin :</strong> ${new Date(event.end_datetime).toLocaleString()}</p>
 
-        <!-- Boutons dynamiques selon le rôle -->
-        <div x-show="role !== 'visiteur'" class="mt-6">
-  <button 
-    hx-get="/api/favorites/:userId/:eventId" 
-    hx-target="#favorite-button" 
-    hx-trigger="load"
-    hx-vals='{ "eventId": "${event.id}", "userId": "${userId}" }'
-    id="favorite-button"
-    class="px-4 py-2 rounded hover:bg-opacity-80 mt-4">
-    Ajouter aux favoris
-  </button>
-</div>
+        <!-- Utilisation de Alpine.js pour gérer l'état du favori -->
+        <div x-data="{ favorite: ${isFavorited} }">
+          <button
+            x-show="!favorite"
+            hx-post="/api/favorites"
+            hx-target="#favorite-button"
+            hx-vals='{ "eventId": "${id}", "userId": "${userId}" }'
+            hx-on="htmx:beforeRequest: this.disabled = true"
+            hx-on="htmx:afterRequest: this.disabled = false"
+            class="px-4 py-2 bg-blue-500 rounded hover:bg-opacity-80"
+            @click="favorite = true"
+          >
+            Je participe
+          </button>
 
+          <button
+            x-show="favorite"
+            hx-post="/api/favorites"
+            hx-target="#favorite-button"
+            hx-vals='{ "eventId": "${id}", "userId": "${userId}" }'
+            hx-on="htmx:beforeRequest: this.disabled = true"
+            hx-on="htmx:afterRequest: this.disabled = false"
+            class="px-4 py-2 bg-blue-500 rounded hover:bg-opacity-80"
+            @click="favorite = false"
+          >
+            Plus intéressé
+          </button>
+        </div>
       </div>
-      
     `;
 
-    res.send(eventHtml);
+    res.send(eventHtml);  // Envoi de la vue complète à la demande
   } catch (err) {
-    console.error(
-      "Erreur lors de la récupération des détails de l'événement",
-      err
-    );
+    console.error("Erreur lors de la récupération des détails de l'événement", err);
     res.status(500).json({
       error: "Erreur lors de la récupération des détails de l'événement",
     });
   }
 });
+
 
 //inscription
 app.post("/api/register", async (req, res) => {
@@ -332,7 +344,8 @@ app.post(
 app.post(
   '/api/favorites',
   authenticateToken,
-  checkRole(["joueur","orga", "admin"]), async (req, res) => {
+  checkRole(["joueur", "orga", "admin"]),
+  async (req, res) => {
     const { eventId, userId } = req.body;  // Récupère les données envoyées dans le body de la requête
   
     // Vérifie si le favori existe déjà
@@ -342,14 +355,18 @@ app.post(
     );
     
     if (favorite.rowCount > 0) {
+      // Si le favori existe, on le supprime
       await pgClient.query(
         "DELETE FROM favorites WHERE user_id = $1 AND event_id = $2",
         [userId, eventId]
       );
+      
+      // Retourner un bouton pour "Je participe"
       return res.send(`
         <button 
           hx-post="/api/favorites" 
           hx-target="#favorite-button"
+          hx-vals='{ "eventId": "${eventId}", "userId": "${userId}" }'
           hx-on="htmx:beforeRequest: this.disabled = true"
           hx-on="htmx:afterRequest: this.disabled = false"
           class="px-4 py-2 bg-blue-500 rounded hover:bg-opacity-80"
@@ -357,17 +374,19 @@ app.post(
           Je participe
         </button>
       `);
-      // Bouton pour "Je participe"
     } else {
+      // Si le favori n'existe pas, on l'ajoute
       await pgClient.query(
         "INSERT INTO favorites (user_id, event_id) VALUES ($1, $2)",
         [userId, eventId]
       );
-      // Bouton pour "Plus intéressé"
+      
+      // Retourner un bouton pour "Plus intéressé"
       return res.send(`
         <button 
           hx-post="/api/favorites" 
           hx-target="#favorite-button"
+          hx-vals='{ "eventId": "${eventId}", "userId": "${userId}" }'
           hx-on="htmx:beforeRequest: this.disabled = true"
           hx-on="htmx:afterRequest: this.disabled = false"
           class="px-4 py-2 bg-blue-500 rounded hover:bg-opacity-80"
@@ -378,10 +397,11 @@ app.post(
     }
   }
 );
+
 app.get(
   '/api/favorites/:userId/:eventId',
   authenticateToken,
-  checkRole(["joueur","orga", "admin"]), async (req, res) => {
+  checkRole(["joueur", "orga", "admin"]), async (req, res) => {
     const { eventId, userId } = req.params;
     
     // Vérifie si le favori existe déjà
@@ -391,10 +411,12 @@ app.get(
     );
       
     if (favorite.rowCount > 0) {
+      // Si le favori existe, renvoyer le bouton "Plus intéressé"
       return res.send(`
         <button 
           hx-post="/api/favorites" 
           hx-target="#favorite-button"
+          hx-vals='{ "eventId": "${eventId}", "userId": "${userId}" }'
           hx-on="htmx:beforeRequest: this.disabled = true"
           hx-on="htmx:afterRequest: this.disabled = false"
           class="px-4 py-2 bg-blue-500 rounded hover:bg-opacity-80"
@@ -403,10 +425,12 @@ app.get(
         </button>
       `);
     } else {
+      // Si le favori n'existe pas, renvoyer le bouton "Je participe"
       return res.send(`
         <button 
           hx-post="/api/favorites" 
           hx-target="#favorite-button"
+          hx-vals='{ "eventId": "${eventId}", "userId": "${userId}" }'
           hx-on="htmx:beforeRequest: this.disabled = true"
           hx-on="htmx:afterRequest: this.disabled = false"
           class="px-4 py-2 bg-blue-500 rounded hover:bg-opacity-80"
@@ -417,6 +441,7 @@ app.get(
     }
   }
 );
+
 
 // Route pour les administrateurs - approuver un événement
 app.post(

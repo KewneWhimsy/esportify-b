@@ -1,5 +1,5 @@
 -- Supprime les tables existantes si elles existent, pour redémarrer proprement (temporaire)
-DROP TABLE IF EXISTS imagesevents, events, users CASCADE;
+DROP TABLE IF EXISTS favorites, imagesevents, events, users CASCADE;
 -- Conserve les relations mais efface les données
 --TRUNCATE imagesevents, events, users RESTART IDENTITY CASCADE;
 
