@@ -213,18 +213,17 @@ app.get("/api/event/:id", async (req, res) => {
 
         <!-- Boutons dynamiques selon le rôle -->
         <div x-show="role !== 'visiteur'" class="mt-6">
-          hx-get="/api/favorites/{{ userId }}/{{ event.id }}" 
-          hx-target="#favorite-button" 
-          hx-trigger="load"
-          hx-vals='{ "eventId": "${event.id}", "userId": "${userId}" }'
-          id="favorite-button"
-          class="px-4 py-2 rounded hover:bg-opacity-80 mt-4"
-        >
-        </div>
-
-  <button class="mt-6 px-4 py-2 bg-red-700 rounded hover:bg-red-800" @click="isOpen = false">
-    Fermer
+  <button 
+    hx-get="/api/favorites/{{ userId }}/{{ event.id }}" 
+    hx-target="#favorite-button" 
+    hx-trigger="load"
+    hx-vals='{ "eventId": "${event.id}", "userId": "${userId}" }'
+    id="favorite-button"
+    class="px-4 py-2 rounded hover:bg-opacity-80 mt-4">
+    Ajouter aux favoris
   </button>
+</div>
+
       </div>
       
     `;
