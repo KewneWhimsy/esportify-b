@@ -97,13 +97,13 @@ END $$;
 -- Insertion des données initiales de manière idempotente
 INSERT INTO users (username, email, password, role, score)
 VALUES 
-    ('admin', 'admin@esportify.com', 'admin', 'admin'),
-    ('GoMAN', 'gogogo@gomail.gom', '123456', 'orga'),
-    ('Gigi', 'gigilafleche@sportific.com', '123456', 'orga'),
-    ('league_fan', 'lol@esportify.com', '123456', 'orga'),
-    ('Mclaire', 'mclaire@edu.fr', '123456', 'orga'),
-    ('testuser', 'esportifymailtest@yopmail.com', '123456', 'orga'),
-    ('PlayerMan', 'player@yopmail.com', '123456', 'joueur')
+    ('admin', 'admin@esportify.com', 'admin', 'admin', 0),
+    ('GoMAN', 'gogogo@gomail.gom', '123456', 'orga', 100),
+    ('Gigi', 'gigilafleche@sportific.com', '123456', 'orga', 77),
+    ('league_fan', 'lol@esportify.com', '123456', 'orga', 46),
+    ('Mclaire', 'mclaire@edu.fr', '123456', 'orga', 0),
+    ('testuser', 'esportifymailtest@yopmail.com', '123456', 'orga', 0),
+    ('PlayerMan', 'player@yopmail.com', '123456', 'joueur', 0)
 ON CONFLICT DO NOTHING;
 
 INSERT INTO events (title, description, players_count, is_approved, start_datetime, end_datetime, user_id)
