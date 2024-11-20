@@ -37,6 +37,15 @@ CREATE TABLE IF NOT EXISTS imagesevents (
     created_at TIMESTAMP DEFAULT NOW() -- Date et heure d'ajout de l'image dans la base de données
 );
 
+-- Table des favoris
+CREATE TABLE IF NOT EXISTS favorites (
+    id SERIAL PRIMARY KEY,           -- Identifiant unique du favori
+    user_id INT REFERENCES users(id) ON DELETE CASCADE, -- L'utilisateur qui a ajouté aux favoris
+    event_id INT REFERENCES events(id) ON DELETE CASCADE, -- L'événement ajouté comme favori
+    created_at TIMESTAMP DEFAULT NOW(), -- Date et heure d'ajout aux favoris
+    UNIQUE(user_id, event_id) -- Un utilisateur ne peut pas ajouter le même événement plusieurs fois
+);
+
 -- Index pour les performances
 DO $$
 BEGIN
@@ -50,6 +59,10 @@ BEGIN
 
     IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_event_id') THEN
         CREATE INDEX idx_event_id ON imagesevents (event_id);
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_favorites_user_event') THEN
+        CREATE INDEX idx_favorites_user_event ON favorites (user_id, event_id);
     END IF;
 END $$;
 

@@ -1,5 +1,5 @@
 const express = require("express"); // Framework Express
-const cors = require('cors'); //  Middleware CORS pour gérer les requêtes cross-origin
+const cors = require("cors"); //  Middleware CORS pour gérer les requêtes cross-origin
 const { Client } = require("pg"); // Pour la connexion à PostgreSQL
 const mongoose = require("mongoose"); // Pour la connexion à MongoDB Atlas
 const fs = require("fs"); // Module Node.js pour interagir avec le système de fichiers
@@ -40,9 +40,17 @@ mongoose
 
 // Configuration de CORS
 const corsOptions = {
-  origin: ['http://localhost:4321', 'https://kewnewhimsy.github.io'], // Origines autorisées pour les requêtes CORS
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], // Méthodes HTTP autorisées
-  allowedHeaders: ['Content-Type', 'Authorization', 'HX-Request', 'HX-Trigger', 'HX-Target', 'HX-Trigger-Name', 'HX-Current-URL'], // entêtes spécifiques de HTMX
+  origin: ["http://localhost:4321", "https://kewnewhimsy.github.io"], // Origines autorisées pour les requêtes CORS
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"], // Méthodes HTTP autorisées
+  allowedHeaders: [
+    "Content-Type",
+    "Authorization",
+    "HX-Request",
+    "HX-Trigger",
+    "HX-Target",
+    "HX-Trigger-Name",
+    "HX-Current-URL",
+  ], // entêtes spécifiques de HTMX
   credentials: true, // en prévision des cookies pour les sessions d'utilisation
 };
 
@@ -81,8 +89,6 @@ function checkRole(allowedRoles) {
   };
 }
 
-
-
 // Middleware pour gérer les requêtes
 app.get("/", (req, res) => {
   res.send("Hello World!"); // Répond avec "Hello World!" pour la route racine
@@ -92,8 +98,11 @@ app.get("/api/events", async (req, res) => {
   try {
     const sortField = req.query.sort || "start_datetime"; // Trie par défaut : date
     const validSortFields = ["players_count", "start_datetime", "organisateur"];
-    const orderBy = validSortFields.includes(sortField) ? sortField : "start_datetime";
-    const sortColumn = (orderBy === "organisateur") ? "u.username" : `e.${orderBy}`;
+    const orderBy = validSortFields.includes(sortField)
+      ? sortField
+      : "start_datetime";
+    const sortColumn =
+      orderBy === "organisateur" ? "u.username" : `e.${orderBy}`;
 
     // Récupére les événements depuis PostgreSQL
     const result = await pgClient.query(`
@@ -104,11 +113,11 @@ app.get("/api/events", async (req, res) => {
       ORDER BY ${sortColumn}  ASC
       LIMIT 10
     `);
-    
+
     const events = result.rows; // Récupére les événements sous forme d'un tableau d'objets JavaScript
     let eventsHtml = "";
     // Génére du HTML pour chaque événement
-    events.forEach(event => {
+    events.forEach((event) => {
       eventsHtml += `
         <div class="flex flex-col justify-between bg-[#26232A] border 
         border-[#E5E7EB] p-4 rounded-lg w-64 shadow-md hover:shadow-lg transition-transform hover:scale-105 cursor-pointer flex-shrink-0 gap-0.5" 
@@ -119,12 +128,20 @@ app.get("/api/events", async (req, res) => {
 
         >
           <div>
-            <h2 class="text-lg font-heading text-heading leading-tight mb-2">${event.title}</h2>
+            <h2 class="text-lg font-heading text-heading leading-tight mb-2">${
+              event.title
+            }</h2>
           </div>
           <div>
-            <p class="text-sm text-gray-400">Joueurs : ${event.players_count}</p>
-            <p class="text-sm">Début : ${new Date(event.start_datetime).toLocaleString()}</p>
-            <p class="text-sm">Fin : ${new Date(event.end_datetime).toLocaleString()}</p>
+            <p class="text-sm text-gray-400">Joueurs : ${
+              event.players_count
+            }</p>
+            <p class="text-sm">Début : ${new Date(
+              event.start_datetime
+            ).toLocaleString()}</p>
+            <p class="text-sm">Fin : ${new Date(
+              event.end_datetime
+            ).toLocaleString()}</p>
           </div>
         </div>
       `;
@@ -134,19 +151,24 @@ app.get("/api/events", async (req, res) => {
     res.send(eventsHtml);
   } catch (err) {
     console.error("Erreur lors de la récupération des événements", err);
-    res.status(500).json({ error: "Erreur lors de la récupération des événements" });
+    res
+      .status(500)
+      .json({ error: "Erreur lors de la récupération des événements" });
   }
 });
 
 app.get("/api/event/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const result = await pgClient.query(`
+    const result = await pgClient.query(
+      `
       SELECT e.id, e.title, e.description, e.players_count, e.start_datetime, e.end_datetime, u.username AS organisateur
       FROM events e
       JOIN users u ON e.user_id = u.id
       WHERE e.id = $1
-    `, [id]);
+    `,
+      [id]
+    );
 
     if (result.rows.length === 0) {
       return res.status(404).send("<p>Événement non trouvé</p>");
@@ -156,23 +178,89 @@ app.get("/api/event/:id", async (req, res) => {
 
     const eventHtml = `
       <div class="bg-[#26232A] border border-[#E5E7EB] p-6 rounded-lg shadow-lg h-full w-full">
-        <h2 class="text-2xl font-bold mb-4 font-heading text-heading leading-tight">${event.title}</h2>
+        <h2 class="text-2xl font-bold mb-4 font-heading text-heading leading-tight">${
+          event.title
+        }</h2>
         <p class="mb-4">${event.description}</p>
         <p><strong>Joueurs :</strong> ${event.players_count}</p>
         <p><strong>Organisateur :</strong> ${event.organisateur}</p>
-        <p><strong>Début :</strong> ${new Date(event.start_datetime).toLocaleString()}</p>
-        <p><strong>Fin :</strong> ${new Date(event.end_datetime).toLocaleString()}</p>
+        <p><strong>Début :</strong> ${new Date(
+          event.start_datetime
+        ).toLocaleString()}</p>
+        <p><strong>Fin :</strong> ${new Date(
+          event.end_datetime
+        ).toLocaleString()}</p>
         <button class="mt-4 px-4 py-2 bg-red-700 rounded hover:bg-red-800" 
         @click="isOpen = false">
           Fermer
         </button>
+
+        <!-- Boutons dynamiques selon le rôle -->
+        <div class="mt-6">
+          <!-- Actions pour un joueur -->
+          ${
+            ["joueur", "orga", "admin"].includes(userRole)
+              ? `
+              <button 
+                hx-get="/api/favorites/{{ userId }}/{{ event.id }}" 
+                hx-target="#favorite-button" 
+                hx-trigger="load"
+                id="favorite-button"
+                class="px-4 py-2 rounded hover:bg-opacity-80 mt-4"
+              >
+              </button>
+              `
+            : ""
+          }
+
+    <!-- Actions pour un organisateur -->
+    ${
+      userRole === "organisateur" && event.organisateur_id === userId
+        ? `
+        <button class="px-4 py-2 bg-yellow-500 rounded hover:bg-yellow-600 mr-2">
+          Modifier
+        </button>
+        <button class="px-4 py-2 bg-green-500 rounded hover:bg-green-600">
+          Démarrer l'événement
+        </button>
+        `
+        : ""
+    }
+
+    <!-- Actions pour un admin -->
+    ${
+      userRole === "admin"
+        ? `
+        <button class="px-4 py-2 bg-green-500 rounded hover:bg-green-600 mr-2">
+          Valider
+        </button>
+        <button class="px-4 py-2 bg-red-500 rounded hover:bg-red-600 mr-2">
+          Suspendre
+        </button>
+        <button class="px-4 py-2 bg-red-700 rounded hover:bg-red-800">
+          Supprimer
+        </button>
+        `
+        : ""
+    }
+  </div>
+
+  <button class="mt-6 px-4 py-2 bg-red-700 rounded hover:bg-red-800" @click="isOpen = false">
+    Fermer
+  </button>
       </div>
+      
     `;
 
     res.send(eventHtml);
   } catch (err) {
-    console.error("Erreur lors de la récupération des détails de l'événement", err);
-    res.status(500).json({ error: "Erreur lors de la récupération des détails de l'événement" });
+    console.error(
+      "Erreur lors de la récupération des détails de l'événement",
+      err
+    );
+    res.status(500).json({
+      error: "Erreur lors de la récupération des détails de l'événement",
+    });
   }
 });
 
@@ -181,11 +269,16 @@ app.post("/api/register", async (req, res) => {
   const { username, email, password } = req.body;
 
   // Vérification de l'existence de l'utilisateur
-  const result = await pgClient.query("SELECT * FROM users WHERE email = $1", [email]);
+  const result = await pgClient.query("SELECT * FROM users WHERE email = $1", [
+    email,
+  ]);
   if (result.rows.length > 0) {
     return res.status(400).json({ error: "Email déjà utilisé" });
   }
-  const resultUsername = await pgClient.query("SELECT * FROM users WHERE username = $1", [username]);
+  const resultUsername = await pgClient.query(
+    "SELECT * FROM users WHERE username = $1",
+    [username]
+  );
   if (resultUsername.rows.length > 0) {
     return res.status(400).json({ error: "Nom d'utilisateur déjà pris" });
   }
@@ -207,7 +300,9 @@ app.post("/api/login", async (req, res) => {
   const { email, password } = req.body;
 
   // Vérification de l'existence de l'utilisateur
-  const result = await pgClient.query("SELECT * FROM users WHERE email = $1", [email]);
+  const result = await pgClient.query("SELECT * FROM users WHERE email = $1", [
+    email,
+  ]);
   if (result.rows.length === 0) {
     return res.status(400).json({ error: "Utilisateur introuvable" });
   }
@@ -216,55 +311,158 @@ app.post("/api/login", async (req, res) => {
 
   // Vérification du mot de passe
   if (password === user.password) {
-    console.log('Connexion réussie (mot de passe en clair)');
+    console.log("Connexion réussie (mot de passe en clair)");
   } else {
     const isMatch = await bcrypt.compare(password, user.password);
     if (isMatch) {
-      console.log('Connexion réussie (mot de passe haché)');
+      console.log("Connexion réussie (mot de passe haché)");
     } else {
       return res.status(400).json({ error: "Mot de passe incorrect" });
     }
   }
   // Création du token JWT
-  const token = jwt.sign({ userId: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1h" });
+  const token = jwt.sign(
+    { userId: user.id, role: user.role },
+    process.env.JWT_SECRET,
+    { expiresIn: "1h" }
+  );
 
   // Renvoi du token JWT dans la réponse
   res.json({ message: "Connexion réussie", token });
 });
 
-// Route pour les joueurs - inscription à un événement
-app.post("/api/events/:id/join", authenticateToken, checkRole(['joueur', 'orga', 'admin']), async (req, res) => {
-  const eventId = req.params.id;
-  const userId = req.user.userId;
-
-  // Logique pour inscrire le joueur à l'événement
-  await pgClient.query("INSERT INTO event_participants (event_id, user_id) VALUES ($1, $2)", [eventId, userId]);
-  res.json({ message: "Inscription réussie" });
-});
-
 // Route pour les orga - créer un événement
-app.post("/api/events", authenticateToken, checkRole(['orga', 'admin']), async (req, res) => {
-  const { title, description, players_count, start_datetime, end_datetime } = req.body;
-  const userId = req.user.userId;
+app.post(
+  "/api/events",
+  authenticateToken,
+  checkRole(["orga", "admin"]),
+  async (req, res) => {
+    const { title, description, players_count, start_datetime, end_datetime } = req.body;
+    const userId = req.user.userId;
 
-  // Logique pour créer un événement
-  await pgClient.query(
-    "INSERT INTO events (title, description, players_count, start_datetime, end_datetime, user_id) VALUES ($1, $2, $3, $4, $5, $6)",
-    [title, description, players_count, start_datetime, end_datetime, userId]
-  );
-  res.json({ message: "Événement créé avec succès, en attente de validation" });
+    // Logique pour créer un événement
+    await pgClient.query(
+      "INSERT INTO events (title, description, players_count, start_datetime, end_datetime, user_id) VALUES ($1, $2, $3, $4, $5, $6)",
+      [title, description, players_count, start_datetime, end_datetime, userId]
+    );
+    res.json({
+      message: "Événement créé avec succès, en attente de validation",
+    });
+  }
+);
+
+// Route pour ajouter ou retirer un favori
+app.post(
+  '/api/favorites',
+  authenticateToken,
+  checkRole(["joueur","orga", "admin"]), async (req, res) => {
+    const { eventId, userId } = req.body;  // Récupère les données envoyées dans le body de la requête
+  
+    // Vérifie si le favori existe déjà
+    const favorite = await pgClient.query(
+      "SELECT * FROM favorites WHERE user_id = $1 AND event_id = $2",
+      [userId, eventId]
+    );
+    
+    if (favorite.rowCount > 0) {
+      await pgClient.query(
+        "DELETE FROM favorites WHERE user_id = $1 AND event_id = $2",
+        [userId, eventId]
+      );
+      return res.send(`
+        <button 
+          hx-post="/api/favorites" 
+          hx-target="#favorite-button"
+          hx-on="htmx:beforeRequest: this.disabled = true"
+          hx-on="htmx:afterRequest: this.disabled = false"
+          class="px-4 py-2 bg-blue-500 rounded hover:bg-opacity-80"
+        >
+          Je participe
+        </button>
+      `);
+      // Bouton pour "Je participe"
+    } else {
+      await pgClient.query(
+        "INSERT INTO favorites (user_id, event_id) VALUES ($1, $2)",
+        [userId, eventId]
+      );
+      // Bouton pour "Plus intéressé"
+      return res.send(`
+        <button 
+          hx-post="/api/favorites" 
+          hx-target="#favorite-button"
+          hx-on="htmx:beforeRequest: this.disabled = true"
+          hx-on="htmx:afterRequest: this.disabled = false"
+          class="px-4 py-2 bg-blue-500 rounded hover:bg-opacity-80"
+        >
+          Plus intéressé
+        </button>
+      `);
+    }
+  }
+);
+app.get(
+  '/api/favorites/:userId/:eventId',
+  authenticateToken,
+  checkRole(["joueur","orga", "admin"]), async (req, res) => {
+    const { eventId, userId } = req.params;
+    
+    // Vérifie si le favori existe déjà
+    const favorite = await pgClient.query(
+      "SELECT * FROM favorites WHERE user_id = $1 AND event_id = $2",
+      [userId, eventId]
+    );
+      
+    if (favorite.rowCount > 0) {
+      return res.send(`
+        <button 
+          hx-post="/api/favorites" 
+          hx-target="#favorite-button"
+          hx-on="htmx:beforeRequest: this.disabled = true"
+          hx-on="htmx:afterRequest: this.disabled = false"
+          class="px-4 py-2 bg-blue-500 rounded hover:bg-opacity-80"
+        >
+          Plus intéressé
+        </button>
+      `);
+    } else {
+      return res.send(`
+        <button 
+          hx-post="/api/favorites" 
+          hx-target="#favorite-button"
+          hx-on="htmx:beforeRequest: this.disabled = true"
+          hx-on="htmx:afterRequest: this.disabled = false"
+          class="px-4 py-2 bg-blue-500 rounded hover:bg-opacity-80"
+        >
+          Je participe
+        </button>
+      `);
+    }
+  }
+);
+
+// Route pour vérifier si un événement est déjà favori pour un utilisateur
+app.get('/api/favorites/:userId/:eventId', async (req, res) => {
+  const { userId, eventId } = req.params;
+  
 });
+
 
 // Route pour les administrateurs - approuver un événement
-app.post("/api/events/:id/approve", authenticateToken, checkRole('admin'), async (req, res) => {
-  const eventId = req.params.id;
+app.post(
+  "/api/events/:id/approve",
+  authenticateToken,
+  checkRole("admin"),
+  async (req, res) => {
+    const eventId = req.params.id;
 
-  // Logique pour approuver l'événement
-  await pgClient.query("UPDATE events SET is_approved = TRUE WHERE id = $1", [eventId]);
-  res.json({ message: "Événement approuvé" });
-});
-
-
+    // Logique pour approuver l'événement
+    await pgClient.query("UPDATE events SET is_approved = TRUE WHERE id = $1", [
+      eventId,
+    ]);
+    res.json({ message: "Événement approuvé" });
+  }
+);
 
 // Démarrer le serveur
 const PORT = process.env.PORT || 3000; // Définit le port sur lequel le serveur doit écouter
