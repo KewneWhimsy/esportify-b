@@ -186,6 +186,7 @@ app.get("/api/event/:id", async (req, res) => {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         userRole = decoded.role;
         userId = decoded.userId;
+        console.log("Décodage du JWT réussi)");
       } catch (err) {
         console.error("Erreur lors du décodage du token JWT", err);
       }
@@ -222,7 +223,7 @@ app.get("/api/event/:id", async (req, res) => {
               >
               </button>
               `
-            : ""
+            : "pas de bouton favoris"
           }
 
     
