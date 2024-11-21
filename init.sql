@@ -1,8 +1,3 @@
--- Supprime les tables existantes si elles existent, pour redémarrer proprement (temporaire)
-DROP TABLE IF EXISTS favorites, imagesevents, events, users CASCADE;
--- Conserve les relations mais efface les données
---TRUNCATE imagesevents, events, users RESTART IDENTITY CASCADE;
-
 -- Table des utilisateurs
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY, -- Identifiant unique de l'utilisateur
