@@ -216,33 +216,40 @@ app.get("/api/event/:id", async (req, res) => {
         <p><strong>Début :</strong> ${new Date(event.start_datetime).toLocaleString()}</p>
         <p><strong>Fin :</strong> ${new Date(event.end_datetime).toLocaleString()}</p>
 
-        <!-- Utilisation de Alpine.js pour gérer l'état du favori -->
-        <div x-show="rolee !== 'visiteur'" x-data="{ favorite: ${isFavorited} }">
-          <button
-            x-show="!favorite"
-            hx-post="/api/favorites"
-            hx-target="#favorite-button"
-            hx-vals='{ "eventId": "${id}", "userId": "${userId}" }'
-            hx-on="htmx:beforeRequest: this.disabled = true"
-            hx-on="htmx:afterRequest: this.disabled = false"
-            class="px-4 py-2 bg-blue-500 rounded hover:bg-opacity-80"
-            @click="favorite = true"
-          >
-            Je participe
+        <div class="flex justify-between">
+        
+          <!-- Utilisation de Alpine.js pour gérer l'état du favori -->
+          <div x-show="rolee !== 'visiteur'" x-data="{ favorite: ${isFavorited} }">
+            <button
+              x-show="!favorite"
+              hx-post="/api/favorites"
+              hx-target="#favorite-button"
+              hx-vals='{ "eventId": "${id}", "userId": "${userId}" }'
+              hx-on="htmx:beforeRequest: this.disabled = true"
+              hx-on="htmx:afterRequest: this.disabled = false"
+              class="px-4 py-2 bg-blue-500 rounded hover:bg-opacity-80"
+              @click="favorite = true"
+            >
+              Je participe
+            </button>
+
+            <button
+              x-show="favorite"
+              hx-post="/api/favorites"
+              hx-target="#favorite-button"
+              hx-vals='{ "eventId": "${id}", "userId": "${userId}" }'
+              hx-on="htmx:beforeRequest: this.disabled = true"
+              hx-on="htmx:afterRequest: this.disabled = false"
+              class="px-4 py-2 bg-red-900 rounded hover:bg-opacity-80"
+              @click="favorite = false"
+            >
+              Plus intéressé
+            </button>
+          </div>
+          <button @click="isOpen = false" class="bg-red-700 hover:bg-red-800 px-4 py-2 rounded mt-4">
+            Fermer
           </button>
 
-          <button
-            x-show="favorite"
-            hx-post="/api/favorites"
-            hx-target="#favorite-button"
-            hx-vals='{ "eventId": "${id}", "userId": "${userId}" }'
-            hx-on="htmx:beforeRequest: this.disabled = true"
-            hx-on="htmx:afterRequest: this.disabled = false"
-            class="px-4 py-2 bg-blue-500 rounded hover:bg-opacity-80"
-            @click="favorite = false"
-          >
-            Plus intéressé
-          </button>
         </div>
       </div>
     `;
