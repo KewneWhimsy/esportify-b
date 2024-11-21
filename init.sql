@@ -111,7 +111,7 @@ END $$;
 
 INSERT INTO users (username, email, password, role, score)
 VALUES 
-    ('admin', 'admin@esportify.com', 'admin', 'admin', 0),
+    ('admin', 'admin@esport.com', 'admin', 'admin', 0),
     ('GoMAN', 'gogogo@gomail.gom', '123456', 'orga', 100),
     ('Gigi', 'gigilafleche@sportific.com', '123456', 'orga', 77),
     ('league_fan', 'lol@esportify.com', '123456', 'orga', 46),
@@ -142,7 +142,7 @@ ON CONFLICT DO NOTHING;
 
 INSERT INTO favorites (user_id, event_id, created_at)
 VALUES 
-    ('1', '1', 'admin', 'admin', NOW()),
+    (1, 1, NOW())
 ON CONFLICT DO NOTHING;
 
 
