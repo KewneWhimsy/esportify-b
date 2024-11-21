@@ -203,7 +203,12 @@ app.get("/api/event/:id", async (req, res) => {
     }
 
     const eventHtml = `
-      <div class="bg-[#26232A] border border-[#E5E7EB] p-6 rounded-lg shadow-lg h-full w-full">
+      <div x-data="{ rolee: window.role }" x-init="
+      console.log('Initialisation du rôle:', rolee);
+      window.addEventListener('role-changed', (event) => {
+      console.log('Rôle mis à jour immédiatement:', event.detail.role);
+      rolee = event.detail.role;
+      });" class="bg-[#26232A] border border-[#E5E7EB] p-6 rounded-lg shadow-lg h-full w-full">
         <h2 class="text-2xl font-bold mb-4 font-heading text-heading leading-tight">${event.title}</h2>
         <p class="mb-4">${event.description}</p>
         <p><strong>Joueurs :</strong> ${event.players_count}</p>
@@ -212,7 +217,7 @@ app.get("/api/event/:id", async (req, res) => {
         <p><strong>Fin :</strong> ${new Date(event.end_datetime).toLocaleString()}</p>
 
         <!-- Utilisation de Alpine.js pour gérer l'état du favori -->
-        <div x-data="{ favorite: ${isFavorited} }">
+        <div x-show="rolee !== 'visiteur'" x-data="{ favorite: ${isFavorited} }">
           <button
             x-show="!favorite"
             hx-post="/api/favorites"
