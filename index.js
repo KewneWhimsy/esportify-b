@@ -246,7 +246,7 @@ app.get("/api/event/:id", async (req, res) => {
               Plus intéressé
             </button>
           </div>
-          <button @click="isOpen = false" class="bg-red-700 hover:bg-red-800 px-4 py-2 rounded mt-4">
+          <button @click="isOpen = false" class="ml-auto bg-red-700 hover:bg-red-800 px-4 py-2 rounded mt-4">
             Fermer
           </button>
 
