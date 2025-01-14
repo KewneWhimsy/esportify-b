@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const authenticateToken = require("../middlewares/authMiddleware.js");
+const checkRole = require("../middlewares/roleMiddleware.js");
 
 // Import des contrôleurs pour les différentes routes
 const eventsController = require('../controllers/eventsController.js');
