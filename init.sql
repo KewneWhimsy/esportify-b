@@ -74,15 +74,27 @@ BEGIN
 
 END $$;
 
-ALTER TABLE events ADD CONSTRAINT no_overlap CHECK (
-    NOT EXISTS (
+CREATE OR REPLACE FUNCTION check_event_overlap()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Vérifie s'il existe un autre événement de l'utilisateur qui se chevauche
+    IF EXISTS (
         SELECT 1
         FROM events e2
-        WHERE e2.user_id = user_id
-        AND (start_datetime, end_datetime) OVERLAPS (start_datetime, end_datetime)
-    )
-);
+        WHERE e2.user_id = NEW.user_id
+        AND e2.id != NEW.id -- exclut l'événement actuel (dans le cas de mise à jour)
+        AND (NEW.start_datetime, NEW.end_datetime) OVERLAPS (e2.start_datetime, e2.end_datetime)
+    ) THEN
+        RAISE EXCEPTION 'Il existe déjà un événement qui se chevauche avec celui-ci.';
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
 
+CREATE TRIGGER trg_check_event_overlap
+BEFORE INSERT OR UPDATE ON events
+FOR EACH ROW
+EXECUTE FUNCTION check_event_overlap();
 
 -- Contrainte pour s'assurer que la date de fin est après la date de début
 ALTER TABLE users DROP CONSTRAINT IF EXISTS check_dates;
