@@ -8,7 +8,6 @@ const checkRole = require("../middlewares/roleMiddleware.js");
 // Import des contrôleurs pour les différentes routes
 const eventsController = require('../controllers/eventsController.js');
 const authController = require('../controllers/authController.js');
-const favoritesController = require('../controllers/favoritesController.js');
 
 // Routes publiques (pas besoin d'authentification)
 router.get("/api/events", eventsController.getAllEvents);
