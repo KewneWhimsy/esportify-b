@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const authenticateToken = require("./src/middlewares/authMiddleware.js"); // Import du middleware d'authentification
 const checkRole = require("./src/middlewares/roleMiddleware.js"); // Import du middleware de vérification des rôles
-const routes = require("./src/routes"); // Import des routes
+const routes = require("./src/routes/routes.js"); // Import des routes
 
 const app = express(); // Crée une instance d'application Express
 
@@ -12,11 +12,11 @@ const app = express(); // Crée une instance d'application Express
 app.use(express.json());
 
 // Configuration de CORS
-const corsOptions = require("./config/corsOptions");
+const corsOptions = require("./config/corsOptions.js");
 app.use(cors(corsOptions)); // L'app Express utilise CORS avec ses options configurées
 
 // Connexion à PostgreSQL et MongoDB
-require("./config/dbConnection");
+require("./config/dbConnection.js");
 
 // Routes protégées par le middleware d'authentification
 app.use("/api", authenticateToken, routes); // Applique authenticateToken avant d'utiliser les routes
