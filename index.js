@@ -2,8 +2,8 @@ const express = require("express"); // Framework Express
 const cors = require("cors"); //  Middleware CORS pour gérer les requêtes cross-origin
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const authenticateToken = require("./middlewares/authMiddleware"); // Import du middleware d'authentification
-const checkRole = require("./middlewares/roleMiddleware"); // Import du middleware de vérification des rôles
+const authenticateToken = require("./middlewares/authMiddleware.js"); // Import du middleware d'authentification
+const checkRole = require("./middlewares/roleMiddleware.js"); // Import du middleware de vérification des rôles
 const routes = require("./routes"); // Import des routes
 
 const app = express(); // Crée une instance d'application Express
