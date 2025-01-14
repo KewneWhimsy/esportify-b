@@ -61,7 +61,7 @@ BEGIN
     END IF;
 
     IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_event_id') THEN
-        CREATE INDEX idx_event_id ON imagesevents (event_id);
+        CREATE INDEX idx_event_id ON events_images (event_id);
     END IF;
 
     IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_favorites_user_event') THEN
