@@ -13,6 +13,7 @@ const favoritesController = require('../controllers/favoritesController.js');
 // Routes publiques (pas besoin d'authentification)
 router.get("/api/events", eventsController.getAllEvents);
 router.get("/event/:id", eventsController.getEventById);
+router.get("/api/favorites/:userId/:eventId", authenticateToken, checkRole(["joueur", "orga", "admin"]), favoritesController.checkIfFavorites);
 
 // Routes liées à l'authentification
 router.post("/api/register", authController.register);
