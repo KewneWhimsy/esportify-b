@@ -4,8 +4,11 @@ module.exports.getAllEvents = async (req, res) => {
   try {
     const sortField = req.query.sort || "start_datetime";
     const validSortFields = ["players_count", "start_datetime", "organisateur"];
-    const orderBy = validSortFields.includes(sortField) ? sortField : "start_datetime";
-    const sortColumn = orderBy === "organisateur" ? "u.username" : `e.${orderBy}`;
+    const orderBy = validSortFields.includes(sortField)
+      ? sortField
+      : "start_datetime";
+    const sortColumn =
+      orderBy === "organisateur" ? "u.username" : `e.${orderBy}`;
 
     const result = await pgClient.query(`
       SELECT e.id, e.title, e.description, e.players_count, e.start_datetime, e.end_datetime, u.username AS organisateur
@@ -28,12 +31,20 @@ module.exports.getAllEvents = async (req, res) => {
         hx-swap="innerHTML"
         >
           <div>
-            <h2 class="text-lg font-heading text-heading leading-tight mb-2">${event.title}</h2>
+            <h2 class="text-lg font-heading text-heading leading-tight mb-2">${
+              event.title
+            }</h2>
           </div>
           <div>
-            <p class="text-sm text-gray-400">Joueurs : ${event.players_count}</p>
-            <p class="text-sm">Début : ${new Date(event.start_datetime).toLocaleString()}</p>
-            <p class="text-sm">Fin : ${new Date(event.end_datetime).toLocaleString()}</p>
+            <p class="text-sm text-gray-400">Joueurs : ${
+              event.players_count
+            }</p>
+            <p class="text-sm">Début : ${new Date(
+              event.start_datetime
+            ).toLocaleString()}</p>
+            <p class="text-sm">Fin : ${new Date(
+              event.end_datetime
+            ).toLocaleString()}</p>
           </div>
         </div>
       `;
@@ -42,7 +53,9 @@ module.exports.getAllEvents = async (req, res) => {
     res.send(eventsHtml);
   } catch (err) {
     console.error("Erreur lors de la récupération des événements", err);
-    res.status(500).json({ error: "Erreur lors de la récupération des événements" });
+    res
+      .status(500)
+      .json({ error: "Erreur lors de la récupération des événements" });
   }
 };
 
@@ -71,18 +84,30 @@ module.exports.getEventById = async (req, res) => {
         <p>${event.description}</p>
         <p><strong>Joueurs :</strong> ${event.players_count}</p>
         <p><strong>Organisateur :</strong> ${event.organisateur}</p>
-        <p><strong>Début :</strong> ${new Date(event.start_datetime).toLocaleString()}</p>
-        <p><strong>Fin :</strong> ${new Date(event.end_datetime).toLocaleString()}</p>
+        <p><strong>Début :</strong> ${new Date(
+          event.start_datetime
+        ).toLocaleString()}</p>
+        <p><strong>Fin :</strong> ${new Date(
+          event.end_datetime
+        ).toLocaleString()}</p>
       </div>
     `);
   } catch (err) {
-    console.error("Erreur lors de la récupération des détails de l'événement", err);
-    res.status(500).json({ error: "Erreur lors de la récupération des détails de l'événement" });
+    console.error(
+      "Erreur lors de la récupération des détails de l'événement",
+      err
+    );
+    res
+      .status(500)
+      .json({
+        error: "Erreur lors de la récupération des détails de l'événement",
+      });
   }
 };
 
 module.exports.createEvent = async (req, res) => {
-  const { title, description, players_count, start_datetime, end_datetime } = req.body;
+  const { title, description, players_count, start_datetime, end_datetime } =
+    req.body;
   const userId = req.user.userId;
 
   await pgClient.query(
@@ -91,4 +116,15 @@ module.exports.createEvent = async (req, res) => {
   );
 
   res.json({ message: "Événement créé avec succès, en attente de validation" });
+};
+
+// Route pour les administrateurs - approuver un événement
+module.exports.approveEvent = async (req, res) => {
+  const eventId = req.params.id;
+
+  // Logique pour approuver l'événement
+  await pgClient.query("UPDATE events SET is_approved = TRUE WHERE id = $1", [
+    eventId,
+  ]);
+  res.json({ message: "Événement approuvé" });
 };

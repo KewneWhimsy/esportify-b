@@ -8,6 +8,7 @@ const checkRole = require("../middlewares/roleMiddleware.js");
 // Import des contrôleurs pour les différentes routes
 const eventsController = require('../controllers/eventsController.js');
 const authController = require('../controllers/authController.js');
+const favoritesController = require('../controllers/favoritesController.js');
 
 // Routes publiques (pas besoin d'authentification)
 router.get("/api/events", eventsController.getAllEvents);
@@ -22,6 +23,6 @@ router.post("/api/events", authenticateToken, checkRole(["orga", "admin"]), even
 router.post("/api/favorites", authenticateToken, checkRole(["joueur", "orga", "admin"]), favoritesController.toggleFavorite);
 
 // Route d'admin - approuver un événement
-router.post("/api/events/:id/approve", authenticateToken, checkRole("admin"), adminController.approveEvent);
+router.post("/api/events/:id/approve", authenticateToken, checkRole("admin"), eventsController.approveEvent);
 
 module.exports = router;
