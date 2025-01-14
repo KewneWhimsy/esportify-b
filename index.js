@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const authenticateToken = require("./src/middlewares/authMiddleware.js"); // Import du middleware d'authentification
 const checkRole = require("./src/middlewares/roleMiddleware.js"); // Import du middleware de vérification des rôles
-const routes = require("./routes"); // Import des routes
+const routes = require("./src/routes"); // Import des routes
 
 const app = express(); // Crée une instance d'application Express
 
