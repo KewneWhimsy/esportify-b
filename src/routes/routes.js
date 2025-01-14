@@ -2,10 +2,9 @@ const express = require('express');
 const router = express.Router();
 
 // Import des contrôleurs pour les différentes routes
-const eventsController = require('./controllers/eventsController');
-const authController = require('./controllers/authController');
-const favoritesController = require('./controllers/favoritesController');
-const adminController = require('./controllers/adminController');
+const eventsController = require('./src/controllers/eventsController.js');
+const authController = require('./src/controllers/authController.js');
+const favoritesController = require('./src/controllers/favoritesController.js');
 
 // Routes publiques (pas besoin d'authentification)
 router.get("/events", eventsController.getAllEvents);
