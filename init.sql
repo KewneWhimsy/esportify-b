@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS events (
 );
 
 -- Table des images d'événements
-CREATE TABLE IF NOT EXISTS imagesevents (
+CREATE TABLE IF NOT EXISTS events_images (
     id SERIAL PRIMARY KEY,           -- Identifiant unique de l'image
     event_id INT REFERENCES events(id) ON DELETE CASCADE, -- Référence à l'événement
     image_url VARCHAR(255) NOT NULL CHECK (image_url ~* '^(https?:\/\/)[\w\-]+(\.[\w\-]+)+[/#?]?.*$'),  -- Vérification URL de l'image
@@ -39,6 +39,14 @@ CREATE TABLE IF NOT EXISTS favorites (
     event_id INT REFERENCES events(id) ON DELETE CASCADE, -- L'événement ajouté comme favori
     created_at TIMESTAMP DEFAULT NOW(), -- Date et heure d'ajout aux favoris
     UNIQUE(user_id, event_id) -- Un utilisateur ne peut pas ajouter le même événement plusieurs fois
+);
+
+CREATE TABLE IF NOT EXISTS messages (
+    id SERIAL PRIMARY KEY,
+    event_id INT REFERENCES events(id) ON DELETE CASCADE, -- L'événement auquel le message est lié
+    user_id INT REFERENCES users(id) ON DELETE CASCADE,   -- L'utilisateur ayant envoyé le message
+    content TEXT NOT NULL,                                -- Contenu du message
+    created_at TIMESTAMP DEFAULT NOW()                    -- Date de création
 );
 
 -- Index pour les performances
@@ -59,7 +67,22 @@ BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_favorites_user_event') THEN
         CREATE INDEX idx_favorites_user_event ON favorites (user_id, event_id);
     END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_events_is_approved') THEN
+        CREATE INDEX idx_events_is_approved ON events (is_approved);
+    END IF;
+
 END $$;
+
+ALTER TABLE events ADD CONSTRAINT no_overlap CHECK (
+    NOT EXISTS (
+        SELECT 1
+        FROM events e2
+        WHERE e2.user_id = user_id
+        AND (start_datetime, end_datetime) OVERLAPS (start_datetime, end_datetime)
+    )
+);
+
 
 -- Contrainte pour s'assurer que la date de fin est après la date de début
 ALTER TABLE users DROP CONSTRAINT IF EXISTS check_dates;
@@ -68,6 +91,10 @@ ALTER TABLE events ADD CONSTRAINT check_dates CHECK (start_datetime < end_dateti
 -- Contrainte pour s'assurer que le nombre de joueurs est supérieur à 1
 ALTER TABLE users DROP CONSTRAINT IF EXISTS check_players_count;
 ALTER TABLE events ADD CONSTRAINT check_players_count CHECK (players_count > 1);
+
+-- Contrainte pour s'assurer que le nombre de joueurs est supérieur à 1
+ALTER TABLE favorites ADD CONSTRAINT only_approved_events
+CHECK (event_id IN (SELECT id FROM events WHERE is_approved = TRUE));
 
 -- Fonction pour mettre à jour le champ updated_at automatiquement
 CREATE OR REPLACE FUNCTION update_updated_at()
