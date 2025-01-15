@@ -117,7 +117,7 @@ BEGIN
         FROM events e
         WHERE e.id = NEW.event_id AND e.is_approved = TRUE
     ) THEN
-        RAISE EXCEPTION 'L\'événement n\'est pas approuvé.';
+        RAISE EXCEPTION 'événement non approuvé.';
     END IF;
     RETURN NEW;
 END;
