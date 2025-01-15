@@ -1,4 +1,4 @@
--- Supprimer toutes les tables dans le bon ordre
+-- Réinitialisation
 DROP TABLE IF EXISTS favorites, events_images, messages, events, users CASCADE;
 
 -- Table des utilisateurs
@@ -186,7 +186,7 @@ VALUES
     ('Kermesse du village', 'Chers amis, nous vous attendont nombreux le 10 Janvier.', 100, FALSE, 
      '2025-01-10 09:00'::timestamp, '2025-01-11 05:00'::timestamp, 5, NOW(), NOW()),
     ('Petite partie d''échec ?', 'alléééééé !!!! rejoignez moi pour une loooooogue partie...', 3, TRUE,
-     '2024-11-15 09:00'::timestamp, '2024-12-20 12:00'::timestamp, 2, NOW(), NOW()),
+     '2025-01-15 09:00'::timestamp, '2025-01-30 12:00'::timestamp, 2, NOW(), NOW()),
     ('événement test', 'à accepter', 20, FALSE, 
      '2024-11-17 00:00'::timestamp, '2024-12-17 23:59'::timestamp, 6, NOW(), NOW())
 ON CONFLICT DO NOTHING;
