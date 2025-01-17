@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const pgClient = require("../../config/dbConnection");
+const {pgClient} = require("../../config/dbConnection");
 
 module.exports.register = async (req, res) => {
   const { username, email, password } = req.body;

@@ -53,7 +53,7 @@ module.exports.getAllEvents = async (req, res) => {
     });
 
     // Renvoi le fragment HTML à HTMX
-    console.log('Événements récupérés avec succès :', events);
+    console.log('Événements récupérés avec succès');
     res.send(eventsHtml);
   } catch (err) {
     console.error('Erreur dans getAllEvents :', err);
