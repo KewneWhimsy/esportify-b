@@ -165,7 +165,7 @@ module.exports.getEventById = async (req, res) => {
 
   <button
     x-show="!favorite"
-    hx-post="/api/favorites"
+    hx-post="https://esportify-backend.onrender.com/api/favorites"
     hx-target="#favorite-button"
     hx-vals='{ "eventId": "${id}", "userId": "${userId}" }'
     hx-on="htmx:beforeRequest: this.disabled = true"
@@ -178,7 +178,7 @@ module.exports.getEventById = async (req, res) => {
 
   <button
     x-show="favorite"
-    hx-post="/api/favorites"
+    hx-post="https://esportify-backend.onrender.com/api/favorites"
     hx-target="#favorite-button"
     hx-vals='{ "eventId": "${id}", "userId": "${userId}" }'
     hx-on="htmx:beforeRequest: this.disabled = true"
