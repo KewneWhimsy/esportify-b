@@ -119,46 +119,75 @@ module.exports.getEventById = async (req, res) => {
       console.log('Rôle mis à jour immédiatement:', event.detail.role);
       rolee = event.detail.role;
       });" class="bg-[#26232A] border border-[#E5E7EB] p-6 rounded-lg shadow-lg h-full w-full">
-        <h2 class="text-2xl font-bold mb-4 font-heading text-heading leading-tight">${event.title}</h2>
+        <h2 class="text-2xl font-bold mb-4 font-heading text-heading leading-tight">${
+          event.title
+        }</h2>
         <p class="mb-4">${event.description}</p>
         <p><strong>Joueurs :</strong> ${event.players_count}</p>
         <p><strong>Organisateur :</strong> ${event.organisateur}</p>
-        <p><strong>Début :</strong> ${new Date(event.start_datetime).toLocaleString()}</p>
-        <p><strong>Fin :</strong> ${new Date(event.end_datetime).toLocaleString()}</p>
+        <p><strong>Début :</strong> ${new Date(
+          event.start_datetime
+        ).toLocaleString()}</p>
+        <p><strong>Fin :</strong> ${new Date(
+          event.end_datetime
+        ).toLocaleString()}</p>
 
         <div class="flex justify-between">
         
           <!-- Utilisation de Alpine.js pour gérer l'état du favori -->
-          <div x-show="rolee !== 'visiteur'" x-data="{ favorite: ${isFavorited} }">
-            <button
-              x-show="!favorite"
-              hx-post="/api/favorites"
-              hx-target="#favorite-button"
-              hx-vals='{ "eventId": "${id}", "userId": "${userId}" }'
-              hx-on="htmx:beforeRequest: this.disabled = true"
-              hx-on="htmx:afterRequest: this.disabled = false"
-              class="px-4 py-2 bg-blue-500 rounded hover:bg-opacity-80"
-              @click="favorite = true"
-            >
-              Je participe
-            </button>
+          <div x-show="rolee !== 'visiteur'" x-data="{
+  favorite: ${isFavorited},
+  async updateFavorite(state) {
+    try {
+      // Mettre à jour l'état local
+      this.favorite = state;
 
-            <button
-              x-show="favorite"
-              hx-post="/api/favorites"
-              hx-target="#favorite-button"
-              hx-vals='{ "eventId": "${id}", "userId": "${userId}" }'
-              hx-on="htmx:beforeRequest: this.disabled = true"
-              hx-on="htmx:afterRequest: this.disabled = false"
-              class="px-4 py-2 bg-red-900 rounded hover:bg-opacity-80"
-              @click="favorite = false"
-            >
-              Plus intéressé
-            </button>
-          </div>
-          <button @click="isOpen = false" class="ml-auto bg-red-700 hover:bg-red-800 px-4 py-2 rounded mt-4">
-            Fermer
-          </button>
+      // Faire une requête au backend pour synchroniser l'état
+      const response = await fetch('/api/favorites', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ eventId: '${id}', userId: '${userId}', isFavorited: state })
+      });
+
+      if (!response.ok) {
+        console.error('Erreur lors de la mise à jour du favori');
+        // Restaurer l'ancien état en cas d'échec
+        this.favorite = !state;
+      }
+    } catch (error) {
+      console.error('Erreur réseau :', error);
+      // Restaurer l'ancien état en cas d'échec
+      this.favorite = !state;
+    }
+  }
+}"
+>
+
+  <button
+    x-show="!favorite"
+    hx-post="/api/favorites"
+    hx-target="#favorite-button"
+    hx-vals='{ "eventId": "${id}", "userId": "${userId}" }'
+    hx-on="htmx:beforeRequest: this.disabled = true"
+    hx-on="htmx:afterRequest: this.disabled = false"
+    class="px-4 py-2 bg-blue-500 rounded hover:bg-opacity-80"
+    @click="updateFavorite(true)"
+  >
+    Je participe
+  </button>
+
+  <button
+    x-show="favorite"
+    hx-post="/api/favorites"
+    hx-target="#favorite-button"
+    hx-vals='{ "eventId": "${id}", "userId": "${userId}" }'
+    hx-on="htmx:beforeRequest: this.disabled = true"
+    hx-on="htmx:afterRequest: this.disabled = false"
+    class="px-4 py-2 bg-red-900 rounded hover:bg-opacity-80"
+    @click="updateFavorite(false)"
+  >
+    Plus intéressé
+  </button>
 
         </div>
       </div>
