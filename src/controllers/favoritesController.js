@@ -18,7 +18,7 @@ module.exports.toggleFavorite = async (req, res) => {
     // Retourner un bouton pour "Je participe"
     return res.send(`
         <button 
-          hx-post="/api/favorites" 
+          hx-post="https://esportify-backend.onrender.com/api/favorites" 
           hx-target="#favorite-button"
           hx-vals='{ "eventId": "${eventId}", "userId": "${userId}" }'
           hx-on="htmx:beforeRequest: this.disabled = true"
@@ -38,7 +38,7 @@ module.exports.toggleFavorite = async (req, res) => {
     // Retourner un bouton pour "Plus intéressé"
     return res.send(`
         <button 
-          hx-post="/api/favorites" 
+          hx-post="https://esportify-backend.onrender.com/api/favorites" 
           hx-target="#favorite-button"
           hx-vals='{ "eventId": "${eventId}", "userId": "${userId}" }'
           hx-on="htmx:beforeRequest: this.disabled = true"
@@ -64,7 +64,7 @@ module.exports.checkIfFavorites = async (req, res) => {
     // Si le favori existe, renvoyer le bouton "Plus intéressé"
     return res.send(`
         <button 
-          hx-post="/api/favorites" 
+          hx-post="https://esportify-backend.onrender.com/api/favorites" 
           hx-target="#favorite-button"
           hx-vals='{ "eventId": "${eventId}", "userId": "${userId}" }'
           hx-on="htmx:beforeRequest: this.disabled = true"
@@ -78,7 +78,7 @@ module.exports.checkIfFavorites = async (req, res) => {
     // Si le favori n'existe pas, renvoyer le bouton "Je participe"
     return res.send(`
         <button 
-          hx-post="/api/favorites" 
+          hx-post="https://esportify-backend.onrender.com/api/favorites" 
           hx-target="#favorite-button"
           hx-vals='{ "eventId": "${eventId}", "userId": "${userId}" }'
           hx-on="htmx:beforeRequest: this.disabled = true"
