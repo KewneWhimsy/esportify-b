@@ -1,4 +1,4 @@
-const pgClient = require("../../config/dbConnection.js"); // Assurez-vous que votre client PostgreSQL est correctement configuré
+const {pgClient} = require("../../config/dbConnection.js"); // Assurez-vous que votre client PostgreSQL est correctement configuré
 
 module.exports.getAllEvents = async (req, res) => {
   console.log('Requête reçue pour récupérer tous les événements');

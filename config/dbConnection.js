@@ -14,17 +14,22 @@ const pgClient = new Client({
 pgClient
   .connect()
   .then(() => console.log("Connected to PostgreSQL database"))
-  .catch((err) => console.error("PostgreSQL connection error", err.stack));
+  .catch((err) => console.error("PostgreSQL connection error", err.stack))
+;
 
 const initSql = fs.readFileSync("./init.sql").toString(); // Lit le contenu du fichier init.sql et le convertit en String
 
 pgClient
   .query(initSql)
   .then(() => console.log("Database initialized with init.sql"))
-  .catch((err) => console.error("Error initializing database", err));
+  .catch((err) => console.error("Error initializing database", err))
+;
 
 // Se connecter à MongoDB Atlas
 mongoose
   .connect(process.env.MONGODB_URI)
   .then(() => console.log("Connected to MongoDB Atlas"))
-  .catch((err) => console.error("MongoDB connection error", err));
+  .catch((err) => console.error("MongoDB connection error", err))
+;
+
+module.exports = { pgClient, mongoose };
