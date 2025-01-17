@@ -18,16 +18,15 @@ app.use(cors(corsOptions)); // L'app Express utilise CORS avec ses options confi
 // Connexion à PostgreSQL et MongoDB
 require("./config/dbConnection.js");
 
-// Routes publiques
-app.use("/api", routes);
-
-// Routes avec vérification des rôles
-app.use("/admin", authenticateToken, checkRole("admin"), routes); // Protège certaines routes avec checkRole
+// Montage des routes
+app.use("/", routes);
 
 // Route de test
 app.get("/", (req, res) => {
   res.send("Hello World!"); // Répond avec "Hello World!" pour la route racine
 });
+
+
 
 app.get("/api/event/:id", async (req, res) => {
   try {
