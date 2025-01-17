@@ -1,6 +1,7 @@
-const pgClient = require("../../config/dbConnection"); // Assurez-vous que votre client PostgreSQL est correctement configuré
+const pgClient = require("../../config/dbConnection.js"); // Assurez-vous que votre client PostgreSQL est correctement configuré
 
 module.exports.getAllEvents = async (req, res) => {
+  console.log('Requête reçue pour récupérer tous les événements');
   try {
     const sortField = req.query.sort || "start_datetime"; // Tri par défaut : date
     const validSortFields = ["players_count", "start_datetime", "organisateur"];
@@ -52,12 +53,13 @@ module.exports.getAllEvents = async (req, res) => {
     });
 
     // Renvoi le fragment HTML à HTMX
+    console.log('Événements récupérés avec succès :', events);
     res.send(eventsHtml);
   } catch (err) {
-    console.error("Erreur lors de la récupération des événements", err);
+    console.error('Erreur dans getAllEvents :', err);
     res
       .status(500)
-      .json({ error: "Erreur lors de la récupération des événements" });
+      .json({ error: "Erreur serveur lors de la récupération des événements" });
   }
 };
 
