@@ -2,14 +2,14 @@ const pgClient = require("../../config/dbConnection"); // Assurez-vous que votre
 
 module.exports.getAllEvents = async (req, res) => {
   try {
-    const sortField = req.query.sort || "start_datetime";
+    const sortField = req.query.sort || "start_datetime"; // Tri par défaut : date
     const validSortFields = ["players_count", "start_datetime", "organisateur"];
     const orderBy = validSortFields.includes(sortField)
       ? sortField
       : "start_datetime";
-    const sortColumn =
-      orderBy === "organisateur" ? "u.username" : `e.${orderBy}`;
+    const sortColumn = orderBy === "organisateur" ? "u.username" : `e.${orderBy}`;
 
+    // Récupére les événements depuis PostgreSQL
     const result = await pgClient.query(`
       SELECT e.id, e.title, e.description, e.players_count, e.start_datetime, e.end_datetime, u.username AS organisateur
       FROM events e
@@ -18,9 +18,10 @@ module.exports.getAllEvents = async (req, res) => {
       ORDER BY ${sortColumn} ASC
       LIMIT 10
     `);
-
-    const events = result.rows;
+  
+    const events = result.rows; // Récupére les événements sous forme d'un tableau d'objets JavaScript
     let eventsHtml = "";
+    // Génére du HTML pour chaque événement
     events.forEach((event) => {
       eventsHtml += `
         <div class="flex flex-col justify-between bg-[#26232A] border 
@@ -50,6 +51,7 @@ module.exports.getAllEvents = async (req, res) => {
       `;
     });
 
+    // Renvoi le fragment HTML à HTMX
     res.send(eventsHtml);
   } catch (err) {
     console.error("Erreur lors de la récupération des événements", err);

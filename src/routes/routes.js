@@ -10,20 +10,20 @@ const eventsController = require('../controllers/eventsController.js');
 const authController = require('../controllers/authController.js');
 const favoritesController = require('../controllers/favoritesController.js');
 
-// Routes publiques (pas besoin d'authentification)
+// === Routes publiques ===
 router.get("/api/events", eventsController.getAllEvents);
-router.get("/event/:id", eventsController.getEventById);
+router.get("/api/event/:id", eventsController.getEventById);
+
+// === Routes protégées ===
+router.post("/api/events", authenticateToken, checkRole(["orga", "admin"]), eventsController.createEvent);
+router.post("/api/favorites", authenticateToken, checkRole(["joueur", "orga", "admin"]), favoritesController.toggleFavorite);
 router.get("/api/favorites/:userId/:eventId", authenticateToken, checkRole(["joueur", "orga", "admin"]), favoritesController.checkIfFavorites);
 
-// Routes liées à l'authentification
+// === Routes d'authentification ===
 router.post("/api/register", authController.register);
 router.post("/api/login", authController.login);
 
-// Routes protégées par authentification et rôle
-router.post("/api/events", authenticateToken, checkRole(["orga", "admin"]), eventsController.createEvent);
-router.post("/api/favorites", authenticateToken, checkRole(["joueur", "orga", "admin"]), favoritesController.toggleFavorite);
-
-// Route d'admin - approuver un événement
-router.post("/api/events/:id/approve", authenticateToken, checkRole("admin"), eventsController.approveEvent);
+// === Routes d'administration ===
+router.post("/admin/events/:id/approve", authenticateToken, checkRole("admin"), eventsController.approveEvent);
 
 module.exports = router;

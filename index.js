@@ -18,20 +18,20 @@ app.use(cors(corsOptions)); // L'app Express utilise CORS avec ses options confi
 // Connexion à PostgreSQL et MongoDB
 require("./config/dbConnection.js");
 
-// Routes protégées par le middleware d'authentification
-app.use("/api", authenticateToken, routes); // Applique authenticateToken avant d'utiliser les routes
+// Routes publiques
+app.use("/api", routes);
 
 // Routes avec vérification des rôles
 app.use("/admin", authenticateToken, checkRole("admin"), routes); // Protège certaines routes avec checkRole
 
-// Middleware pour gérer les requêtes
+// Route de test
 app.get("/", (req, res) => {
   res.send("Hello World!"); // Répond avec "Hello World!" pour la route racine
 });
 
 app.get("/api/events", async (req, res) => {
   try {
-    const sortField = req.query.sort || "start_datetime"; // Trie par défaut : date
+    const sortField = req.query.sort || "start_datetime"; // Tri par défaut : date
     const validSortFields = ["players_count", "start_datetime", "organisateur"];
     const orderBy = validSortFields.includes(sortField)
       ? sortField
