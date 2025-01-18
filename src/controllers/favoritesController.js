@@ -3,6 +3,7 @@ const { pgClient } = require("../../config/dbConnection.js");
 // Route pour ajouter ou retirer un favori
 module.exports.toggleFavorite = async (req, res) => {
   const { event_id, user_id, isFavorited } = req.body;
+  console.log("Requête reçue avec le body :", req.body);
   const authHeader = req.headers.authorization;
   try {
 
@@ -32,7 +33,7 @@ module.exports.toggleFavorite = async (req, res) => {
       ? `<button
            hx-post="https://esportify-backend.onrender.com/api/favorites"
            hx-target="#favorite-button"
-          hx-vals='{"event_id": "' + id + '", "user_id": "' + userId + '", "isFavorited": true}'
+           hx-vals='{"event_id": "${event_id}", "user_id": "${user_id}", "isFavorited": false}'
            hx-swap="innerHTML"
            class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
          >
@@ -41,7 +42,7 @@ module.exports.toggleFavorite = async (req, res) => {
       : `<button
            hx-post="https://esportify-backend.onrender.com/api/favorites"
            hx-target="#favorite-button"
-          hx-vals='{"event_id": "' + id + '", "user_id": "' + userId + '", "isFavorited": true}'
+           hx-vals='{"event_id": "${event_id}", "user_id": "${user_id}", "isFavorited": true}'
            hx-swap="innerHTML"
            class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
          >
