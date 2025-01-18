@@ -32,7 +32,7 @@ module.exports.toggleFavorite = async (req, res) => {
       ? `<button
            hx-post="https://esportify-backend.onrender.com/api/favorites"
            hx-target="#favorite-button"
-           hx-vals='{"event_id": "${event_id}", "user_id": "${user_id}", "isFavorited": false}'
+          hx-vals='{"event_id": "' + id + '", "user_id": "' + userId + '", "isFavorited": true}'
            hx-swap="innerHTML"
            class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
          >
@@ -41,7 +41,7 @@ module.exports.toggleFavorite = async (req, res) => {
       : `<button
            hx-post="https://esportify-backend.onrender.com/api/favorites"
            hx-target="#favorite-button"
-           hx-vals='{"event_id": "${event_id}", "user_id": "${user_id}", "isFavorited": true}'
+          hx-vals='{"event_id": "' + id + '", "user_id": "' + userId + '", "isFavorited": true}'
            hx-swap="innerHTML"
            class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
          >
