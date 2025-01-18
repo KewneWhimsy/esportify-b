@@ -103,7 +103,7 @@ module.exports.getEventById = async (req, res) => {
     if (userId) {
       const favoriteCheck = await pgClient.query(
         "SELECT * FROM favorites WHERE user_id = $1 AND event_id = $2",
-        [user_id, id]
+        [userId, id]
       );
       if (favoriteCheck.rowCount > 0) {
         isFavorited = true; // L'événement est déjà un favori de cet utilisateur
