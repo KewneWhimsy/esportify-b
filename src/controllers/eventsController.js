@@ -113,83 +113,56 @@ module.exports.getEventById = async (req, res) => {
     }
 
     const eventHtml = `
-      < x-data="{ rolee: window.role }" x-init="
-      console.log('Initialisation du rôle:', rolee);
-      window.addEventListener('role-changed', (event) => {
+  <div x-data="{ rolee: window.role, favorite: ${isFavorited} }" x-init="
+    console.log('Initialisation du rôle:', rolee);
+    window.addEventListener('role-changed', (event) => {
       console.log('Rôle mis à jour immédiatement:', event.detail.role);
       rolee = event.detail.role;
-      });" class="bg-[#26232A] border border-[#E5E7EB] p-6 rounded-lg shadow-lg h-full w-full"
-      >
-        <h2 class="text-2xl font-bold mb-4 font-heading text-heading leading-tight">${event.title}</h2>
-        <p class="mb-4">${event.description}</p>
-        <p><strong>Joueurs :</strong> ${event.players_count}</p>
-        <p><strong>Organisateur :</strong> ${event.organisateur}</p>
-        <p><strong>Début :</strong> ${new Date(event.start_datetime).toLocaleString()}</p>
-        <p><strong>Fin :</strong> ${new Date(event.end_datetime).toLocaleString()}</p>
+    });
+  " class="bg-gray-800 border border-gray-300 p-6 rounded-lg shadow-lg w-full">
+    <h2 class="text-2xl font-bold mb-4 text-white">${event.title}</h2>
+    <p class="mb-4 text-gray-300">${event.description}</p>
+    <p class="text-gray-300"><strong>Joueurs :</strong> ${event.players_count}</p>
+    <p class="text-gray-300"><strong>Organisateur :</strong> ${event.organisateur}</p>
+    <p class="text-gray-300"><strong>Début :</strong> ${new Date(event.start_datetime).toLocaleString()}</p>
+    <p class="text-gray-300"><strong>Fin :</strong> ${new Date(event.end_datetime).toLocaleString()}</p>
 
-        <div class="flex justify-between">
-        
-          <!-- Utilisation de Alpine.js pour gérer l'état du favori -->
-          <div x-show="rolee !== 'visiteur'" x-data="{
-          favorite: ${isFavorited},
-          async updateFavorite(state) {
-          try {
-          
-            this.favorite = state;
+    <div class="flex justify-between mt-4">
+      <!-- Boutons pour participer -->
+      <div x-show="rolee !== 'visiteur'" id="favorite-button">
+        <!-- Bouton pour ajouter aux favoris -->
+        <button
+          x-show="!favorite"
+          hx-post="https://esportify-backend.onrender.com/api/favorites"
+          hx-target="#favorite-button"
+          hx-vals='{"event_id": "${event.id}", "user_id": "${userId}", "isFavorited": true}'
+          hx-swap="outerHTML"
+          class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
+          Je participe
+        </button>
 
-            const response = await fetch('/api/favorites', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ eventId: '${id}', userId: '${userId}', isFavorited: state })
-            });
-
-            if (!response.ok) {
-              console.error('Erreur lors de la mise à jour du favori');
-          
-              this.favorite = !state;
-            }
-            } catch (error) {
-              console.error('Erreur réseau :', error);
-          
-              this.favorite = !state;
-            }
-          }
-          }"
-          >
-            <!-- Bouton pour participer -->
-            <button
-            x-show="!favorite"
-            hx-post="https://esportify-backend.onrender.com/api/favorites"
-            hx-target="#favorite-button"
-            hx-vals='{ "eventId": "${id}", "userId": "${userId}" }'
-            hx-on="htmx:beforeRequest: this.disabled = true"
-            hx-on="htmx:afterRequest: this.disabled = false"
-            class="px-4 py-2 bg-blue-500 rounded hover:bg-opacity-80"
-            @click="updateFavorite(true)"
-            >
-              Je participe
-            </button>
-
-            <!-- Bouton pour ne plus être intéressé -->
-            <button
-            x-show="favorite"
-            hx-post="https://esportify-backend.onrender.com/api/favorites"
-            hx-target="#favorite-button"
-            hx-vals='{ "eventId": "${id}", "userId": "${userId}" }'
-            hx-on="htmx:beforeRequest: this.disabled = true"
-            hx-on="htmx:afterRequest: this.disabled = false"
-            class="px-4 py-2 bg-red-900 rounded hover:bg-opacity-80"
-            @click="updateFavorite(false)"
-            >
-              Plus intéressé
-            </button>
-          </div>
-          <button @click="isOpen = false" class="ml-auto bg-red-700 hover:bg-red-800 px-4 py-2 rounded mt-4">
-          Fermer
-          </button>
-        </div>
+        <!-- Bouton pour retirer des favoris -->
+        <button
+          x-show="favorite"
+          hx-post="https://esportify-backend.onrender.com/api/favorites"
+          hx-target="#favorite-button"
+          hx-vals='{"event_id": "${event.id}", "user_id": "${userId}", "isFavorited": false}'
+          hx-swap="outerHTML"
+          class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+        >
+          Plus intéressé
+        </button>
       </div>
-    `;
+      <button
+        @click="isOpen = false"
+        class="ml-auto bg-red-700 text-white px-4 py-2 rounded hover:bg-red-800"
+      >
+        Fermer
+      </button>
+    </div>
+  </div>
+`;
 
     res.send(eventHtml);
   } catch (err) {
