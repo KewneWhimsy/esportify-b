@@ -157,7 +157,7 @@ module.exports.getEventById = async (req, res) => {
           hx-vals='${JSON.stringify({
             event_id: id,
             user_id: userId,
-            isFavorited: true,
+            isFavorited: false,
           })}'
           hx-headers='{"Content-Type": "application/json"}'
           hx-encoding="json"

@@ -72,7 +72,13 @@ module.exports.checkIfFavorites = async (req, res) => {
         <button 
           hx-post="https://esportify-backend.onrender.com/api/favorites" 
           hx-target="#favorite-button"
-          hx-vals='{ "event_id": "${event_id}", "user_id": "${user_id}" }'
+          hx-vals='${JSON.stringify({
+            event_id: id,
+            user_id: userId,
+            isFavorited: false,
+          })}'
+          hx-headers='{"Content-Type": "application/json"}'
+          hx-encoding="json"
           hx-on="htmx:beforeRequest: this.disabled = true"
           hx-on="htmx:afterRequest: this.disabled = false"
           class="px-4 py-2 bg-blue-500 rounded hover:bg-opacity-80"
@@ -86,7 +92,13 @@ module.exports.checkIfFavorites = async (req, res) => {
         <button 
           hx-post="https://esportify-backend.onrender.com/api/favorites" 
           hx-target="#favorite-button"
-          hx-vals='{ "event_id": "${event_id}", "user_id": "${user_id}" }'
+          hx-vals='${JSON.stringify({
+            event_id: id,
+            user_id: userId,
+            isFavorited: true,
+          })}'
+          hx-headers='{"Content-Type": "application/json"}'
+          hx-encoding="json"
           hx-on="htmx:beforeRequest: this.disabled = true"
           hx-on="htmx:afterRequest: this.disabled = false"
           class="px-4 py-2 bg-blue-500 rounded hover:bg-opacity-80"
