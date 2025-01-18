@@ -136,7 +136,11 @@ module.exports.getEventById = async (req, res) => {
           x-show="!favorite"
           hx-post="https://esportify-backend.onrender.com/api/favorites"
           hx-target="#favorite-button"
-          hx-vals='{"event_id": "' + id + '", "user_id": "' + userId + '", "isFavorited": true}'
+          hx-vals='${JSON.stringify({
+            event_id: id,
+            user_id: userId,
+            isFavorited: true,
+          })}'
           hx-headers='{"Content-Type": "application/json"}'
           hx-encoding="json"
           hx-swap="innerHTML"
@@ -150,7 +154,11 @@ module.exports.getEventById = async (req, res) => {
           x-show="favorite"
           hx-post="https://esportify-backend.onrender.com/api/favorites"
           hx-target="#favorite-button"
-          hx-vals='{"event_id": "' + id + '", "user_id": "' + userId + '", "isFavorited": true}'
+          hx-vals='${JSON.stringify({
+            event_id: id,
+            user_id: userId,
+            isFavorited: true,
+          })}'
           hx-headers='{"Content-Type": "application/json"}'
           hx-encoding="json"
           hx-swap="innerHTML"
