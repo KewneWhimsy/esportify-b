@@ -4,6 +4,11 @@ const { pgClient } = require("../../config/dbConnection.js");
 module.exports.toggleFavorite = async (req, res) => {
   const { event_id, user_id, isFavorited } = req.body;
   console.log("Requête reçue avec le body :", req.body);
+  console.log("Headers :", req.headers);
+console.log("Body :", req.body);
+console.log("Query params :", req.query);
+console.log("Raw body (si activé) :", req.rawBody);
+
   const authHeader = req.headers.authorization;
   try {
 
