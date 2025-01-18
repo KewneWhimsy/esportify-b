@@ -30,7 +30,7 @@ module.exports.toggleFavorite = async (req, res) => {
     // Génération du bouton mis à jour
     const buttonHtml = isFavorited
       ? `<button
-           hx-post="/api/favorites"
+           hx-post="https://esportify-backend.onrender.com/api/favorites"
            hx-target="#favorite-button"
            hx-vals='{"event_id": "${event_id}", "user_id": "${user_id}", "isFavorited": false}'
            hx-swap="innerHTML"
@@ -39,7 +39,7 @@ module.exports.toggleFavorite = async (req, res) => {
            Plus intéressé
          </button>`
       : `<button
-           hx-post="/api/favorites"
+           hx-post="https://esportify-backend.onrender.com/api/favorites"
            hx-target="#favorite-button"
            hx-vals='{"event_id": "${event_id}", "user_id": "${user_id}", "isFavorited": true}'
            hx-swap="innerHTML"
