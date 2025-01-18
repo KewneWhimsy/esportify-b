@@ -67,6 +67,10 @@ module.exports.getAllEvents = async (req, res) => {
 
 module.exports.getEventById = async (req, res) => {
   const { id } = req.params;
+  console.log("Requête reçue :", req.body);
+
+  const { event_id, user_id, isFavorited } = req.body;
+  console.log("Paramètres extraits :", { event_id, user_id, isFavorited });
   try {
     const result = await pgClient.query(
       `
