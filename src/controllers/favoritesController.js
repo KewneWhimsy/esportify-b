@@ -33,7 +33,7 @@ module.exports.toggleFavorite = async (req, res) => {
            hx-post="/api/favorites"
            hx-target="#favorite-button"
            hx-vals='{"event_id": "${event_id}", "user_id": "${user_id}", "isFavorited": false}'
-           hx-swap="outerHTML"
+           hx-swap="innerHTML"
            class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
          >
            Plus intéressé
@@ -42,7 +42,7 @@ module.exports.toggleFavorite = async (req, res) => {
            hx-post="/api/favorites"
            hx-target="#favorite-button"
            hx-vals='{"event_id": "${event_id}", "user_id": "${user_id}", "isFavorited": true}'
-           hx-swap="outerHTML"
+           hx-swap="innerHTML"
            class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
          >
            Je participe
