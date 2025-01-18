@@ -137,7 +137,6 @@ module.exports.getEventById = async (req, res) => {
           hx-post="https://esportify-backend.onrender.com/api/favorites"
           hx-target="#favorite-button"
           hx-vals='{"event_id": "' + id + '", "user_id": "' + userId + '", "isFavorited": true}'
-          hx-headers='{"Content-Type": "application/json"}'
           hx-swap="innerHTML"
           class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
         >
@@ -150,7 +149,6 @@ module.exports.getEventById = async (req, res) => {
           hx-post="https://esportify-backend.onrender.com/api/favorites"
           hx-target="#favorite-button"
           hx-vals='{"event_id": "' + id + '", "user_id": "' + userId + '", "isFavorited": true}'
-          hx-headers='{"Content-Type": "application/json"}'
           hx-swap="innerHTML"
           class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
         >

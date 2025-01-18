@@ -6,6 +6,7 @@ const app = express(); // Crée une instance d'application Express
 
 // Middleware pour parser le JSON
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Configuration de CORS
 const corsOptions = require("./config/corsOptions.js");
