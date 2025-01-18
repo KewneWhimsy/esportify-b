@@ -39,8 +39,8 @@ console.log("Raw body (si activé) :", req.rawBody);
            hx-post="https://esportify-backend.onrender.com/api/favorites"
            hx-target="#favorite-button"
            hx-vals='${JSON.stringify({
-            event_id: id,
-            user_id: userId,
+            event_id: event_id,
+            user_id: user_id,
             isFavorited: false,
           })}'
           hx-headers='{"Content-Type": "application/json"}'
@@ -54,8 +54,8 @@ console.log("Raw body (si activé) :", req.rawBody);
            hx-post="https://esportify-backend.onrender.com/api/favorites"
            hx-target="#favorite-button"
           hx-vals='${JSON.stringify({
-            event_id: id,
-            user_id: userId,
+            event_id: event_id,
+            user_id: user_id,
             isFavorited: true,
           })}'
           hx-headers='{"Content-Type": "application/json"}'
