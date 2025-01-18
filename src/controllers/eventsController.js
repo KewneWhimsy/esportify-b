@@ -67,10 +67,6 @@ module.exports.getAllEvents = async (req, res) => {
 
 module.exports.getEventById = async (req, res) => {
   const { id } = req.params;
-  console.log("Requête reçue :", req.body);
-
-  const { event_id, user_id, isFavorited } = req.body;
-  console.log("Paramètres extraits :", { event_id, user_id, isFavorited });
   try {
     const result = await pgClient.query(
       `
@@ -141,6 +137,8 @@ module.exports.getEventById = async (req, res) => {
           hx-post="https://esportify-backend.onrender.com/api/favorites"
           hx-target="#favorite-button"
           hx-vals='{"event_id": "' + id + '", "user_id": "' + userId + '", "isFavorited": true}'
+          hx-headers='{"Content-Type": "application/json"}'
+          hx-encoding="json"
           hx-swap="innerHTML"
           class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
         >
@@ -153,6 +151,8 @@ module.exports.getEventById = async (req, res) => {
           hx-post="https://esportify-backend.onrender.com/api/favorites"
           hx-target="#favorite-button"
           hx-vals='{"event_id": "' + id + '", "user_id": "' + userId + '", "isFavorited": true}'
+          hx-headers='{"Content-Type": "application/json"}'
+          hx-encoding="json"
           hx-swap="innerHTML"
           class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
         >
