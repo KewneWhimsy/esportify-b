@@ -30,6 +30,7 @@ module.exports.toggleFavorite = async (req, res) => {
     const buttonHtml = isFavorited
       ? `<button
            hx-post="/api/favorites"
+           hx-headers='{"Authorization": sessionStorage.getItem("jwt") ? "Bearer " + sessionStorage.getItem("jwt") : ""}'
            hx-target="#favorite-button"
            hx-vals='{"event_id": "${event_id}", "user_id": "${user_id}", "isFavorited": false}'
            hx-swap="outerHTML"
@@ -39,6 +40,7 @@ module.exports.toggleFavorite = async (req, res) => {
          </button>`
       : `<button
            hx-post="/api/favorites"
+           hx-headers='{"Authorization": sessionStorage.getItem("jwt") ? "Bearer " + sessionStorage.getItem("jwt") : ""}'
            hx-target="#favorite-button"
            hx-vals='{"event_id": "${event_id}", "user_id": "${user_id}", "isFavorited": true}'
            hx-swap="outerHTML"
