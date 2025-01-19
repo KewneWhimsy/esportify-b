@@ -66,7 +66,8 @@ console.log("Raw body (si activé) :", req.rawBody);
          >
            Je participe
          </button>`;
-
+    
+    console.log('HTML envoyé au client :', buttonHtml);
     res.send(buttonHtml);
 };
 
