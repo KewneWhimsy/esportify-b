@@ -94,6 +94,7 @@ module.exports.getEventById = async (req, res) => {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         userRole = decoded.role;
         userId = decoded.userId;
+        console.log("Rôle userRole après jwt :", userRole);
       } catch (err) {
         console.error("Erreur lors du décodage du token JWT", err);
       }
@@ -132,7 +133,7 @@ module.exports.getEventById = async (req, res) => {
 
     <div class="flex justify-between mt-4">
       <!-- Boutons pour participer -->
-      <div x-show="rolee !== 'visiteur'" id="favorite-button">
+      <div x-data="console.log('role dans le x-show', rolee)" x-show="rolee !== 'visiteur'" id="favorite-button">
         <!-- Bouton pour ajouter aux favoris -->
         <button
           x-show="!favorite"
