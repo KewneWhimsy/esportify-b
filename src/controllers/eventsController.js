@@ -118,6 +118,7 @@ module.exports.getEventById = async (req, res) => {
 
     const eventHtml = `
   <div x-data="{ rolee: '${userRole}', favorite: ${isFavorited} }" 
+  x-init="console.log('Initialisation du rôle:', rolee, 'Favorite:', favorite);"
   class="bg-gray-800 border border-gray-300 p-6 rounded-lg shadow-lg w-full"
   >
     <h2 class="text-2xl font-bold mb-4 text-white">${event.title}</h2>
