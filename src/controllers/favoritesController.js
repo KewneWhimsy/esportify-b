@@ -3,10 +3,14 @@ const { pgClient } = require("../../config/dbConnection.js");
 // Route pour ajouter ou retirer un favori
 module.exports.toggleFavorite = async (req, res) => {
   const { event_id, user_id, isFavorited } = req.body;
+  
+  console.log('isFavorited:', isFavorited, 'Type:', typeof isFavorited);
+  let isFavoritedBool = isFavorited === true || isFavorited === "true";
+  console.log('isFavoritedBool:', isFavoritedBool);
 
   try {
     // Fonction pour mettre à jour les favoris
-    if (isFavorited) {
+    if (isFavoritedBool) {
       // Ajouter un favori
       await pgClient.query(
         `INSERT INTO favorites (user_id, event_id) VALUES ($1, $2)
@@ -17,57 +21,26 @@ module.exports.toggleFavorite = async (req, res) => {
     } else {
       // Supprimer un favori
       await pgClient.query(
-        `DELETE FROM favorites WHERE user_id = $1 AND event_id = $2 RETURNING *`,
+        `DELETE FROM favorites WHERE user_id = $1 AND event_id = $2`,
         [user_id, event_id]
       );
-      if (result.rowCount === 0) {
-        console.log(
-          `Aucune ligne supprimée pour user_id=${user_id}, event_id=${event_id}`
-        );
-      } else {
-        console.log(`Ligne supprimée :`, result.rows);
-      }
     }
-    // Vérifiez si le favori existe toujours
-    const favoriteCheck = await pgClient.query(
-      `SELECT * FROM favorites WHERE user_id = $1 AND event_id = $2`,
-      [user_id, event_id]
-    );
-
-    if (favoriteCheck.rowCount > 0) {
-      console.log(
-        `Des lignes existent encore pour user_id=${user_id}, event_id=${event_id}`
-      );
-      isFavorited = true;
-    } else {
-      console.log(
-        `Aucune ligne trouvée pour user_id=${user_id}, event_id=${event_id}`
-      );
-      isFavorited = false;
-    }
-    console.log(
-      `Favori mis à jour : user_id=${user_id}, event_id=${event_id}, isFavorited=${isFavorited}`
-    );
+    console.log(`Favori mis à jour : user_id=${user_id}, event_id=${event_id}, isFavorited=${isFavorited}`);
   } catch (error) {
-    console.error(
-      "Erreur lors de la mise à jour de la base de données :",
-      error
-    );
+    console.error('Erreur lors de la mise à jour de la base de données :', error);
     throw error;
   }
-  // Génération du bouton mis à jour
-  console.log("isFavorited:", isFavorited, "Type:", typeof isFavorited);
-  const isFavoritedBool = isFavorited === true || isFavorited === "true";
-  console.log("isFavoritedBool:", isFavoritedBool);
-  const buttonHtml = isFavoritedBool
-    ? `<button
+    // Génération du bouton mis à jour
+    
+    const buttonHtml = isFavoritedBool
+      ? `<button
            hx-post="https://esportify-backend.onrender.com/api/favorites"
            hx-target="#favorite-button"
            hx-vals='${JSON.stringify({
-             event_id: event_id,
-             user_id: user_id,
-             isFavorited: false,
-           })}'
+            event_id: event_id,
+            user_id: user_id,
+            isFavorited: false,
+          })}'
           hx-headers='{"Content-Type": "application/json"}'
           hx-encoding="json"
            hx-swap="innerHTML"
@@ -75,7 +48,7 @@ module.exports.toggleFavorite = async (req, res) => {
          >
            Plus intéressé
          </button>`
-    : `<button
+      : `<button
            hx-post="https://esportify-backend.onrender.com/api/favorites"
            hx-target="#favorite-button"
           hx-vals='${JSON.stringify({
@@ -90,9 +63,9 @@ module.exports.toggleFavorite = async (req, res) => {
          >
            Je participe
          </button>`;
-
-  console.log("HTML envoyé au client :", buttonHtml);
-  res.send(buttonHtml);
+    
+    console.log('HTML envoyé au client :', buttonHtml);
+    res.send(buttonHtml);
 };
 
 module.exports.checkIfFavorites = async (req, res) => {
