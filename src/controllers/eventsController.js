@@ -101,7 +101,7 @@ module.exports.getEventById = async (req, res) => {
 
     // Vérifier si l'utilisateur a déjà favorisé cet événement
     let isFavorited;
-    console.log('userId avant favoritecheck eventcontroller:', userId, 'Type:', typeof userId);
+    console.log('isFavorited avant favoritecheck eventcontroller:', isFavorited, 'Type:', typeof isFavorited);
     if (userId) {
       const favoriteCheck = await pgClient.query(
         "SELECT * FROM favorites WHERE user_id = $1 AND event_id = $2",
@@ -113,7 +113,7 @@ module.exports.getEventById = async (req, res) => {
         isFavorited = false;
       }
     }
-    console.log('isFavorited:', isFavorited, 'Type:', typeof isFavorited);
+    console.log('isFavorited après favoritecheck eventcontroller:', isFavorited, 'Type:', typeof isFavorited);
 
     const eventHtml = `
   <div x-data="{ rolee: window.role, favorite: ${isFavorited} }" x-init="
