@@ -1,5 +1,6 @@
 const { pgClient } = require("./config/dbConnection.js");
 const bcrypt = require("bcrypt");
+const fs = require("fs");
 
 // Données des utilisateurs à insérer
 const users = [
@@ -76,4 +77,23 @@ async function initializeData() {
     }
 }
 
-module.exports = initializeData; // Exporter la fonction si nécessaire ailleurs
+// Fonction d'initialisation qui combine init.sql et initData.js
+async function initializeDbPg() {
+  try {
+    // Lire et exécuter le fichier SQL (init.sql)
+    const initSql = fs.readFileSync('./init.sql').toString();
+
+    // Exécuter le script SQL pour initialiser la base
+    await pgClient.query(initSql);
+    console.log('Database initialized with init.sql');
+    
+    // Insérer les données après l'initialisation SQL
+    await initializeData();  // Assurez-vous d'attendre que l'insertion des données soit terminée
+    console.log('Initial data inserted successfully.');
+  } catch (err) {
+    console.error('Error during initialization:', err);
+    throw err; // Propager l'erreur si l'initialisation échoue
+  }
+}
+
+initializeDbPg()
