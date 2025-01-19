@@ -112,6 +112,7 @@ module.exports.getEventById = async (req, res) => {
         isFavorited = false;
       }
     }
+    console.log('isFavorited:', isFavorited, 'Type:', typeof isFavorited);
 
     const eventHtml = `
   <div x-data="{ rolee: window.role, favorite: ${isFavorited} }" x-init="

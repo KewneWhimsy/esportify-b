@@ -3,13 +3,8 @@ const { pgClient } = require("../../config/dbConnection.js");
 // Route pour ajouter ou retirer un favori
 module.exports.toggleFavorite = async (req, res) => {
   const { event_id, user_id, isFavorited } = req.body;
-  console.log("Requête reçue avec le body :", req.body);
   console.log("Headers :", req.headers);
-console.log("Body :", req.body);
-console.log("Query params :", req.query);
-console.log("Raw body (si activé) :", req.rawBody);
 
-  const authHeader = req.headers.authorization;
   try {
 
     // Fonction pour mettre à jour les favoris
@@ -32,7 +27,19 @@ console.log("Raw body (si activé) :", req.rawBody);
     console.error('Erreur lors de la mise à jour de la base de données :', error);
     throw error;
   }
-
+  let isFavoritedcheck;
+    if (userId) {
+      const favoriteCheck = await pgClient.query(
+        "SELECT * FROM favorites WHERE user_id = $1 AND event_id = $2",
+        [userId, id]
+      );
+      if (favoriteCheck.rowCount > 0) {
+        isFavoritedcheck = true; // L'événement est déjà un favori de cet utilisateur
+      } else {
+        isFavoritedcheck = false;
+      }
+    }
+    console.log(isFavoritedcheck)
     // Génération du bouton mis à jour
     console.log('isFavorited:', isFavorited, 'Type:', typeof isFavorited);
     const isFavoritedBool = isFavorited === true || isFavorited === "true";
