@@ -1,6 +1,7 @@
-const { pgClient } = require("../../config/dbConnection.js"); // Assurez-vous que votre client PostgreSQL est correctement configuré
+const { pgClient } = require("../../config/dbConnection.js");
 const jwt = require('jsonwebtoken');
 
+//Renvoi un tableau contenant tout les événements
 module.exports.getAllEvents = async (req, res) => {
   console.log("Requête reçue pour récupérer tous les événements");
   try {
@@ -65,6 +66,7 @@ module.exports.getAllEvents = async (req, res) => {
   }
 };
 
+//Renvoie la vue détaillée d'un événement + bouton toggle favoris pour l'utilisateur connecté
 module.exports.getEventById = async (req, res) => {
   const { id } = req.params;
   try {

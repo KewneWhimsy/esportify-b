@@ -71,7 +71,7 @@ async function initializeData() {
         // Initialiser les événements
         await initializeEvents();
 
-        console.log("Données initiales insérées avec succès.");
+        console.log("Initialisation de la db postgres réussie");
     } catch (error) {
         console.error("Erreur lors de l'initialisation des données :", error);
     }
@@ -85,13 +85,13 @@ async function initializeDbPg() {
 
     // Exécuter le script SQL pour initialiser la base
     await pgClient.query(initSql);
-    console.log('Database initialized with init.sql');
+    console.log('Database postgres initialisée avec init.sql');
     
     // Insérer les données après l'initialisation SQL
     await initializeData();  // Assurez-vous d'attendre que l'insertion des données soit terminée
-    console.log('Initial data inserted successfully.');
+    console.log('Données initiales insérées avec succès.');
   } catch (err) {
-    console.error('Error during initialization:', err);
+    console.error("Erreur durant initialisation de postgres", err);
     throw err; // Propager l'erreur si l'initialisation échoue
   }
 }
