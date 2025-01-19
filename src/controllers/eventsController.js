@@ -116,7 +116,7 @@ module.exports.getEventById = async (req, res) => {
 
     const eventHtml = `
   <div x-data="{ rolee: '${userRole}', favorite: ${isFavorited} }" 
-  class="bg-gray-800 border border-gray-300 p-6 rounded-lg shadow-lg w-full"
+  class="border border-gray-300 p-6 rounded-lg shadow-lg w-full"
   >
     <h2 class="text-2xl font-bold mb-4 text-white">${event.title}</h2>
     <p class="mb-4 text-gray-300">${event.description}</p>
@@ -125,7 +125,7 @@ module.exports.getEventById = async (req, res) => {
     <p class="text-gray-300"><strong>Début :</strong> ${new Date(event.start_datetime).toLocaleString()}</p>
     <p class="text-gray-300"><strong>Fin :</strong> ${new Date(event.end_datetime).toLocaleString()}</p>
 
-    <div class="flex justify-between mt-6">
+    <div class="flex justify-between mt-10">
       <!-- Boutons pour participer -->
       <div x-show="rolee === 'joueur' || rolee === 'admin' || rolee === 'orga'" id="favorite-button"
       :class="{ 'hidden': rolee === 'visiteur' }"
