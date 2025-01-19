@@ -94,7 +94,7 @@ module.exports.getEventById = async (req, res) => {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         userRole = decoded.role;
         userId = decoded.userId;
-        console.log("Rôle userRole après jwt :", userRole);
+        console.log("Rôle userRole après  décodage jwt :", userRole);
       } catch (err) {
         console.error("Erreur lors du décodage du token JWT", err);
       }
@@ -102,7 +102,6 @@ module.exports.getEventById = async (req, res) => {
 
     // Vérifier si l'utilisateur a déjà favorisé cet événement
     let isFavorited = false;
-    console.log('isFavorited avant favoritecheck eventcontroller:', isFavorited, 'Type:', typeof isFavorited);
     if (userId) {
       const favoriteCheck = await pgClient.query(
         "SELECT * FROM favorites WHERE user_id = $1 AND event_id = $2",
@@ -114,11 +113,9 @@ module.exports.getEventById = async (req, res) => {
         isFavorited = false;
       }
     }
-    console.log('isFavorited après favoritecheck eventcontroller:', isFavorited, 'Type:', typeof isFavorited);
 
     const eventHtml = `
   <div x-data="{ rolee: '${userRole}', favorite: ${isFavorited} }" 
-  x-init="console.log('Initialisation du rôle:', rolee, 'Favorite:', favorite);"
   class="bg-gray-800 border border-gray-300 p-6 rounded-lg shadow-lg w-full"
   >
     <h2 class="text-2xl font-bold mb-4 text-white">${event.title}</h2>
@@ -128,9 +125,9 @@ module.exports.getEventById = async (req, res) => {
     <p class="text-gray-300"><strong>Début :</strong> ${new Date(event.start_datetime).toLocaleString()}</p>
     <p class="text-gray-300"><strong>Fin :</strong> ${new Date(event.end_datetime).toLocaleString()}</p>
 
-    <div class="flex justify-between mt-4">
+    <div class="flex justify-between mt-6">
       <!-- Boutons pour participer -->
-      <div x-data="console.log('role dans le x-show', rolee)" x-show="rolee === 'joueur' || rolee === 'admin' || rolee === 'orga'" id="favorite-button"
+      <div x-show="rolee === 'joueur' || rolee === 'admin' || rolee === 'orga'" id="favorite-button"
       :class="{ 'hidden': rolee === 'visiteur' }"
       >
         <!-- Bouton pour ajouter aux favoris -->
