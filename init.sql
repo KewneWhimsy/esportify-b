@@ -103,7 +103,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 -- Trigger pour vérifier les chevauchements avant l'insertion ou la mise à jour des événements
-CREATE TRIGGER trg_check_event_overlap
+CREATE OR REPLACE TRIGGER trg_check_event_overlap
 BEFORE INSERT OR UPDATE ON events
 FOR EACH ROW
 EXECUTE FUNCTION check_event_overlap();
@@ -123,7 +123,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 -- Trigger pour vérifier l'approbation avant l'ajout dans favorites
-CREATE TRIGGER trg_check_event_approval
+CREATE OR REPLACE TRIGGER trg_check_event_approval
 BEFORE INSERT ON favorites
 FOR EACH ROW
 EXECUTE FUNCTION check_event_approval();
