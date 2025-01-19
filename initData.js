@@ -96,4 +96,4 @@ async function initializeDbPg() {
   }
 }
 
-initializeDbPg()
+module.exports = { initializeDbPg };
