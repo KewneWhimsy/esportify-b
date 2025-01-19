@@ -28,10 +28,11 @@ module.exports.toggleFavorite = async (req, res) => {
     throw error;
   }
   let isFavoritedcheck;
-    if (userId) {
+  console.log('user_id avant favoritecheck favpritecontroler:', user_id, 'Type:', typeof user_id);
+    if (user_id) {
       const favoriteCheck = await pgClient.query(
         "SELECT * FROM favorites WHERE user_id = $1 AND event_id = $2",
-        [userId, id]
+        [user_id, id]
       );
       if (favoriteCheck.rowCount > 0) {
         isFavoritedcheck = true; // L'événement est déjà un favori de cet utilisateur
@@ -39,7 +40,6 @@ module.exports.toggleFavorite = async (req, res) => {
         isFavoritedcheck = false;
       }
     }
-    console.log(isFavoritedcheck)
     // Génération du bouton mis à jour
     console.log('isFavorited:', isFavorited, 'Type:', typeof isFavorited);
     const isFavoritedBool = isFavorited === true || isFavorited === "true";
