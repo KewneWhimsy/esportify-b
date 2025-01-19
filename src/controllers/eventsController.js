@@ -117,13 +117,9 @@ module.exports.getEventById = async (req, res) => {
     console.log('isFavorited après favoritecheck eventcontroller:', isFavorited, 'Type:', typeof isFavorited);
 
     const eventHtml = `
-  <div x-data="{ rolee: window.role, favorite: ${isFavorited} }" x-init="
-    console.log('Initialisation du rôle:', rolee);
-    window.addEventListener('role-changed', (event) => {
-      console.log('Rôle mis à jour immédiatement:', event.detail.role);
-      rolee = event.detail.role;
-    });
-  " class="bg-gray-800 border border-gray-300 p-6 rounded-lg shadow-lg w-full">
+  <div x-data="{ rolee: ${userRole}, favorite: ${isFavorited} }" 
+  class="bg-gray-800 border border-gray-300 p-6 rounded-lg shadow-lg w-full"
+  >
     <h2 class="text-2xl font-bold mb-4 text-white">${event.title}</h2>
     <p class="mb-4 text-gray-300">${event.description}</p>
     <p class="text-gray-300"><strong>Joueurs :</strong> ${event.players_count}</p>
