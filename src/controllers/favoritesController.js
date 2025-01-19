@@ -34,8 +34,10 @@ console.log("Raw body (si activé) :", req.rawBody);
   }
 
     // Génération du bouton mis à jour
-    console.log('isFavorited:', isFavorited);
-    const buttonHtml = isFavorited
+    console.log('isFavorited:', isFavorited, 'Type:', typeof isFavorited);
+    const isFavoritedBool = isFavorited === true || isFavorited === "true";
+    console.log('isFavoritedBool:', isFavoritedBool);
+    const buttonHtml = isFavoritedBool
       ? `<button
            hx-post="https://esportify-backend.onrender.com/api/favorites"
            hx-target="#favorite-button"
