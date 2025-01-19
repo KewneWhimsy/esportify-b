@@ -1,5 +1,5 @@
 -- Réinitialisation
---DROP TABLE IF EXISTS favorites, events_images, messages, events, users CASCADE;
+DROP TABLE IF EXISTS favorites, events_images, messages, events, users CASCADE;
 
 -- Table des utilisateurs
 CREATE TABLE IF NOT EXISTS users (
@@ -79,11 +79,11 @@ BEGIN
 END $$;
 
 -- Contrainte pour s'assurer que la date de fin est après la date de début
-ALTER TABLE users DROP CONSTRAINT IF EXISTS check_dates;
+ALTER TABLE events DROP CONSTRAINT IF EXISTS check_dates;
 ALTER TABLE events ADD CONSTRAINT check_dates CHECK (start_datetime < end_datetime);
 
 -- Contrainte pour s'assurer que le nombre de joueurs est supérieur à 1
-ALTER TABLE users DROP CONSTRAINT IF EXISTS check_players_count;
+ALTER TABLE events DROP CONSTRAINT IF EXISTS check_players_count;
 ALTER TABLE events ADD CONSTRAINT check_players_count CHECK (players_count > 1);
 
 -- Fonction pour vérifier les chevauchements d'événements
