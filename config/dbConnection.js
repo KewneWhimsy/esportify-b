@@ -36,7 +36,8 @@ pgClient
   .connect()
   .then(async () => {
     console.log('Connected to PostgreSQL database');
-    
+    module.exports = { pgClient }; // export de pgClient pour être utilisé par initialisation()
+
     // Appeler l'initialisation après une connexion réussie à PostgreSQL
     await initialisation(); // Attendre l'initialisation complète avant de continuer
   })
@@ -51,4 +52,4 @@ mongoose
   .catch((err) => console.error("MongoDB connection error", err))
 ;
 
-module.exports = { pgClient, mongoose };
+module.exports = { mongoose };
