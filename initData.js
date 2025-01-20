@@ -13,7 +13,7 @@ const users = [
     { username: "PlayerMan", email: "player@yopmail.com", password: "123456", role: "joueur", score: 0 },
 ];
 
-// Fonction pour hacher les mots de passe et insérer les utilisateurs
+// Fonction pour hacher les mots de passe et insérer les utilisateurs test de manière idempotente
 async function initializeUsers() {
     try {
         console.log("Initialisation des utilisateurs...");
@@ -38,7 +38,7 @@ async function initializeUsers() {
     }
 }
 
-// Fonction pour insérer les événements dans la base
+// Fonction pour insérer les événements de test de manière idempotente
 async function initializeEvents() {
     const eventsQuery = `
         INSERT INTO events (title, description, players_count, is_approved, start_datetime, end_datetime, user_id, created_at, updated_at)
@@ -62,7 +62,7 @@ async function initializeEvents() {
     }
 }
 
-// Fonction d'initialisation complète
+// Fonction d'initialisation des données complète
 async function initializeData() {
     try {
         // Initialiser les utilisateurs
@@ -77,10 +77,10 @@ async function initializeData() {
     }
 }
 
-// Fonction d'initialisation qui combine init.sql et initData.js
+// Fonction d'initialisation, init.sql(structure) + initializeData(données)
 async function initializeDbPg() {
   try {
-    // Lire et exécuter le fichier SQL (init.sql)
+    // Lire et convertir le fichier SQL en String
     const initSql = fs.readFileSync('./init.sql').toString();
 
     // Exécuter le script SQL pour initialiser la base
@@ -88,7 +88,7 @@ async function initializeDbPg() {
     console.log('Database postgres initialisée avec init.sql');
     
     // Insérer les données après l'initialisation SQL
-    await initializeData();  // Assurez-vous d'attendre que l'insertion des données soit terminée
+    await initializeData();
     console.log('Données initiales insérées avec succès.');
   } catch (err) {
     console.error("Erreur durant initialisation de postgres", err);

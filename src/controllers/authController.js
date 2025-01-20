@@ -25,9 +25,9 @@ module.exports.register = async (req, res) => {
 };
 
 module.exports.login = async (req, res) => {
-  const { email, password } = req.body;
+  const { username, password } = req.body;
 
-  const result = await pgClient.query("SELECT * FROM users WHERE email = $1", [email]);
+  const result = await pgClient.query("SELECT * FROM users WHERE username = $1", [username]);
   if (result.rows.length === 0) {
     return res.status(400).json({ error: "Utilisateur introuvable" });
   }
