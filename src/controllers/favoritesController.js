@@ -1,12 +1,13 @@
 const { pgClient } = require("../../config/dbConnection.js");
+const jwt = require("jsonwebtoken");
 
 // Route pour ajouter ou retirer un favori
 module.exports.toggleFavorite = async (req, res) => {
   const { event_id, user_id, isFavorited } = req.body;
-  
-  console.log('isFavorited:', isFavorited, 'Type:', typeof isFavorited);
+
+  console.log("isFavorited:", isFavorited, "Type:", typeof isFavorited);
   let isFavoritedBool = isFavorited === true || isFavorited === "true";
-  console.log('isFavoritedBool:', isFavoritedBool);
+  console.log("isFavoritedBool:", isFavoritedBool);
 
   try {
     // Fonction pour mettre à jour les favoris
@@ -25,22 +26,27 @@ module.exports.toggleFavorite = async (req, res) => {
         [user_id, event_id]
       );
     }
-    console.log(`Favori mis à jour : user_id=${user_id}, event_id=${event_id}, isFavorited=${isFavorited}`);
+    console.log(
+      `Favori mis à jour : user_id=${user_id}, event_id=${event_id}, isFavorited=${isFavorited}`
+    );
   } catch (error) {
-    console.error('Erreur lors de la mise à jour de la base de données :', error);
+    console.error(
+      "Erreur lors de la mise à jour de la base de données :",
+      error
+    );
     throw error;
   }
-    // Génération du bouton mis à jour
-    
-    const buttonHtml = isFavoritedBool
-      ? `<button
+  // Génération du bouton mis à jour
+
+  const buttonHtml = isFavoritedBool
+    ? `<button
            hx-post="https://esportify-backend.onrender.com/api/favorites"
            hx-target="#favorite-button"
            hx-vals='${JSON.stringify({
-            event_id: event_id,
-            user_id: user_id,
-            isFavorited: false,
-          })}'
+             event_id: event_id,
+             user_id: user_id,
+             isFavorited: false,
+           })}'
           hx-headers='{"Content-Type": "application/json"}'
           hx-encoding="json"
            hx-swap="innerHTML"
@@ -48,7 +54,7 @@ module.exports.toggleFavorite = async (req, res) => {
          >
            Plus intéressé
          </button>`
-      : `<button
+    : `<button
            hx-post="https://esportify-backend.onrender.com/api/favorites"
            hx-target="#favorite-button"
           hx-vals='${JSON.stringify({
@@ -63,14 +69,31 @@ module.exports.toggleFavorite = async (req, res) => {
          >
            Je participe
          </button>`;
-    
-    console.log('HTML envoyé au client :', buttonHtml);
-    res.send(buttonHtml);
+
+  console.log("HTML envoyé au client :", buttonHtml);
+  res.send(buttonHtml);
 };
 
 module.exports.showFavorited = async (req, res) => {
-  const userId = req.body; // L'identifiant de l'utilisateur connecté (obtenu via un middleware d'authentification)
-  console.log(`Requête reçue pour les événements favoris de l'utilisateur ${userId}`);
+
+  // Tentative de décoder le token JWT si présent pour savoir si l'utilisateur est connecté
+  let userRole = "visiteur";
+  let userId = null;
+  const authHeader = req.headers.authorization;
+  if (authHeader) {
+    const token = authHeader.split(" ")[1];
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      userRole = decoded.role;
+      userId = decoded.userId;
+      console.log("Rôle userRole après décodage jwt :", userRole);
+    } catch (err) {
+      console.error("Erreur lors du décodage du token JWT", err);
+    }
+  }
+  console.log(
+    `Requête reçue pour les événements favoris de l'utilisateur ${userId}`
+  );
   try {
     const sortField = req.query.sort || "start_datetime"; // Tri par défaut : date
     const validSortFields = ["players_count", "start_datetime", "organisateur"];
@@ -81,14 +104,17 @@ module.exports.showFavorited = async (req, res) => {
       orderBy === "organisateur" ? "u.username" : `e.${orderBy}`;
 
     // Récupère les événements favoris de l'utilisateur
-    const result = await pgClient.query(`
+    const result = await pgClient.query(
+      `
       SELECT e.id, e.title, e.description, e.players_count, e.start_datetime, e.end_datetime, u.username AS organisateur
       FROM events e
       JOIN users u ON e.user_id = u.id
       JOIN user_favorites f ON f.event_id = e.id
       WHERE f.user_id = $1
       ORDER BY ${sortColumn} ASC
-    `, [userId]);
+    `,
+      [userId]
+    );
 
     const events = result.rows;
     let eventsHtml = "";
@@ -125,6 +151,10 @@ module.exports.showFavorited = async (req, res) => {
     res.send(eventsHtml);
   } catch (err) {
     console.error("Erreur dans getFavoriteEvents :", err);
-    res.status(500).json({ error: "Erreur serveur lors de la récupération des événements favoris" });
+    res
+      .status(500)
+      .json({
+        error: "Erreur serveur lors de la récupération des événements favoris",
+      });
   }
 };
