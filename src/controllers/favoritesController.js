@@ -125,26 +125,36 @@ module.exports.showFavorited = async (req, res) => {
     const events = result.rows;
     let eventsHtml = "";
 
-    events.forEach((event) => {
-      eventsHtml += `
-        <div id="event-${event.id}" class="flex flex-col justify-between bg-[#26232A] border 
-        border-[#E5E7EB] p-4 rounded-lg w-64 shadow-md hover:shadow-lg transition-transform hover:scale-105 cursor-pointer flex-shrink-0 gap-0.5" 
-        @click="setTimeout(() => { isOpen = true }, 200)"
-        hx-get="https://esportify-backend.onrender.com/api/event/${event.id}"
-        hx-target="#popup-content"
-        hx-swap="innerHTML"
-        >
-          <div>
-            <h2 class="text-lg font-heading text-heading leading-tight mb-2">${event.title}</h2>
-          </div>
-          <div>
-            <p class="text-sm text-gray-400">Joueurs : ${event.players_count}</p>
-            <p class="text-sm">Début : ${new Date(event.start_datetime).toLocaleString()}</p>
-            <p class="text-sm">Fin : ${new Date(event.end_datetime).toLocaleString()}</p>
-          </div>
+    if (events.length === 0) {
+      // Si aucun événement favori n'est trouvé, afficher un message
+      eventsHtml = `
+        <div class="text-center">
+          <p>Pas encore d'événement favoris</p>
         </div>
       `;
-    });
+    } else {
+      // Sinon, générer le HTML pour les événements
+      events.forEach((event) => {
+        eventsHtml += `
+          <div id="event-${event.id}" class="flex flex-col justify-between bg-[#26232A] border 
+          border-[#E5E7EB] p-4 rounded-lg w-64 shadow-md hover:shadow-lg transition-transform hover:scale-105 cursor-pointer flex-shrink-0 gap-0.5" 
+          @click="setTimeout(() => { isOpen = true }, 200)"
+          hx-get="https://esportify-backend.onrender.com/api/event/${event.id}"
+          hx-target="#popup-content"
+          hx-swap="innerHTML"
+          >
+            <div>
+              <h2 class="text-lg font-heading text-heading leading-tight mb-2">${event.title}</h2>
+            </div>
+            <div>
+              <p class="text-sm text-gray-400">Joueurs : ${event.players_count}</p>
+              <p class="text-sm">Début : ${new Date(event.start_datetime).toLocaleString()}</p>
+              <p class="text-sm">Fin : ${new Date(event.end_datetime).toLocaleString()}</p>
+            </div>
+          </div>
+        `;
+      });
+    }
 
     res.send(eventsHtml);
   } catch (err) {
