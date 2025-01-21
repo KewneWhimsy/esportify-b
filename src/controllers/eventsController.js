@@ -19,7 +19,7 @@ module.exports.getAllEvents = async (req, res) => {
       FROM events e
       JOIN users u ON e.user_id = u.id
       WHERE e.is_approved = TRUE
-      ORDER BY ${sortColumn} ASC
+      ORDER BY ${sortColumn} DESC
       LIMIT 10
     `);
 

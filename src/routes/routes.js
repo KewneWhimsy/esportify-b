@@ -17,6 +17,7 @@ router.get("/api/event/:id", eventsController.getEventById);
 // === Routes protégées ===
 router.post("/api/events", authenticateToken, checkRole(["orga", "admin"]), eventsController.createEvent);
 router.post("/api/favorites", authenticateToken, checkRole(["joueur", "orga", "admin"]), favoritesController.toggleFavorite);
+router.get("/api/favorites", authenticateToken, checkRole(["joueur", "orga", "admin"]), favoritesController.showFavorited);
 
 // === Routes d'authentification ===
 router.post("/api/register", authController.register);
