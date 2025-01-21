@@ -128,7 +128,7 @@ module.exports.showFavorited = async (req, res) => {
     if (events.length === 0) {
       // Si aucun événement favori n'est trouvé, afficher un message
       eventsHtml = `
-        <div class="flex text-center justify-center">
+        <div class="flex text-center mx-auto">
           <p>Pas encore d'événement favoris</p>
         </div>
       `;
