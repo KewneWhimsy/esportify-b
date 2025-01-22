@@ -14,16 +14,19 @@ const favoritesController = require('../controllers/favoritesController.js');
 router.get("/api/events", eventsController.getAllEvents);
 router.get("/api/event/:id", eventsController.getEventById);
 
-// === Routes protégées ===
-router.post("/api/events", authenticateToken, checkRole(["orga", "admin"]), eventsController.createEvent);
-router.post("/api/favorites", authenticateToken, checkRole(["joueur", "orga", "admin"]), favoritesController.toggleFavorite);
-router.get("/api/favorites", authenticateToken, checkRole(["joueur", "orga", "admin"]), favoritesController.showFavorited);
-
 // === Routes d'authentification ===
 router.post("/api/register", authController.register);
 router.post("/api/login", authController.login);
 
-// === Routes d'administration ===
+// === Routes protégées ===
+// Routes joueur+
+router.post("/api/favorites", authenticateToken, checkRole(["joueur", "orga", "admin"]), favoritesController.toggleFavorite);
+router.get("/api/favorites", authenticateToken, checkRole(["joueur", "orga", "admin"]), favoritesController.showFavorited);
+
+// Routes orga+
+router.post("/api/events", authenticateToken, checkRole(["orga", "admin"]), eventsController.createEvent);
+
+// Routes admin
 router.post("/admin/events/:id/approve", authenticateToken, checkRole("admin"), eventsController.approveEvent);
 
 module.exports = router;

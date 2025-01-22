@@ -68,7 +68,9 @@ module.exports.getAllEvents = async (req, res) => {
 
 //Renvoie la vue détaillée d'un événement + bouton toggle favoris pour l'utilisateur connecté
 module.exports.getEventById = async (req, res) => {
-  const { id } = req.params;
+  const userRole = req.user?.role || "visiteur";
+  const userId = req.user?.userId || null;
+
   try {
     const result = await pgClient.query(
       `
@@ -79,42 +81,16 @@ module.exports.getEventById = async (req, res) => {
     `,
       [id]
     );
-
     if (result.rows.length === 0) {
       return res.status(404).send("<p>Événement non trouvé</p>");
     }
-
     const event = result.rows[0];
 
-    // Tentative de décoder le token JWT si présent pour savoir si l'utilisateur est connecté
-    let userRole = "visiteur";
-    let userId = null;
-    const authHeader = req.headers.authorization;
-    if (authHeader) {
-      const token = authHeader.split(" ")[1];
-      try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        userRole = decoded.role;
-        userId = decoded.userId;
-        console.log("Rôle userRole après  décodage jwt :", userRole);
-      } catch (err) {
-        console.error("Erreur lors du décodage du token JWT", err);
-      }
-    }
-
     // Vérifier si l'utilisateur a déjà favorisé cet événement
-    let isFavorited = false;
-    if (userId) {
-      const favoriteCheck = await pgClient.query(
-        "SELECT * FROM favorites WHERE user_id = $1 AND event_id = $2",
-        [userId, id]
-      );
-      if (favoriteCheck.rowCount > 0) {
-        isFavorited = true; // L'événement est déjà un favori de cet utilisateur
-      } else {
-        isFavorited = false;
-      }
-    }
+    const isFavorited = userId? (await pgClient.query(
+      "SELECT 1 FROM favorites WHERE user_id = $1 AND event_id = $2",
+      [userId, id]
+    )).rowCount > 0 : false;
 
     const eventHtml = `
   <div x-data="{ rolee: '${userRole}', favorite: ${isFavorited} }" 
@@ -191,17 +167,32 @@ module.exports.getEventById = async (req, res) => {
 };
 
 module.exports.createEvent = async (req, res) => {
-  const { title, description, players_count, start_datetime, end_datetime } =
-    req.body;
-  const userId = req.user.userId;
+  const { title, description, players_count, start_datetime, end_datetime } = req.body;
+  const { userId } = req.user; // Les infos utilisateur sont déjà disponibles
 
-  // Logique pour créer un événement
-  await pgClient.query(
-    "INSERT INTO events (title, description, players_count, start_datetime, end_datetime, user_id) VALUES ($1, $2, $3, $4, $5, $6)",
-    [title, description, players_count, start_datetime, end_datetime, userId]
-  );
+  // Validation des données
+  if (!title || !description || !players_count || !start_datetime || !end_datetime) {
+    return res.status(400).send('<p class="text-red-500">Tous les champs sont requis.</p>');
+  }
 
-  res.json({ message: "Événement créé avec succès, en attente de validation" });
+  if (new Date(start_datetime) >= new Date(end_datetime)) {
+    return res.status(400).send('<p class="text-red-500">La date de début doit être avant la date de fin.</p>');
+  }
+
+  try {
+    // Insérer dans la base de données
+    const result = await db.query(
+      `INSERT INTO events (title, description, players_count, start_datetime, end_datetime, user_id) 
+       VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
+      [title, description, players_count, start_datetime, end_datetime, userId] // Utilisation de userId
+    );
+
+    const eventId = result.rows[0].id;
+    res.send(`<p class="text-green-500">Événement créé avec succès (ID: ${eventId}).</p>`);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('<p class="text-red-500">Erreur lors de la création de l\'événement.</p>');
+  }
 };
 
 // Route pour les administrateurs - approuver un événement
