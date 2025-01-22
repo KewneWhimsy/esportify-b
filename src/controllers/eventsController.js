@@ -169,15 +169,27 @@ module.exports.getEventById = async (req, res) => {
 
 module.exports.createEvent = async (req, res) => {
   const { title, description, players_count, start_datetime, end_datetime } = req.body;
-  const { userId } = req.user; // Les infos utilisateur sont déjà disponibles
+  const { userId } = req.user;
 
   // Validation des données
   if (!title || !description || !players_count || !start_datetime || !end_datetime) {
     return res.status(400).send('<p class="text-red-500">Tous les champs sont requis.</p>');
   }
 
+  if (players_count <= 1) {
+    return res.status(400).send('<p class="text-red-500">Le nombre de joueurs doit être supérieur à 1.</p>');
+  }
+
   if (new Date(start_datetime) >= new Date(end_datetime)) {
     return res.status(400).send('<p class="text-red-500">La date de début doit être avant la date de fin.</p>');
+  }
+
+  if (isNaN(startDate) || isNaN(endDate)) {
+    return res.status(400).send('<p class="text-red-500">Les dates fournies ne sont pas valides.</p>');
+  }
+
+  if (startDate >= endDate) {
+    return res.status(400).send('<p class="text-red-500">La date de début doit être antérieure à la date de fin.</p>');
   }
 
   try {
@@ -189,10 +201,19 @@ module.exports.createEvent = async (req, res) => {
     );
 
     const eventId = result.rows[0].id;
-    res.send(`<p class="text-green-500">Événement créé avec succès (ID: ${eventId}).</p>`);
+    res.send(`<p class="text-green-500">Événement créé avec succès : ${eventId}).</p>`);
   } catch (err) {
     console.error(err);
-    res.send('<p class="text-red-500">Erreur lors de la création de l\'événement.</p>');
+    // Gérer les erreurs spécifiques de la base de données
+    if (err.code === '23505') {
+      res.status(400).send('<p class="text-red-500">Un événement similaire existe déjà.</p>');
+    } else if (err.code === '23514') { // Violation de contrainte CHECK
+      res.status(400).send('<p class="text-red-500">Les données fournies ne respectent pas les contraintes (par exemple, chevauchement d\'événements ou nombre de joueurs incorrect).</p>');
+    } else if (err.code === '23503') { // Violation de clé étrangère
+      res.status(400).send('<p class="text-red-500">Utilisateur non trouvé. Veuillez vous reconnecter.</p>');
+    } else {
+      res.status(500).send('<p class="text-red-500">Erreur interne du serveur. Veuillez réessayer plus tard.</p>');
+    }
   }
 };
 
