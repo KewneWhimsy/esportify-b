@@ -121,7 +121,7 @@ module.exports.getEventById = async (req, res) => {
   class="border border-gray-300 p-6 rounded-lg shadow-lg w-full"
   >
     <h2 class="text-2xl font-bold mb-4 text-white">${event.title}</h2>
-    <p class="mb-4 text-xl text-gray-300">${event.description}</p>
+    <p class="text-lg text-gray-300 my-10>${event.description}</p>
     <p class="text-gray-300"><strong>Joueurs :</strong> ${event.players_count}</p>
     <p class="text-gray-300"><strong>Organisateur :</strong> ${event.organisateur}</p>
     <p class="text-gray-300"><strong>Début :</strong> ${new Date(event.start_datetime).toLocaleString()}</p>
