@@ -182,7 +182,7 @@ module.exports.createEvent = async (req, res) => {
 
   try {
     // Insérer dans la base de données
-    const result = await db.query(
+    const result = await pgClient.query(
       `INSERT INTO events (title, description, players_count, start_datetime, end_datetime, user_id) 
        VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
       [title, description, players_count, start_datetime, end_datetime, userId] // Utilisation de userId
