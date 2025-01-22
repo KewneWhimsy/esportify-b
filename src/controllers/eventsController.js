@@ -68,6 +68,7 @@ module.exports.getAllEvents = async (req, res) => {
 
 //Renvoie la vue détaillée d'un événement + bouton toggle favoris pour l'utilisateur connecté
 module.exports.getEventById = async (req, res) => {
+  const { id } = req.params;
   const userRole = req.user?.role || "visiteur";
   const userId = req.user?.userId || null;
 
