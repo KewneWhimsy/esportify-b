@@ -112,7 +112,7 @@ module.exports.getEventById = async (req, res) => {
         <!-- Bouton pour ajouter aux favoris -->
         <button
           x-show="!favorite"
-          hx-post="https://esportify-backend.onrender.com/api/favorites"
+          hx-post="https://esportify-backend.onrender.com/api/protected/favorites"
           hx-target="#favorite-button"
           hx-vals='${JSON.stringify({
             event_id: id,
@@ -130,7 +130,7 @@ module.exports.getEventById = async (req, res) => {
         <!-- Bouton pour retirer des favoris -->
         <button
           x-show="favorite"
-          hx-post="https://esportify-backend.onrender.com/api/favorites"
+          hx-post="https://esportify-backend.onrender.com/api/protected/favorites"
           hx-target="#favorite-button"
           hx-vals='${JSON.stringify({
             event_id: id,

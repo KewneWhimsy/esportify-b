@@ -40,7 +40,7 @@ module.exports.toggleFavorite = async (req, res) => {
 
   const buttonHtml = isFavoritedBool
     ? `<button
-           hx-post="https://esportify-backend.onrender.com/api/favorites"
+           hx-post="https://esportify-backend.onrender.com/api/protected/favorites"
            hx-target="#favorite-button"
            hx-vals='${JSON.stringify({
              event_id: event_id,
@@ -55,7 +55,7 @@ module.exports.toggleFavorite = async (req, res) => {
            Plus intéressé
          </button>`
     : `<button
-           hx-post="https://esportify-backend.onrender.com/api/favorites"
+           hx-post="https://esportify-backend.onrender.com/api/protected/favorites"
            hx-target="#favorite-button"
           hx-vals='${JSON.stringify({
             event_id: event_id,
