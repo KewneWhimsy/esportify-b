@@ -192,7 +192,7 @@ module.exports.createEvent = async (req, res) => {
     res.send(`<p class="text-green-500">Événement créé avec succès (ID: ${eventId}).</p>`);
   } catch (err) {
     console.error(err);
-    res.status(500).send('<p class="text-red-500">Erreur lors de la création de l\'événement.</p>');
+    res.send('<p class="text-red-500">Erreur lors de la création de l\'événement.</p>');
   }
 };
 
