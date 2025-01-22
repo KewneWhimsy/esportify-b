@@ -1,5 +1,6 @@
 const express = require("express"); // Framework Express
 const cors = require("cors"); //  Middleware CORS pour gérer les requêtes cross-origin
+const corsOptions = require("./config/corsOptions.js");
 const routes = require("./src/routes/routes.js"); // Import des routes
 const { connectToDB } = require("./config/dbConnection.js"); // Import fonction de connexion
 const { initializeDbPg } = require("./initData.js"); // Import fonction d'initialisation de la bdd postgres
@@ -10,9 +11,10 @@ const app = express(); // Crée une instance d'application Express
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Configuration de CORS
-const corsOptions = require("./config/corsOptions.js");
+// Applique CORS à toutes les requêtes
 app.use(cors(corsOptions)); // L'app Express utilise CORS avec ses options configurées
+// Gérer explicitement les requêtes OPTIONS
+app.options('*', cors(corsOptions)); // Pour chaque requête OPTIONS, renvoyer les en-têtes CORS appropriés
 
 // Fonction asynchrone pour démarrer l'application
 async function startServer() {
