@@ -18,7 +18,7 @@ module.exports.getPendingEvents = async (req, res) => {
 
     events.forEach((event) => {
       eventsHtml += `
-        <tr id="event-${event.id}" class="border-b">
+        <tr id="event-pend-${event.id}" class="border-b">
           <td class="px-4 py-3">${event.title}</td>
           <td class="px-4 py-3 text-yellow-600">En attente</td>
           <td class="px-4 py-3 flex flex-wrap gap-2">
@@ -38,6 +38,9 @@ module.exports.getPendingEvents = async (req, res) => {
               Refuser
             </button>
           </td>
+          <script>
+            document.getElementById('event-val-${event.id}').remove();
+          </script>
         </tr>
       `;
     });
@@ -67,7 +70,7 @@ module.exports.getApprovedEvents = async (req, res) => {
 
     events.forEach((event) => {
       eventsHtml += `
-        <tr id="event-${event.id}" class="border-b">
+        <tr id="event-val-${event.id}" class="border-b">
           <td class="px-4 py-3">${event.title}</td>
           <td class="px-4 py-3 text-green-600">Validé</td>
           <td class="px-4 py-3">
@@ -80,6 +83,9 @@ module.exports.getApprovedEvents = async (req, res) => {
               Suspendre
             </button>
           </td>
+          <script>
+            document.getElementById('event-pend-${event.id}').remove();
+          </script>
         </tr>
       `;
     });
@@ -113,7 +119,7 @@ module.exports.approveEvent = async (req, res) => {
 
     const event = result.rows[0];
     res.send(`
-      <tr id="event-${event.id}" class="border-b">
+      <tr id="event-val-${event.id}" class="border-b">
         <td class="px-4 py-3">${event.title}</td>
         <td class="px-4 py-3 text-green-600">Validé</td>
         <td class="px-4 py-3">
@@ -126,7 +132,11 @@ module.exports.approveEvent = async (req, res) => {
             Suspendre
           </button>
         </td>
+        <script>
+          document.getElementById('event-pend-${event.id}').remove();
+        </script>
       </tr>
+      
     `);
   } catch (err) {
     console.error("Erreur dans approveEvent :", err);
@@ -176,7 +186,7 @@ module.exports.suspendEvent = async (req, res) => {
     
     // Génère le HTML pour la ligne modifiée
     res.send(`
-      <tr id="event-${event.id}" class="border-b">
+      <tr id="event-pend-${event.id}" class="border-b">
         <td class="px-4 py-3">${event.title}</td>
         <td class="px-4 py-3 text-yellow-600">En attente</td>
         <td class="px-4 py-3 flex flex-wrap gap-2">
@@ -196,7 +206,11 @@ module.exports.suspendEvent = async (req, res) => {
             Refuser
           </button>
         </td>
-      </tr>
+        <script>
+          document.getElementById('event-val-${event.id}').remove();
+        </script>
+      </tr> 
+      
     `);
   } catch (err) {
     console.error("Erreur dans suspendEvent :", err);
