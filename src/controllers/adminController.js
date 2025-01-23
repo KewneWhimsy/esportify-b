@@ -239,7 +239,7 @@ function getRoleButtons(currentRole, userId) {
         hx-post="https://esportify-backend.onrender.com/admin/users/demote/${userId}/orga"
         hx-swap="innerHTML"
         hx-target="boutonsRole"
-        class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+        class="px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-700 transition-colors"
       >
         Rétrograder
       </button>
@@ -249,14 +249,14 @@ function getRoleButtons(currentRole, userId) {
       <button
         hx-post="https://esportify-backend.onrender.com/admin/users/promote/${userId}/admin"
         hx-swap="innerHTML"
-        class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+        class="px-3 py-1 bg-blue-900 text-white rounded hover:bg-yellow-600 transition-colors"
       >
         Promouvoir
       </button>
       <button
         hx-post="https://esportify-backend.onrender.com/admin/users/demote/${userId}/joueur"
         hx-swap="innerHTML"
-        class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+        class="px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-700 transition-colors"
       >
         Rétrograder
       </button>
@@ -266,7 +266,7 @@ function getRoleButtons(currentRole, userId) {
       <button
         hx-post="https://esportify-backend.onrender.com/admin/users/promote/${userId}/orga"
         hx-swap="innerHTML"
-        class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+        class="px-3 py-1 bg-blue-900 text-white rounded hover:bg-yellow-600 transition-colors"
       >
         Promouvoir
       </button>
