@@ -1,3 +1,5 @@
+const { pgClient } = require("../../config/dbConnection.js");
+
 // Renvoi un tableau contenant les événements en attente de modération
 module.exports.getPendingEvents = async (req, res) => {
   console.log("Requête reçue pour récupérer les événements en attente");
