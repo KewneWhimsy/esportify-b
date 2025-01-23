@@ -187,26 +187,27 @@ module.exports.getEventById = async (req, res) => {
 
 module.exports.createEvent = async (req, res) => {
   const { title, description, players_count, start_datetime, end_datetime } = req.body;
-  const { userId } = req.user;
+  const { userId, role } = req.user;
 
   // Validation des données
   
   if (new Date(start_datetime) >= new Date(end_datetime)) {
-    res.send('<p class="text-red-500">La date de début doit être avant la date de fin.</p>');
-    return res.status(400).send('<p class="text-red-500">La date de début doit être avant la date de fin.</p>');
+    return res.send('<p class="text-red-500">La date de début doit être avant la date de fin.</p>');
   }
 
   if (isNaN(new Date(start_datetime)) || isNaN(new Date(end_datetime))) {
-    res.send('<p class="text-red-500">Les dates fournies ne sont pas valides.</p>');
-    return res.status(400).send('<p class="text-red-500">Les dates fournies ne sont pas valides.</p>');
+    return res.send('<p class="text-red-500">Les dates fournies ne sont pas valides.</p>');
   }  
 
   try {
+    // Déterminer la valeur de is_approved
+    const is_approved = role === 'admin' ? true : false;
+
     // Insérer dans la base de données
     const result = await pgClient.query(
-      `INSERT INTO events (title, description, players_count, start_datetime, end_datetime, user_id) 
+      `INSERT INTO events (title, description, players_count, start_datetime, end_datetime, user_id, is_approved) 
        VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
-      [title, description, players_count, start_datetime, end_datetime, userId]
+      [title, description, players_count, start_datetime, end_datetime, userId, is_approved]
     );
 
     res.status(200).send(`<p class="text-green-500">Événement créé avec succès !</p>`);
