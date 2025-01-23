@@ -86,8 +86,8 @@ module.exports.getEventById = async (req, res) => {
     const event = result.rows[0];
 
     // Tentative de décoder le token JWT si présent pour savoir si l'utilisateur est connecté
-    let userRole = rolee;
-    let userId = null;
+    let userRole = req.user || 'visiteur';
+    let userId = req.user || null;
     const authHeader = req.headers.authorization;
     if (authHeader) {
       const token = authHeader.split(" ")[1];
