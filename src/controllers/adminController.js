@@ -237,7 +237,8 @@ function getRoleButtons(currentRole, userId) {
     return `
       <button
         hx-post="https://esportify-backend.onrender.com/admin/users/demote/${userId}/orga"
-        hx-swap="outerHTML"
+        hx-swap="innerHTML"
+        hx-target="boutonsRole"
         class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
       >
         Rétrograder
@@ -247,14 +248,14 @@ function getRoleButtons(currentRole, userId) {
     return `
       <button
         hx-post="https://esportify-backend.onrender.com/admin/users/promote/${userId}/admin"
-        hx-swap="outerHTML"
+        hx-swap="innerHTML"
         class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
       >
         Promouvoir
       </button>
       <button
         hx-post="https://esportify-backend.onrender.com/admin/users/demote/${userId}/joueur"
-        hx-swap="outerHTML"
+        hx-swap="innerHTML"
         class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
       >
         Rétrograder
@@ -264,14 +265,14 @@ function getRoleButtons(currentRole, userId) {
     return `
       <button
         hx-post="https://esportify-backend.onrender.com/admin/users/promote/${userId}/orga"
-        hx-swap="outerHTML"
+        hx-swap="innerHTML"
         class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
       >
         Promouvoir
       </button>
       <button
         hx-post="https://esportify-backend.onrender.com/admin/users/demote/${userId}/visiteur"
-        hx-swap="outerHTML"
+        hx-swap="innerHTML"
         class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
       >
         Bannir
@@ -281,7 +282,7 @@ function getRoleButtons(currentRole, userId) {
     return `
       <button
         hx-post="https://esportify-backend.onrender.com/admin/users/promote/${userId}/joueur"
-        hx-swap="outerHTML"
+        hx-swap="innerHTML"
         class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
       >
         Débannir
@@ -310,7 +311,7 @@ module.exports.getUsersWithRoles = async (req, res) => {
           <td class="px-4 py-3 ${getUserRoleColor(user.role)}">
             ${user.role}
           </td>
-          <td>
+          <td id="boutonsRole">
             ${getRoleButtons(user.role, user.id)}
           </td>
         </tr>
@@ -348,11 +349,7 @@ module.exports.promoteUser = async (req, res) => {
     const user = result.rows[0];
     
     res.send(`
-      
-        <td class="px-4 py-3 flex flex-wrap gap-2">
-          ${getRoleButtons(user.role, user.id)}
-        </td>
-      
+      ${getRoleButtons(user.role, user.id)}
     `);
   } catch (err) {
     console.error("Erreur dans promoteUser :", err);
@@ -384,10 +381,7 @@ module.exports.demoteUser = async (req, res) => {
     const user = result.rows[0];
 
     res.send(`
-      
-        <td class="px-4 py-3 flex flex-wrap gap-2">
-          ${getRoleButtons(user.role, user.id)}
-        </td>
+      ${getRoleButtons(user.role, user.id)}
     `);
   } catch (err) {
     console.error("Erreur dans demoteUser :", err);
