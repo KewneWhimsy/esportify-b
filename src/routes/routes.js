@@ -9,6 +9,7 @@ const checkRole = require("../middlewares/roleMiddleware.js");
 const eventsController = require('../controllers/eventsController.js');
 const authController = require('../controllers/authController.js');
 const favoritesController = require('../controllers/favoritesController.js');
+const adminController = require('../controllers/adminController.js');
 
 // === Routes publiques ===
 router.get("/api/events", eventsController.getAllEvents);
@@ -29,8 +30,8 @@ router.post("/api/events", authenticateToken, checkRole(["orga", "admin"]), even
 // Routes admin
 router.get("/admin/events/pending", authenticateToken, checkRole("admin"), adminController.getPendingEvents);
 router.get("/admin/events/approved", authenticateToken, checkRole("admin"), adminController.getApprovedEvents);
-router.post("/admin/events/approve/:eventId", authenticateToken, checkRole("admin"), eventsController.approveEvent);
-router.post("/admin/events/delete/:eventId", authenticateToken, checkRole("admin"), eventsController.deleteEvent);
-router.post("/admin/events/suspend/:eventId", authenticateToken, checkRole("admin"), eventsController.suspendEvent);
+router.post("/admin/events/approve/:eventId", authenticateToken, checkRole("admin"), adminController.approveEvent);
+router.post("/admin/events/delete/:eventId", authenticateToken, checkRole("admin"), adminController.deleteEvent);
+router.post("/admin/events/suspend/:eventId", authenticateToken, checkRole("admin"), adminController.suspendEvent);
 
 module.exports = router;
