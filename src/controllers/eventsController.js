@@ -195,11 +195,13 @@ module.exports.createEvent = async (req, res) => {
     res.status(200).send(`<p class="text-green-500">Événement créé avec succès !</p>`);
   } catch (err) {
     console.error(err);
+    console.error('Code d\'erreur :', err.code);
+    console.error('Message d\'erreur :', err.message);
     // Gérer les erreurs spécifiques de la base de données
     if (err.code === 'P0001') {  // Custom PostgreSQL error code for overlap
-      return res.status(400).send('<p class="text-red-500">Il existe déjà un événement qui se chevauche avec celui-ci.</p>');
+      return res.status(400).send(`<p class="text-red-500">Erreur : ${err.message || 'Il existe déjà un événement qui se chevauche avec celui-ci.'}</p>`);
     } else if (err.code === '23505') {
-      return res.status(400).send('<p class="text-red-500">Un événement similaire existe déjà.</p>');
+      return res.status(400).send(`<p class="text-red-500">Un événement similaire existe déjà : ${err.detail || ''}</p>`);
     } else if (err.code === '23514') {
       return res.status(400).send('<p class="text-red-500">Les données fournies ne respectent pas les contraintes.</p>');
     } else if (err.code === '23503') {

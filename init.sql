@@ -1,5 +1,5 @@
 -- Réinitialisation
---DROP TABLE IF EXISTS favorites, events_images, messages, events, users CASCADE;
+DROP TABLE IF EXISTS favorites, events_images, messages, events, users CASCADE;
 
 -- Table des utilisateurs
 CREATE TABLE IF NOT EXISTS users (
