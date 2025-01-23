@@ -216,7 +216,7 @@ module.exports.createEvent = async (req, res) => {
     console.error('Message d\'erreur :', err.message);
     // Gérer les erreurs spécifiques de la base de données
     if (err.code === 'P0001') {  // Custom PostgreSQL error code for overlap
-      return res.status(400).send(`<div class="bg-red-500 text-white p-4 rounded">
+      return res.send(`<div class="bg-red-500 text-white p-4 rounded">
         <p>Erreur : Il existe déjà un événement qui se chevauche avec celui-ci.</p>
         <p>Détails : ${err.message || ''}</p>
       </div>`);
