@@ -87,6 +87,7 @@ module.exports.getEventById = async (req, res) => {
 
     // Tentative de décoder le token JWT si présent pour savoir si l'utilisateur est connecté
     let userRole = req.user || 'visiteur';
+    console.log("Rôle userRole avant décodage jwt :", userRole);
     let userId = req.user || null;
     const authHeader = req.headers.authorization;
     if (authHeader) {
@@ -220,13 +221,13 @@ module.exports.createEvent = async (req, res) => {
         <p>Détails : ${err.message || ''}</p>
       </div>`);
     } else if (err.code === '23505') {
-      return res.status(400).send('<p class="text-red-500">Un événement similaire existe déjà.</p>');
+      return res.send('<p class="text-red-500">Un événement similaire existe déjà.</p>');
     } else if (err.code === '23514') {
-      return res.status(400).send('<p class="text-red-500">Les données fournies ne respectent pas les contraintes.</p>');
+      return res.send('<p class="text-red-500">Les données fournies ne respectent pas les contraintes.</p>');
     } else if (err.code === '23503') {
-      return res.status(400).send('<p class="text-red-500">Utilisateur non trouvé. Veuillez vous reconnecter.</p>');
+      return res.send('<p class="text-red-500">Utilisateur non trouvé. Veuillez vous reconnecter.</p>');
     } else {
-      return res.status(500).send('<p class="text-red-500">Erreur interne du serveur. Veuillez réessayer plus tard.</p>');
+      return res.send('<p class="text-red-500">Erreur interne du serveur. Veuillez réessayer plus tard.</p>');
     }
   }
 };
