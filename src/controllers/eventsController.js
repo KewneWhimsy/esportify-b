@@ -198,17 +198,13 @@ module.exports.createEvent = async (req, res) => {
     console.error(err);
     // Gérer les erreurs spécifiques de la base de données
     if (err.code === '23505') {
-      res.status(400).send('<p class="text-red-500">Un événement similaire existe déjà.</p>');
       res.send(`<p class="text-red-500">Un événement similaire existe déjà.</p>`);
     } else if (err.code === '23514') { // Violation de contrainte CHECK
       res.send('<p class="text-red-500">Les données fournies ne respectent pas les contraintes (par exemple, chevauchement d\'événements ou nombre de joueurs incorrect).</p>');
-      res.status(400).send('<p class="text-red-500">Les données fournies ne respectent pas les contraintes (par exemple, chevauchement d\'événements ou nombre de joueurs incorrect).</p>');
     } else if (err.code === '23503') { // Violation de clé étrangère
       res.send('<p class="text-red-500">Utilisateur non trouvé. Veuillez vous reconnecter.</p>');
-      res.status(400).send('<p class="text-red-500">Utilisateur non trouvé. Veuillez vous reconnecter.</p>');
     } else {
       res.send('<p class="text-red-500">Erreur interne du serveur. Veuillez réessayer plus tard.</p>');
-      res.status(500).send('<p class="text-red-500">Erreur interne du serveur. Veuillez réessayer plus tard.</p>');
     }
   }
 };
