@@ -192,7 +192,7 @@ module.exports.suspendEvent = async (req, res) => {
         <td class="px-4 py-3 text-yellow-600">En attente</td>
         <td class="px-4 py-3 flex flex-wrap gap-2">
           <button
-            hx-post="/https://esportify-backend.onrender.com/admin/events/approve/${event.id}"
+            hx-post="https://esportify-backend.onrender.com/admin/events/approve/${event.id}"
             hx-swap="afterbegin"
             hx-target="#approvedEvents"
             class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
@@ -200,7 +200,7 @@ module.exports.suspendEvent = async (req, res) => {
             Valider
           </button>
           <button
-            hx-post="/https://esportify-backend.onrender.com/admin/events/reject/${event.id}"
+            hx-post="https://esportify-backend.onrender.com/admin/events/reject/${event.id}"
             hx-swap="delete"
             hx-target="#event-pend-${event.id}"
             class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
