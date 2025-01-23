@@ -209,7 +209,7 @@ module.exports.suspendEvent = async (req, res) => {
           </button>
         </td>
         <script>
-          document.getElementById('event-val-${event.id}').remove();
+          document.getElementById('event-val-${event.id}')!.remove();
         </script>
       </tr> 
       
