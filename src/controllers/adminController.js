@@ -227,7 +227,7 @@ module.exports.suspendEvent = async (req, res) => {
 // Fonction pour déterminer la couleur du texte en fonction du rôle
 function getUserRoleColor(role) {
   if (role === 'admin') return 'text-green-600';
-  if (role === 'organisateur') return 'text-yellow-600';
+  if (role === 'orga') return 'text-yellow-600';
   return 'text-white';
 }
 
@@ -243,7 +243,7 @@ function getRoleButtons(currentRole, userId) {
         Rétrograder
       </button>
     `;
-  } else if (currentRole === 'organisateur') {
+  } else if (currentRole === 'orga') {
     return `
       <button
         hx-post="https://esportify-backend.onrender.com/admin/users/promote/${userId}/admin"
@@ -263,7 +263,7 @@ function getRoleButtons(currentRole, userId) {
   } else if (currentRole === 'joueur') {
     return `
       <button
-        hx-post="https://esportify-backend.onrender.com/admin/users/promote/${userId}/organisateur"
+        hx-post="https://esportify-backend.onrender.com/admin/users/promote/${userId}/orga"
         hx-swap="outerHTML"
         class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
       >
@@ -348,15 +348,11 @@ module.exports.promoteUser = async (req, res) => {
     const user = result.rows[0];
     
     res.send(`
-      <tr id="user-${user.id}" class="border-b">
-        <td class="px-4 py-3">${user.username}</td>
-        <td class="px-4 py-3 ${getUserRoleColor(user.role)}">
-          ${user.role}
-        </td>
+      
         <td class="px-4 py-3 flex flex-wrap gap-2">
           ${getRoleButtons(user.role, user.id)}
         </td>
-      </tr>
+      
     `);
   } catch (err) {
     console.error("Erreur dans promoteUser :", err);
@@ -388,15 +384,10 @@ module.exports.demoteUser = async (req, res) => {
     const user = result.rows[0];
 
     res.send(`
-      <tr id="user-${user.id}" class="border-b">
-        <td class="px-4 py-3">${user.username}</td>
-        <td class="px-4 py-3 ${getUserRoleColor(user.role)}">
-          ${user.role}
-        </td>
+      
         <td class="px-4 py-3 flex flex-wrap gap-2">
           ${getRoleButtons(user.role, user.id)}
         </td>
-      </tr>
     `);
   } catch (err) {
     console.error("Erreur dans demoteUser :", err);
