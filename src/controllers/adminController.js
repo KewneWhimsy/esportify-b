@@ -73,7 +73,7 @@ module.exports.getApprovedEvents = async (req, res) => {
           <td class="px-4 py-3">
             <button
               hx-post="https://esportify-backend.onrender.com/admin/events/suspend/${event.id}"
-              hx-swap="outerHTML"
+              hx-swap="afterbegin"
               hx-target="#pendingEvents"
               class="px-3 py-1 bg-orange-600 text-white rounded hover:bg-orange-700"
             >
@@ -119,7 +119,7 @@ module.exports.approveEvent = async (req, res) => {
         <td class="px-4 py-3">
           <button
             hx-post="https://esportify-backend.onrender.com/admin/events/suspend/${event.id}"
-            hx-swap="outerHTML"
+            hx-swap="afterbegin"
             class="px-3 py-1 bg-orange-600 text-white rounded hover:bg-orange-700"
           >
             Suspendre
@@ -189,6 +189,7 @@ module.exports.suspendEvent = async (req, res) => {
           <button
             hx-post="/api/events/reject/${event.id}"
             hx-swap="outerHTML"
+            hx-target=""
             class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
           >
             Refuser
