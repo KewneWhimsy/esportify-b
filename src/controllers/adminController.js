@@ -333,7 +333,19 @@ module.exports.promoteUser = async (req, res) => {
       'UPDATE users SET role = $1 WHERE id = $2',
       [newRole, userId]
     );
-    // Renvoie le nouveau HTML pour la ligne utilisateur
+
+    // Récupère les informations mises à jour de l'utilisateur
+    const result = await pgClient.query(
+      'SELECT id, username, role FROM users WHERE id = $1',
+      [userId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).send("Utilisateur introuvable");
+    }
+
+    const user = result.rows[0];
+    
     res.send(`
       <tr id="user-${user.id}" class="border-b">
         <td class="px-4 py-3">${user.username}</td>
@@ -361,6 +373,19 @@ module.exports.demoteUser = async (req, res) => {
       'UPDATE users SET role = $1 WHERE id = $2',
       [newRole, userId]
     );
+
+    // Récupère les informations mises à jour de l'utilisateur
+    const result = await pgClient.query(
+      'SELECT id, username, role FROM users WHERE id = $1',
+      [userId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).send("Utilisateur introuvable");
+    }
+
+    const user = result.rows[0];
+
     res.send(`
       <tr id="user-${user.id}" class="border-b">
         <td class="px-4 py-3">${user.username}</td>
