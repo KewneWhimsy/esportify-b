@@ -35,7 +35,7 @@ router.post("/admin/events/approve/:eventId", authenticateToken, checkRole("admi
 router.post("/admin/events/reject/:eventId", authenticateToken, checkRole("admin"), adminController.rejectEvent);
 router.post("/admin/events/suspend/:eventId", authenticateToken, checkRole("admin"), adminController.suspendEvent);
 /// Modération users
-router.get('admin/users', authenticateToken, checkRole("admin"),UsersController.getUsersWithRoles);
+router.get('admin/users', authenticateToken, checkRole("admin"),adminController.getUsersWithRoles);
 router.post('admin/users/promote/:userId/:newRole', authenticateToken, checkRole("admin"),adminController.promoteUser);
 router.post('admin/users/demote/:userId/:newRole', authenticateToken, checkRole("admin"),adminController.demoteUser);
 
