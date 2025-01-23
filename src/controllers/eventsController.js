@@ -85,6 +85,24 @@ module.exports.getEventById = async (req, res) => {
     }
     const event = result.rows[0];
 
+    // Tentative de décoder le token JWT si présent pour savoir si l'utilisateur est connecté
+    let userRole = rolee;
+    let userId = null;
+    const authHeader = req.headers.authorization;
+    if (authHeader) {
+      const token = authHeader.split(" ")[1];
+      try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        userRole = decoded.role;
+        userId = decoded.userId;
+
+        console.log("Rôle userRole après  décodage jwt :", userRole);
+
+      } catch (err) {
+        console.error("Erreur lors du décodage du token JWT", err);
+      }
+    }
+
     // Vérifier si l'utilisateur a déjà favorisé cet événement
     const isFavorited = userId? (await pgClient.query(
       "SELECT 1 FROM favorites WHERE user_id = $1 AND event_id = $2",
