@@ -28,10 +28,15 @@ router.get("/api/favorites", authenticateToken, checkRole(["joueur", "orga", "ad
 router.post("/api/events", authenticateToken, checkRole(["orga", "admin"]), eventsController.createEvent);
 
 // Routes admin
+/// Modération events
 router.get("/admin/events/pending", authenticateToken, checkRole("admin"), adminController.getPendingEvents);
 router.get("/admin/events/approved", authenticateToken, checkRole("admin"), adminController.getApprovedEvents);
 router.post("/admin/events/approve/:eventId", authenticateToken, checkRole("admin"), adminController.approveEvent);
 router.post("/admin/events/reject/:eventId", authenticateToken, checkRole("admin"), adminController.rejectEvent);
 router.post("/admin/events/suspend/:eventId", authenticateToken, checkRole("admin"), adminController.suspendEvent);
+/// Modération users
+router.get('admin/users', authenticateToken, checkRole("admin"),UsersController.getUsersWithRoles);
+router.post('admin/users/promote/:userId/:newRole', authenticateToken, checkRole("admin"),adminController.promoteUser);
+router.post('admin/users/demote/:userId/:newRole', authenticateToken, checkRole("admin"),adminController.demoteUser);
 
 module.exports = router;

@@ -219,3 +219,268 @@ module.exports.suspendEvent = async (req, res) => {
     res.status(500).send("Erreur serveur lors de la suspension de l'événement");
   }
 };
+
+// Renvoi un tableau contenant les utilisateurs et leurs droits
+module.exports.getUsersWithRoles = async (req, res) => {
+  console.log("Requête reçue pour récupérer les utilisateurs");
+  try {
+    const result = await pgClient.query(`
+      SELECT u.id, u.username, r.role_name AS role
+      FROM users u
+      JOIN roles r ON u.role_id = r.id
+    `);
+
+    const users = result.rows;
+    let usersHtml = "";
+
+    users.forEach((user) => {
+      usersHtml += `
+        <tr id="user-${user.id}" class="border-b">
+          <td class="px-4 py-3">${user.username}</td>
+          <td class="px-4 py-3 ${user.role === 'admin' ? 'text-green-600' : user.role === 'organisateur' ? 'text-yellow-600' : 'text-white' }">
+            ${user.role}
+          </td>
+          <td class="px-4 py-3 flex flex-wrap gap-2">
+          ${user.role === 'admin' ? `
+            <button
+              hx-post="${apiUrl}/admin/users/demote/${user.id}/orga"
+              hx-swap="outerHTML"
+              class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+            >
+              Rétrograder
+            </button>
+          ` : ''}
+          ${user.role === 'orga' ? `
+            <button
+              hx-post="${apiUrl}/admin/users/promote/${user.id}/admin"
+              hx-swap="outerHTML"
+              class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+            >
+              Promouvoir
+            </button>
+
+            <button
+              hx-post="${apiUrl}/admin/users/demote/${user.id}/joueur"
+              hx-swap="outerHTML"
+              class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+            >
+              Rétrograder
+            </button>
+          ` : ''}
+          ${user.role === 'joueur' ? `
+            <button
+              hx-post="${apiUrl}/admin/users/promote/${user.id}/orga"
+              hx-swap="outerHTML"
+              class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+            >
+              Promouvoir
+            </button>
+
+            <button
+              hx-post="${apiUrl}/admin/users/demote/${user.id}/visiteur"
+              hx-swap="outerHTML"
+              class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+            >
+              Bannir
+            </button>
+          ` : ''}
+          ${user.role === 'visiteur' ? `
+            <button
+              hx-post="${apiUrl}/admin/users/promote/${user.id}/joueur"
+              hx-swap="outerHTML"
+              class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+            >
+              Débannir
+            </button>
+          ` : ''}
+          </td>
+        </tr>
+      `;
+    });
+
+    res.send(usersHtml);
+  } catch (err) {
+    console.error("Erreur dans getUsersWithRoles :", err);
+    res.status(500).send("Erreur serveur lors de la récupération des utilisateurs");
+  }
+};
+
+// Promouvoir un utilisateur
+module.exports.promoteUser = async (req, res) => {
+  const userId = req.params.userId;
+  const newRole = req.params.newRole;
+  console.log(`Promotion de l'utilisateur ${userId} vers le rôle ${newRole}`);
+  try {
+    // Récupère l'ID du rôle
+    const roleResult = await pgClient.query(`
+      SELECT id 
+      FROM roles 
+      WHERE role_name = $1
+    `, [newRole]);
+
+    const roleId = roleResult.rows[0].id;
+
+    await pgClient.query(`
+      UPDATE users 
+      SET role_id = $1
+      WHERE id = $2
+    `, [roleId, userId]);
+
+    // Renvoie le nouveau HTML pour la ligne utilisateur
+    const userResult = await pgClient.query(`
+      SELECT u.id, u.username, r.role_name AS role
+      FROM users u
+      JOIN roles r ON u.role_id = r.id
+      WHERE u.id = $1
+    `, [userId]);
+
+    const user = userResult.rows[0];
+    
+    res.send(`
+      <tr id="user-${user.id}" class="border-b">
+        <td class="px-4 py-3">${user.username}</td>
+        <td class="px-4 py-3 ${user.role === 'admin' ? 'text-green-600' : user.role === 'organisateur' ? 'text-yellow-600' : 'text-white' }">
+          ${user.role}
+        </td>
+        <td class="px-4 py-3 flex flex-wrap gap-2">
+        ${user.role === 'orga' ? `
+          <button
+            hx-post="${apiUrl}/admin/users/promote/${user.id}/admin"
+            hx-swap="outerHTML"
+            class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+          >
+            Promouvoir
+          </button>
+
+          <button
+            hx-post="${apiUrl}/admin/users/demote/${user.id}/joueur"
+            hx-swap="outerHTML"
+            class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+          >
+            Rétrograder
+          </button>
+        ` : ''}
+        ${user.role === 'joueur' ? `
+          <button
+            hx-post="${apiUrl}/admin/users/promote/${user.id}/orga"
+            hx-swap="outerHTML"
+            class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+          >
+            Promouvoir
+          </button>
+
+          <button
+            hx-post="${apiUrl}/admin/users/demote/${user.id}/visiteur"
+            hx-swap="outerHTML"
+            class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+          >
+            Bannir
+          </button>
+        ` : ''}
+        ${user.role === 'visiteur' ? `
+          <button
+            hx-post="${apiUrl}/admin/users/promote/${user.id}/joueur"
+            hx-swap="outerHTML"
+            class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+          >
+            Débannir
+          </button>
+        ` : ''}
+        </td>
+      </tr>
+    `);
+  } catch (err) {
+    console.error("Erreur dans promoteUser :", err);
+    res.status(500).send("Erreur serveur lors de la promotion");
+  }
+};
+
+// Rétrograder un utilisateur
+module.exports.demoteUser = async (req, res) => {
+  const userId = req.params.userId;
+  const newRole = req.params.newRole;
+  console.log(`Rétrogradation de l'utilisateur ${userId} vers le rôle ${newRole}`);
+  try {
+    // Récupère l'ID du rôle
+    const roleResult = await pgClient.query(`
+      SELECT id 
+      FROM roles 
+      WHERE role_name = $1
+    `, [newRole]);
+
+    const roleId = roleResult.rows[0].id;
+
+    await pgClient.query(`
+      UPDATE users 
+      SET role_id = $1
+      WHERE id = $2
+    `, [roleId, userId]);
+
+    // Renvoie le nouveau HTML pour la ligne utilisateur
+    const userResult = await pgClient.query(`
+      SELECT u.id, u.username, r.role_name AS role
+      FROM users u
+      JOIN roles r ON u.role_id = r.id
+      WHERE u.id = $1
+    `, [userId]);
+
+    const user = userResult.rows[0];
+    
+    res.send(`
+      <tr id="user-${user.id}" class="border-b">
+        <td class="px-4 py-3">${user.username}</td>
+        <td class="px-4 py-3 ${user.role === 'admin' ? 'text-green-600' : user.role === 'organisateur' ? 'text-yellow-600' : 'text-white' }">
+          ${user.role}
+        </td>
+        <td class="px-4 py-3 flex flex-wrap gap-2">
+          ${user.role === 'admin' ? `
+            <button
+              hx-post="${apiUrl}/admin/users/demote/${user.id}/orga"
+              hx-swap="outerHTML"
+              class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+            >
+              Rétrograder
+            </button>
+          ` : ''}
+          ${user.role === 'orga' ? `
+            <button
+              hx-post="${apiUrl}/admin/users/promote/${user.id}/admin"
+              hx-swap="outerHTML"
+              class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+            >
+              Promouvoir
+            </button>
+
+            <button
+              hx-post="${apiUrl}/admin/users/demote/${user.id}/joueur"
+              hx-swap="outerHTML"
+              class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+            >
+              Rétrograder
+            </button>
+          ` : ''}
+          ${user.role === 'joueur' ? `
+            <button
+              hx-post="${apiUrl}/admin/users/promote/${user.id}/orga"
+              hx-swap="outerHTML"
+              class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+            >
+              Promouvoir
+            </button>
+
+            <button
+              hx-post="${apiUrl}/admin/users/demote/${user.id}/visiteur"
+              hx-swap="outerHTML"
+              class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+            >
+              Bannir
+            </button>
+          ` : ''}
+        </td>
+      </tr>
+    `);
+  } catch (err) {
+    console.error("Erreur dans demoteUser :", err);
+    res.status(500).send("Erreur serveur lors de la rétrogradation");
+  }
+};
