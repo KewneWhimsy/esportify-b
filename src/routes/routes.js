@@ -31,7 +31,7 @@ router.post("/api/events", authenticateToken, checkRole(["orga", "admin"]), even
 router.get("/admin/events/pending", authenticateToken, checkRole("admin"), adminController.getPendingEvents);
 router.get("/admin/events/approved", authenticateToken, checkRole("admin"), adminController.getApprovedEvents);
 router.post("/admin/events/approve/:eventId", authenticateToken, checkRole("admin"), adminController.approveEvent);
-router.post("/admin/events/delete/:eventId", authenticateToken, checkRole("admin"), adminController.rejectEvent);
+router.post("/admin/events/reject/:eventId", authenticateToken, checkRole("admin"), adminController.rejectEvent);
 router.post("/admin/events/suspend/:eventId", authenticateToken, checkRole("admin"), adminController.suspendEvent);
 
 module.exports = router;
