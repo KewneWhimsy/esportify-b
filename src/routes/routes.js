@@ -20,11 +20,11 @@ router.post("/api/login", authController.login);
 
 // === Routes protégées ===
 // Routes joueur+
-router.post("/api/protected/favorites", authenticateToken, checkRole(["joueur", "orga", "admin"]), favoritesController.toggleFavorite);
-router.get("/api/protected/favorites", authenticateToken, checkRole(["joueur", "orga", "admin"]), favoritesController.showFavorited);
+router.post("/api/favorites", authenticateToken, checkRole(["joueur", "orga", "admin"]), favoritesController.toggleFavorite);
+router.get("/api/favorites", authenticateToken, checkRole(["joueur", "orga", "admin"]), favoritesController.showFavorited);
 
 // Routes orga+
-router.post("/api/protected/events", authenticateToken, checkRole(["orga", "admin"]), eventsController.createEvent);
+router.post("/api/events", authenticateToken, checkRole(["orga", "admin"]), eventsController.createEvent);
 
 // Routes admin
 router.post("/admin/events/:id/approve", authenticateToken, checkRole("admin"), eventsController.approveEvent);
