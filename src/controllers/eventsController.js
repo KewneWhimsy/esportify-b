@@ -94,7 +94,7 @@ module.exports.getEventById = async (req, res) => {
     )).rowCount > 0 : false;
 
     const eventHtml = `
-  <div x-data="{ rolee: '${userRole}', favorite: ${isFavorited} }" 
+  <div x-data="{ favorite: ${isFavorited} }" 
   class="border border-gray-300 p-6 rounded-lg shadow-lg w-full"
   >
     <h2 class="text-2xl font-bold mb-4 text-white">${event.title}</h2>
@@ -172,25 +172,14 @@ module.exports.createEvent = async (req, res) => {
   const { userId } = req.user;
 
   // Validation des données
-  if (!title || !description || !players_count || !start_datetime || !end_datetime) {
-    return res.status(400).send('<p class="text-red-500">Tous les champs sont requis.</p>');
-  }
-
-  if (players_count <= 1) {
-    return res.status(400).send('<p class="text-red-500">Le nombre de joueurs doit être supérieur à 1.</p>');
-  }
-
+  
   if (new Date(start_datetime) >= new Date(end_datetime)) {
     return res.status(400).send('<p class="text-red-500">La date de début doit être avant la date de fin.</p>');
   }
 
-  if (isNaN(startDate) || isNaN(endDate)) {
+  if (isNaN(new Date(start_datetime)) || isNaN(new Date(end_datetime))) {
     return res.status(400).send('<p class="text-red-500">Les dates fournies ne sont pas valides.</p>');
-  }
-
-  if (startDate >= endDate) {
-    return res.status(400).send('<p class="text-red-500">La date de début doit être antérieure à la date de fin.</p>');
-  }
+  }  
 
   try {
     // Insérer dans la base de données
