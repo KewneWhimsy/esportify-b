@@ -224,14 +224,80 @@ module.exports.suspendEvent = async (req, res) => {
   }
 };
 
+// Fonction pour déterminer la couleur du texte en fonction du rôle
+function getUserRoleColor(role) {
+  if (role === 'admin') return 'text-green-600';
+  if (role === 'organisateur') return 'text-yellow-600';
+  return 'text-white';
+}
+
+// Fonction pour générer les boutons de rôle
+function getRoleButtons(currentRole, userId) {
+  if (currentRole === 'admin') {
+    return `
+      <button
+        hx-post="${apiUrl}/admin/users/demote/${userId}/orga"
+        hx-swap="outerHTML"
+        class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+      >
+        Rétrograder
+      </button>
+    `;
+  } else if (currentRole === 'organisateur') {
+    return `
+      <button
+        hx-post="${apiUrl}/admin/users/promote/${userId}/admin"
+        hx-swap="outerHTML"
+        class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+      >
+        Promouvoir
+      </button>
+      <button
+        hx-post="${apiUrl}/admin/users/demote/${userId}/joueur"
+        hx-swap="outerHTML"
+        class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+      >
+        Rétrograder
+      </button>
+    `;
+  } else if (currentRole === 'joueur') {
+    return `
+      <button
+        hx-post="${apiUrl}/admin/users/promote/${userId}/organisateur"
+        hx-swap="outerHTML"
+        class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+      >
+        Promouvoir
+      </button>
+      <button
+        hx-post="${apiUrl}/admin/users/demote/${userId}/visiteur"
+        hx-swap="outerHTML"
+        class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+      >
+        Bannir
+      </button>
+    `;
+  } else if (currentRole === 'visiteur') {
+    return `
+      <button
+        hx-post="${apiUrl}/admin/users/promote/${userId}/joueur"
+        hx-swap="outerHTML"
+        class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+      >
+        Débannir
+      </button>
+    `;
+  }
+  return '';
+}
+
 // Renvoi un tableau contenant les utilisateurs et leurs droits
 module.exports.getUsersWithRoles = async (req, res) => {
   console.log("Requête reçue pour récupérer les utilisateurs");
   try {
     const result = await pgClient.query(`
-      SELECT u.id, u.username, r.role_name AS role
-      FROM users u
-      JOIN roles r ON u.role_id = r.id
+      SELECT id, username, role
+      FROM users
     `);
 
     const users = result.rows;
@@ -241,62 +307,10 @@ module.exports.getUsersWithRoles = async (req, res) => {
       usersHtml += `
         <tr id="user-${user.id}" class="border-b">
           <td class="px-4 py-3">${user.username}</td>
-          <td class="px-4 py-3 ${user.role === 'admin' ? 'text-green-600' : user.role === 'organisateur' ? 'text-yellow-600' : 'text-white' }">
+          <td class="px-4 py-3 ${getUserRoleColor(user.role)}">
             ${user.role}
           </td>
-          <td class="px-4 py-3 flex flex-wrap gap-2">
-          ${user.role === 'admin' ? `
-            <button
-              hx-post="${apiUrl}/admin/users/demote/${user.id}/orga"
-              hx-swap="outerHTML"
-              class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
-            >
-              Rétrograder
-            </button>
-          ` : ''}
-          ${user.role === 'orga' ? `
-            <button
-              hx-post="${apiUrl}/admin/users/promote/${user.id}/admin"
-              hx-swap="outerHTML"
-              class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
-            >
-              Promouvoir
-            </button>
-
-            <button
-              hx-post="${apiUrl}/admin/users/demote/${user.id}/joueur"
-              hx-swap="outerHTML"
-              class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
-            >
-              Rétrograder
-            </button>
-          ` : ''}
-          ${user.role === 'joueur' ? `
-            <button
-              hx-post="${apiUrl}/admin/users/promote/${user.id}/orga"
-              hx-swap="outerHTML"
-              class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
-            >
-              Promouvoir
-            </button>
-
-            <button
-              hx-post="${apiUrl}/admin/users/demote/${user.id}/visiteur"
-              hx-swap="outerHTML"
-              class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
-            >
-              Bannir
-            </button>
-          ` : ''}
-          ${user.role === 'visiteur' ? `
-            <button
-              hx-post="${apiUrl}/admin/users/promote/${user.id}/joueur"
-              hx-swap="outerHTML"
-              class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
-            >
-              Débannir
-            </button>
-          ` : ''}
+            ${getRoleButtons(user.role, user.id)}
           </td>
         </tr>
       `;
@@ -311,85 +325,23 @@ module.exports.getUsersWithRoles = async (req, res) => {
 
 // Promouvoir un utilisateur
 module.exports.promoteUser = async (req, res) => {
-  const userId = req.params.userId;
-  const newRole = req.params.newRole;
+  const { userId, newRole } = req.params;
   console.log(`Promotion de l'utilisateur ${userId} vers le rôle ${newRole}`);
   try {
-    // Récupère l'ID du rôle
-    const roleResult = await pgClient.query(`
-      SELECT id 
-      FROM roles 
-      WHERE role_name = $1
-    `, [newRole]);
-
-    const roleId = roleResult.rows[0].id;
-
-    await pgClient.query(`
-      UPDATE users 
-      SET role_id = $1
-      WHERE id = $2
-    `, [roleId, userId]);
-
+    // Met à jour le rôle
+    await pgClient.query(
+      'UPDATE users SET role = $1 WHERE id = $2',
+      [newRole, userId]
+    );
     // Renvoie le nouveau HTML pour la ligne utilisateur
-    const userResult = await pgClient.query(`
-      SELECT u.id, u.username, r.role_name AS role
-      FROM users u
-      JOIN roles r ON u.role_id = r.id
-      WHERE u.id = $1
-    `, [userId]);
-
-    const user = userResult.rows[0];
-    
     res.send(`
       <tr id="user-${user.id}" class="border-b">
         <td class="px-4 py-3">${user.username}</td>
-        <td class="px-4 py-3 ${user.role === 'admin' ? 'text-green-600' : user.role === 'organisateur' ? 'text-yellow-600' : 'text-white' }">
+        <td class="px-4 py-3 ${getUserRoleColor(user.role)}">
           ${user.role}
         </td>
         <td class="px-4 py-3 flex flex-wrap gap-2">
-        ${user.role === 'orga' ? `
-          <button
-            hx-post="${apiUrl}/admin/users/promote/${user.id}/admin"
-            hx-swap="outerHTML"
-            class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
-          >
-            Promouvoir
-          </button>
-
-          <button
-            hx-post="${apiUrl}/admin/users/demote/${user.id}/joueur"
-            hx-swap="outerHTML"
-            class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
-          >
-            Rétrograder
-          </button>
-        ` : ''}
-        ${user.role === 'joueur' ? `
-          <button
-            hx-post="${apiUrl}/admin/users/promote/${user.id}/orga"
-            hx-swap="outerHTML"
-            class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
-          >
-            Promouvoir
-          </button>
-
-          <button
-            hx-post="${apiUrl}/admin/users/demote/${user.id}/visiteur"
-            hx-swap="outerHTML"
-            class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
-          >
-            Bannir
-          </button>
-        ` : ''}
-        ${user.role === 'visiteur' ? `
-          <button
-            hx-post="${apiUrl}/admin/users/promote/${user.id}/joueur"
-            hx-swap="outerHTML"
-            class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
-          >
-            Débannir
-          </button>
-        ` : ''}
+          ${getRoleButtons(user.role, user.id)}
         </td>
       </tr>
     `);
@@ -401,85 +353,22 @@ module.exports.promoteUser = async (req, res) => {
 
 // Rétrograder un utilisateur
 module.exports.demoteUser = async (req, res) => {
-  const userId = req.params.userId;
-  const newRole = req.params.newRole;
+  const { userId, newRole } = req.params;
   console.log(`Rétrogradation de l'utilisateur ${userId} vers le rôle ${newRole}`);
   try {
-    // Récupère l'ID du rôle
-    const roleResult = await pgClient.query(`
-      SELECT id 
-      FROM roles 
-      WHERE role_name = $1
-    `, [newRole]);
-
-    const roleId = roleResult.rows[0].id;
-
-    await pgClient.query(`
-      UPDATE users 
-      SET role_id = $1
-      WHERE id = $2
-    `, [roleId, userId]);
-
-    // Renvoie le nouveau HTML pour la ligne utilisateur
-    const userResult = await pgClient.query(`
-      SELECT u.id, u.username, r.role_name AS role
-      FROM users u
-      JOIN roles r ON u.role_id = r.id
-      WHERE u.id = $1
-    `, [userId]);
-
-    const user = userResult.rows[0];
-    
+    // Met à jour le rôle
+    await pgClient.query(
+      'UPDATE users SET role = $1 WHERE id = $2',
+      [newRole, userId]
+    );
     res.send(`
       <tr id="user-${user.id}" class="border-b">
         <td class="px-4 py-3">${user.username}</td>
-        <td class="px-4 py-3 ${user.role === 'admin' ? 'text-green-600' : user.role === 'organisateur' ? 'text-yellow-600' : 'text-white' }">
+        <td class="px-4 py-3 ${getUserRoleColor(user.role)}">
           ${user.role}
         </td>
         <td class="px-4 py-3 flex flex-wrap gap-2">
-          ${user.role === 'admin' ? `
-            <button
-              hx-post="${apiUrl}/admin/users/demote/${user.id}/orga"
-              hx-swap="outerHTML"
-              class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
-            >
-              Rétrograder
-            </button>
-          ` : ''}
-          ${user.role === 'orga' ? `
-            <button
-              hx-post="${apiUrl}/admin/users/promote/${user.id}/admin"
-              hx-swap="outerHTML"
-              class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
-            >
-              Promouvoir
-            </button>
-
-            <button
-              hx-post="${apiUrl}/admin/users/demote/${user.id}/joueur"
-              hx-swap="outerHTML"
-              class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
-            >
-              Rétrograder
-            </button>
-          ` : ''}
-          ${user.role === 'joueur' ? `
-            <button
-              hx-post="${apiUrl}/admin/users/promote/${user.id}/orga"
-              hx-swap="outerHTML"
-              class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
-            >
-              Promouvoir
-            </button>
-
-            <button
-              hx-post="${apiUrl}/admin/users/demote/${user.id}/visiteur"
-              hx-swap="outerHTML"
-              class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
-            >
-              Bannir
-            </button>
-          ` : ''}
+          ${getRoleButtons(user.role, user.id)}
         </td>
       </tr>
     `);
