@@ -310,6 +310,7 @@ module.exports.getUsersWithRoles = async (req, res) => {
           <td class="px-4 py-3 ${getUserRoleColor(user.role)}">
             ${user.role}
           </td>
+          <td>
             ${getRoleButtons(user.role, user.id)}
           </td>
         </tr>
