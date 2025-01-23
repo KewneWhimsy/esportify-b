@@ -39,9 +39,6 @@ module.exports.getPendingEvents = async (req, res) => {
               Refuser
             </button>
           </td>
-          <script>
-            document.getElementById('event-val-${event.id}').remove();
-          </script>
         </tr>
       `;
     });
@@ -84,9 +81,6 @@ module.exports.getApprovedEvents = async (req, res) => {
               Suspendre
             </button>
           </td>
-          <script>
-            document.getElementById('event-pend-${event.id}').remove();
-          </script>
         </tr>
       `;
     });
@@ -134,7 +128,7 @@ module.exports.approveEvent = async (req, res) => {
           </button>
         </td>
         <script>
-          document.getElementById('event-pend-${event.id}').remove();
+          document.getElementById('event-pend-${event.id}')!.remove();
         </script>
       </tr>
       
