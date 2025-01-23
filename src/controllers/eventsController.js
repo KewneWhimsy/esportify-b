@@ -189,22 +189,21 @@ module.exports.createEvent = async (req, res) => {
     const result = await pgClient.query(
       `INSERT INTO events (title, description, players_count, start_datetime, end_datetime, user_id) 
        VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
-      [title, description, players_count, start_datetime, end_datetime, userId] // Utilisation de userId
+      [title, description, players_count, start_datetime, end_datetime, userId]
     );
 
-    const eventId = result.rows[0].id;
-    res.send(`<p class="text-green-500">Événement créé avec succès !</p>`);
+    res.status(200).send(`<p class="text-green-500">Événement créé avec succès !</p>`);
   } catch (err) {
     console.error(err);
     // Gérer les erreurs spécifiques de la base de données
     if (err.code === '23505') {
-      res.send(`<p class="text-red-500">Un événement similaire existe déjà.</p>`);
-    } else if (err.code === '23514') { // Violation de contrainte CHECK
-      res.send('<p class="text-red-500">Les données fournies ne respectent pas les contraintes (par exemple, chevauchement d\'événements ou nombre de joueurs incorrect).</p>');
-    } else if (err.code === '23503') { // Violation de clé étrangère
-      res.send('<p class="text-red-500">Utilisateur non trouvé. Veuillez vous reconnecter.</p>');
+      return res.status(400).send('<p class="text-red-500">Un événement similaire existe déjà.</p>');
+    } else if (err.code === '23514') {
+      return res.status(400).send('<p class="text-red-500">Les données fournies ne respectent pas les contraintes.</p>');
+    } else if (err.code === '23503') {
+      return res.status(400).send('<p class="text-red-500">Utilisateur non trouvé. Veuillez vous reconnecter.</p>');
     } else {
-      res.send('<p class="text-red-500">Erreur interne du serveur. Veuillez réessayer plus tard.</p>');
+      return res.status(500).send('<p class="text-red-500">Erreur interne du serveur. Veuillez réessayer plus tard.</p>');
     }
   }
 };
