@@ -236,7 +236,7 @@ function getRoleButtons(currentRole, userId) {
   if (currentRole === 'admin') {
     return `
       <button
-        hx-post="${apiUrl}/admin/users/demote/${userId}/orga"
+        hx-post="https://esportify-backend.onrender.com/admin/users/demote/${userId}/orga"
         hx-swap="outerHTML"
         class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
       >
@@ -246,14 +246,14 @@ function getRoleButtons(currentRole, userId) {
   } else if (currentRole === 'organisateur') {
     return `
       <button
-        hx-post="${apiUrl}/admin/users/promote/${userId}/admin"
+        hx-post="https://esportify-backend.onrender.com/admin/users/promote/${userId}/admin"
         hx-swap="outerHTML"
         class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
       >
         Promouvoir
       </button>
       <button
-        hx-post="${apiUrl}/admin/users/demote/${userId}/joueur"
+        hx-post="https://esportify-backend.onrender.com/admin/users/demote/${userId}/joueur"
         hx-swap="outerHTML"
         class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
       >
@@ -263,14 +263,14 @@ function getRoleButtons(currentRole, userId) {
   } else if (currentRole === 'joueur') {
     return `
       <button
-        hx-post="${apiUrl}/admin/users/promote/${userId}/organisateur"
+        hx-post="https://esportify-backend.onrender.com/admin/users/promote/${userId}/organisateur"
         hx-swap="outerHTML"
         class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
       >
         Promouvoir
       </button>
       <button
-        hx-post="${apiUrl}/admin/users/demote/${userId}/visiteur"
+        hx-post="https://esportify-backend.onrender.com/admin/users/demote/${userId}/visiteur"
         hx-swap="outerHTML"
         class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
       >
@@ -280,7 +280,7 @@ function getRoleButtons(currentRole, userId) {
   } else if (currentRole === 'visiteur') {
     return `
       <button
-        hx-post="${apiUrl}/admin/users/promote/${userId}/joueur"
+        hx-post="https://esportify-backend.onrender.com/admin/users/promote/${userId}/joueur"
         hx-swap="outerHTML"
         class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
       >
