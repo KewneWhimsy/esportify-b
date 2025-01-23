@@ -205,9 +205,9 @@ module.exports.createEvent = async (req, res) => {
 
     // Insérer dans la base de données
     const result = await pgClient.query(
-      `INSERT INTO events (title, description, players_count, start_datetime, end_datetime, user_id, is_approved) 
-       VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
-      [title, description, players_count, start_datetime, end_datetime, userId, is_approved]
+      `INSERT INTO events (title, description, players_count, is_approved, start_datetime, end_datetime, user_id) 
+       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
+      [title, description, players_count, is_approved, start_datetime, end_datetime, userId]
     );
 
     res.status(200).send(`<p class="text-green-500">Événement créé avec succès !</p>`);
