@@ -18,13 +18,13 @@ module.exports.getPendingEvents = async (req, res) => {
 
     events.forEach((event) => {
       eventsHtml += `
-        <tr class="border-b">
+        <tr id="event-${event.id}" class="border-b">
           <td class="px-4 py-3">${event.title}</td>
           <td class="px-4 py-3 text-yellow-600">En attente</td>
           <td class="px-4 py-3 flex flex-wrap gap-2">
             <button
               hx-post="https://esportify-backend.onrender.com/admin/events/approve/${event.id}"
-              hx-swap="afterbegin delete"
+              hx-swap="afterbegin"
               hx-target="#approvedEvents"
               class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
             >
@@ -67,7 +67,7 @@ module.exports.getApprovedEvents = async (req, res) => {
 
     events.forEach((event) => {
       eventsHtml += `
-        <tr class="border-b">
+        <tr id="event-${event.id}" class="border-b">
           <td class="px-4 py-3">${event.title}</td>
           <td class="px-4 py-3 text-green-600">Validé</td>
           <td class="px-4 py-3">
@@ -113,13 +113,14 @@ module.exports.approveEvent = async (req, res) => {
 
     const event = result.rows[0];
     res.send(`
-      <tr class="border-b">
+      <tr id="event-${event.id}" class="border-b">
         <td class="px-4 py-3">${event.title}</td>
         <td class="px-4 py-3 text-green-600">Validé</td>
         <td class="px-4 py-3">
           <button
             hx-post="https://esportify-backend.onrender.com/admin/events/suspend/${event.id}"
-            hx-swap="afterbegin delete"
+            hx-swap="afterbegin"
+            hx-target="#pendingEvents"
             class="px-3 py-1 bg-orange-600 text-white rounded hover:bg-orange-700"
           >
             Suspendre
@@ -175,21 +176,21 @@ module.exports.suspendEvent = async (req, res) => {
     
     // Génère le HTML pour la ligne modifiée
     res.send(`
-      <tr class="border-b">
+      <tr id="event-${event.id}" class="border-b">
         <td class="px-4 py-3">${event.title}</td>
         <td class="px-4 py-3 text-yellow-600">En attente</td>
         <td class="px-4 py-3 flex flex-wrap gap-2">
           <button
             hx-post="/api/events/approve/${event.id}"
-            hx-swap="afterbegin delete"
+            hx-swap="afterbegin"
+            hx-target="#approvedEvents"
             class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
           >
             Valider
           </button>
           <button
             hx-post="/api/events/reject/${event.id}"
-            hx-swap="outerHTML"
-            hx-target="delete"
+            hx-swap="delete"
             class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
           >
             Refuser
