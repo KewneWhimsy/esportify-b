@@ -13,8 +13,6 @@ app.use(express.urlencoded({ extended: true }));
 
 // Applique CORS à toutes les requêtes
 app.use(cors(corsOptions)); // L'app Express utilise CORS avec ses options configurées
-// Gérer explicitement les requêtes OPTIONS
-app.options('*', cors(corsOptions)); // Pour chaque requête OPTIONS, renvoyer les en-têtes CORS appropriés
 
 // Fonction asynchrone pour démarrer l'application
 async function startServer() {
