@@ -25,6 +25,7 @@ module.exports.getPendingEvents = async (req, res) => {
             <button
               hx-post="https://esportify-backend.onrender.com/admin/events/approve/${event.id}"
               hx-swap="outerHTML"
+              hx-target="#approvedEvents"
               class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
             >
               Valider
@@ -73,6 +74,7 @@ module.exports.getApprovedEvents = async (req, res) => {
             <button
               hx-post="https://esportify-backend.onrender.com/admin/events/suspend/${event.id}"
               hx-swap="outerHTML"
+              hx-target="#pendingEvents"
               class="px-3 py-1 bg-orange-600 text-white rounded hover:bg-orange-700"
             >
               Suspendre
