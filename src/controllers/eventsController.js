@@ -196,7 +196,9 @@ module.exports.createEvent = async (req, res) => {
   } catch (err) {
     console.error(err);
     // Gérer les erreurs spécifiques de la base de données
-    if (err.code === '23505') {
+    if (err.code === 'P0001') {  // Custom PostgreSQL error code for overlap
+      return res.status(400).send('<p class="text-red-500">Il existe déjà un événement qui se chevauche avec celui-ci.</p>');
+    } else if (err.code === '23505') {
       return res.status(400).send('<p class="text-red-500">Un événement similaire existe déjà.</p>');
     } else if (err.code === '23514') {
       return res.status(400).send('<p class="text-red-500">Les données fournies ne respectent pas les contraintes.</p>');
