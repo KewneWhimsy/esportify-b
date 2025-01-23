@@ -128,7 +128,12 @@ module.exports.approveEvent = async (req, res) => {
           </button>
         </td>
         <script>
-          document.getElementById('event-pend-${event.id}')!.remove();
+          try {
+            document.getElementById('event-pend-${event.id}').remove();
+          } catch (error) {
+          // Gérer l'erreur si l'élément n'existe pas
+          console.error('Élément non trouvé:', error);
+          }        
         </script>
       </tr>
       
@@ -203,7 +208,12 @@ module.exports.suspendEvent = async (req, res) => {
           </button>
         </td>
         <script>
-          document.getElementById('event-val-${event.id}')!.remove();
+          try {
+            document.getElementById('event-val-${event.id}').remove();
+          } catch (error) {
+          // Gérer l'erreur si l'élément n'existe pas
+          console.error('Élément non trouvé:', error);
+          }        
         </script>
       </tr> 
       
