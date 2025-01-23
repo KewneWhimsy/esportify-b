@@ -174,10 +174,12 @@ module.exports.createEvent = async (req, res) => {
   // Validation des données
   
   if (new Date(start_datetime) >= new Date(end_datetime)) {
+    res.send('<p class="text-red-500">La date de début doit être avant la date de fin.</p>');
     return res.status(400).send('<p class="text-red-500">La date de début doit être avant la date de fin.</p>');
   }
 
   if (isNaN(new Date(start_datetime)) || isNaN(new Date(end_datetime))) {
+    res.send('<p class="text-red-500">Les dates fournies ne sont pas valides.</p>');
     return res.status(400).send('<p class="text-red-500">Les dates fournies ne sont pas valides.</p>');
   }  
 
@@ -190,17 +192,21 @@ module.exports.createEvent = async (req, res) => {
     );
 
     const eventId = result.rows[0].id;
-    res.send(`<p class="text-green-500">Événement créé avec succès : ${eventId}).</p>`);
+    res.send(`<p class="text-green-500">Événement créé avec succès !</p>`);
   } catch (err) {
     console.error(err);
     // Gérer les erreurs spécifiques de la base de données
     if (err.code === '23505') {
       res.status(400).send('<p class="text-red-500">Un événement similaire existe déjà.</p>');
+      res.send(`<p class="text-red-500">Un événement similaire existe déjà.</p>`);
     } else if (err.code === '23514') { // Violation de contrainte CHECK
+      res.send('<p class="text-red-500">Les données fournies ne respectent pas les contraintes (par exemple, chevauchement d\'événements ou nombre de joueurs incorrect).</p>');
       res.status(400).send('<p class="text-red-500">Les données fournies ne respectent pas les contraintes (par exemple, chevauchement d\'événements ou nombre de joueurs incorrect).</p>');
     } else if (err.code === '23503') { // Violation de clé étrangère
+      res.send('<p class="text-red-500">Utilisateur non trouvé. Veuillez vous reconnecter.</p>');
       res.status(400).send('<p class="text-red-500">Utilisateur non trouvé. Veuillez vous reconnecter.</p>');
     } else {
+      res.send('<p class="text-red-500">Erreur interne du serveur. Veuillez réessayer plus tard.</p>');
       res.status(500).send('<p class="text-red-500">Erreur interne du serveur. Veuillez réessayer plus tard.</p>');
     }
   }
