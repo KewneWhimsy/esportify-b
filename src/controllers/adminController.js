@@ -20,14 +20,14 @@ module.exports.getPendingEvents = async (req, res) => {
       eventsHtml += `
         <tr id="event-pend-${event.id}" class="border-b">
           <td class="px-4 py-3">
+            ${event.title}
             <button @click="setTimeout(() => { isOpen = true }, 200)"
-            class="text-2xl mr-1"
+            class="text-lg hover:scale-110 transition-transform"
             hx-get="https://esportify-backend.onrender.com/api/event/${event.id}"
             hx-target="#popup-content"
             hx-swap="innerHTML">
               +
             </button>
-            ${event.title}
           </td>
           <td class="px-4 py-3 text-yellow-600">En attente</td>
           <td class="px-4 py-3 flex flex-wrap gap-2">
@@ -79,14 +79,14 @@ module.exports.getApprovedEvents = async (req, res) => {
       eventsHtml += `
         <tr id="event-val-${event.id}" class="border-b">
           <td class="px-4 py-3">
+            ${event.title}
             <button @click="setTimeout(() => { isOpen = true }, 200)"
-            class="text-2xl mr-1"
+            class="hover:scale-110 transition-transform"
             hx-get="https://esportify-backend.onrender.com/api/event/${event.id}"
             hx-target="#popup-content"
             hx-swap="innerHTML">
               +
             </button>
-            ${event.title}
           </td>
           <td class="px-4 py-3 text-green-600">Validé</td>
           <td class="px-4 py-3">
@@ -134,14 +134,14 @@ module.exports.approveEvent = async (req, res) => {
     res.send(`
       <tr id="event-val-${event.id}" class="border-b">
         <td class="px-4 py-3">
-          <button @click="setTimeout(() => { isOpen = true }, 200)"
-            class="text-2xl mr-1"
+          ${event.title}
+          <button @click="setTimeout(() => { isOpen = true }, 200)" 
+            class="hover:scale-110 transition-transform"
             hx-get="https://esportify-backend.onrender.com/api/event/${event.id}"
             hx-target="#popup-content"
             hx-swap="innerHTML">
               +
           </button>
-          ${event.title}
         </td>
         <td class="px-4 py-3 text-green-600">Validé</td>
         <td class="px-4 py-3">
@@ -215,14 +215,15 @@ module.exports.suspendEvent = async (req, res) => {
     res.send(`
       <tr id="event-pend-${event.id}" class="border-b">
         <td class="px-4 py-3">
+          ${event.title}
           <button @click="setTimeout(() => { isOpen = true }, 200)"
-            class="text-2xl mr-1"
+            class="text-2xl hover:scale-110 transition-transform"
             hx-get="https://esportify-backend.onrender.com/api/event/${event.id}"
             hx-target="#popup-content"
             hx-swap="innerHTML">
               +
           </button>
-          ${event.title}</td>
+        </td>
         <td class="px-4 py-3 text-yellow-600">En attente</td>
         <td class="px-4 py-3 flex flex-wrap gap-2">
           <button
