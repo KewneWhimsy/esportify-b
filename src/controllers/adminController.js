@@ -411,7 +411,14 @@ module.exports.promoteUser = async (req, res) => {
 // Rétrograder un utilisateur
 module.exports.demoteUser = async (req, res) => {
   const { userId, newRole } = req.params;
+  
+  // Vérifie que l'utilisateur n'est pas le super admin
+  if (parseInt(userId, 10) === 1) {
+    return res.status(403).send("Modification du super admin interdite");
+  }
+
   console.log(`Rétrogradation de l'utilisateur ${userId} vers le rôle ${newRole}`);
+  
   try {
     // Met à jour le rôle
     await pgClient.query(
@@ -428,7 +435,7 @@ module.exports.demoteUser = async (req, res) => {
     if (result.rows.length === 0) {
       return res.status(404).send("Utilisateur introuvable");
     }
-
+    
     const user = result.rows[0];
 
     res.send(`
