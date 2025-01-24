@@ -25,42 +25,25 @@ module.exports.register = async (req, res) => {
 };
 
 module.exports.login = async (req, res) => {
-  try {
-    const { username, password } = req.body;
+  const { username, password } = req.body;
 
-    // Recherche de l'utilisateur dans la base de données
-    const result = await pgClient.query("SELECT * FROM users WHERE username = $1", [username]);
-    if (result.rows.length === 0) {
-      return res.status(400).json({ error: "Nom d'utilisateur ou mot de passe incorrect" });
-    }
-
-    const user = result.rows[0];
-
-    // Vérification du mot de passe
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(400).json({ error: "Nom d'utilisateur ou mot de passe incorrect" });
-    }
-
-    // Génération du token JWT
-    const token = jwt.sign(
-      { userId: user.id, role: user.role },
-      process.env.JWT_SECRET,
-      { expiresIn: "1h" }
-    );
-
-    // Envoi de la réponse avec le token et les détails utilisateur
-    res.json({
-      message: "Connexion réussie",
-      token,
-      user: {
-        id: user.id,
-        username: user.username,
-        role: user.role,
-      },
-    });
-  } catch (err) {
-    console.error("Erreur lors de la connexion :", err);
-    res.status(500).json({ error: "Erreur serveur" });
+  const result = await pgClient.query("SELECT * FROM users WHERE username = $1", [username]);
+  if (result.rows.length === 0) {
+    return res.status(400).json({ error: "Nom d'utilisateur ou mot de passe incorrect" });
   }
+
+  const user = result.rows[0];
+
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    return res.status(400).json({ error: "Mot de passe incorrect" });
+  }
+
+  const token = jwt.sign(
+    { userId: user.id, role: user.role },
+    process.env.JWT_SECRET,
+    { expiresIn: "1h" }
+  );
+
+  res.json({ message: "Connexion réussie", token });
 };
