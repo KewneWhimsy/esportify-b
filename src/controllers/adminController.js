@@ -19,7 +19,14 @@ module.exports.getPendingEvents = async (req, res) => {
     events.forEach((event) => {
       eventsHtml += `
         <tr id="event-pend-${event.id}" class="border-b">
-          <td class="px-4 py-3">${event.title}</td>
+          <td class="px-4 py-3">
+            ${event.title}
+            <button hx-get="https://esportify-backend.onrender.com/api/event/${event.id}"
+            hx-target="#popup-content"
+            hx-swap="innerHTML">
+              +
+            </button>
+          </td>
           <td class="px-4 py-3 text-yellow-600">En attente</td>
           <td class="px-4 py-3 flex flex-wrap gap-2">
             <button
@@ -69,7 +76,14 @@ module.exports.getApprovedEvents = async (req, res) => {
     events.forEach((event) => {
       eventsHtml += `
         <tr id="event-val-${event.id}" class="border-b">
-          <td class="px-4 py-3">${event.title}</td>
+          <td class="px-4 py-3">
+            ${event.title}
+            <button hx-get="https://esportify-backend.onrender.com/api/event/${event.id}"
+            hx-target="#popup-content"
+            hx-swap="innerHTML">
+              +
+            </button>
+          </td>
           <td class="px-4 py-3 text-green-600">Validé</td>
           <td class="px-4 py-3">
             <button
