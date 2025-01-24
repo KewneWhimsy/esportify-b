@@ -236,24 +236,20 @@ module.exports.createEvent = async (req, res) => {
 
 module.exports.getMyEvents = async (req, res) => {
   console.log("GET MyEvents");
-  let userRole = req.user;
-  console.log("Rôle userRole avant décodage jwt :", userRole);
-  let userId = req.user;
-  const authHeader = req.headers.authorization;
-  if (authHeader) {
-    const token = authHeader.split(" ")[1];
-    try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      userRole = decoded.role;
-      userId = decoded.userId;
-      console.log("Rôle userRole après  décodage jwt :", userRole);
-    } catch (err) {
-      console.error("Erreur lors du décodage du token JWT", err);
-    }
-  }  
+  // Tentative de décoder le token JWT si présent pour savoir si l'utilisateur est connecté
+    let userId = req.user || null;
+    const authHeader = req.headers.authorization;
+    if (authHeader) {
+      const token = authHeader.split(" ")[1];
+      try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        userId = decoded.userId;
+      } catch (err) {
+        console.error("Erreur lors du décodage du token JWT", err);
+      }
+    }  
 
   try {
-    const userId = req.user.id // Utilisation de l'ID utilisateur provenant du token transmi par le middleware
     console.log("userId :", userId);
     const sortField = req.query.sort || "start_datetime"; // Tri par défaut : date
     const validSortFields = ["players_count", "start_datetime", "organisateur"];
