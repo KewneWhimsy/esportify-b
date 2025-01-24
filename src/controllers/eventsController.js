@@ -112,14 +112,14 @@ module.exports.getEventById = async (req, res) => {
 
     const eventHtml = `
   <div x-data="{ rolee: '${userRole}', favorite: ${isFavorited} }" 
-  class="class="bg-[#26232A] border border-[#E5E7EB] p-6 rounded-lg shadow-lg h-full w-full"
+  class="border border-gray-300 p-6 rounded-lg shadow-lg w-full"
   >
-    <h2 class="text-2xl font-bold mb-4 text-white">${event.title}</h2>
-    <p class="text-lg text-gray-300 my-10>${event.description}</p>
-    <p class="text-gray-300"><strong>Joueurs :</strong> ${event.players_count}</p>
-    <p class="text-gray-300"><strong>Organisateur :</strong> ${event.organisateur}</p>
-    <p class="text-gray-300"><strong>Début :</strong> ${new Date(event.start_datetime).toLocaleString()}</p>
-    <p class="text-gray-300"><strong>Fin :</strong> ${new Date(event.end_datetime).toLocaleString()}</p>
+    <h2 class="text-2xl font-bold mb-4 font-heading text-heading leading-tight">${event.title}</h2>
+    <p class="mb-4">${event.description}</p>
+    <p><strong>Joueurs :</strong> ${event.players_count}</p>
+    <p><strong>Organisateur :</strong> ${event.organisateur}</p>
+    <p><strong>Début :</strong> ${new Date(event.start_datetime).toLocaleString()}</p>
+    <p><strong>Fin :</strong> ${new Date(event.end_datetime).toLocaleString()}</p>
 
     <div class="flex justify-between mt-10">
       <!-- Boutons pour participer -->
