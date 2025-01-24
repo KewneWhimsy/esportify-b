@@ -21,7 +21,7 @@ module.exports.getPendingEvents = async (req, res) => {
         <tr id="event-pend-${event.id}" class="border-b">
           <td class="px-4 py-3">
             <button @click="setTimeout(() => { isOpen = true }, 200)"
-            class="text-xl"
+            class="text-2xl mr-1"
             hx-get="https://esportify-backend.onrender.com/api/event/${event.id}"
             hx-target="#popup-content"
             hx-swap="innerHTML">
@@ -80,7 +80,7 @@ module.exports.getApprovedEvents = async (req, res) => {
         <tr id="event-val-${event.id}" class="border-b">
           <td class="px-4 py-3">
             <button @click="setTimeout(() => { isOpen = true }, 200)"
-            class="text-xl"
+            class="text-2xl mr-1"
             hx-get="https://esportify-backend.onrender.com/api/event/${event.id}"
             hx-target="#popup-content"
             hx-swap="innerHTML">
@@ -135,7 +135,7 @@ module.exports.approveEvent = async (req, res) => {
       <tr id="event-val-${event.id}" class="border-b">
         <td class="px-4 py-3">
           <button @click="setTimeout(() => { isOpen = true }, 200)"
-            class="text-xl"
+            class="text-2xl mr-1"
             hx-get="https://esportify-backend.onrender.com/api/event/${event.id}"
             hx-target="#popup-content"
             hx-swap="innerHTML">
@@ -216,7 +216,7 @@ module.exports.suspendEvent = async (req, res) => {
       <tr id="event-pend-${event.id}" class="border-b">
         <td class="px-4 py-3">
           <button @click="setTimeout(() => { isOpen = true }, 200)"
-            class="text-xl"
+            class="text-2xl mr-1"
             hx-get="https://esportify-backend.onrender.com/api/event/${event.id}"
             hx-target="#popup-content"
             hx-swap="innerHTML">
