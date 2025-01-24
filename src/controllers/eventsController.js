@@ -224,7 +224,7 @@ module.exports.getMyEvents = async (req, res) => {
   console.log("GET MyEvents");
 
   try {
-    const userId = req.user // Utilisation de l'ID utilisateur provenant du token transmi par le middleware
+    const userId = req.user.id // Utilisation de l'ID utilisateur provenant du token transmi par le middleware
     console.log("userId :", userId);
     const sortField = req.query.sort || "start_datetime"; // Tri par défaut : date
     const validSortFields = ["players_count", "start_datetime", "organisateur"];
