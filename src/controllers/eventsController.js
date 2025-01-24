@@ -232,6 +232,151 @@ module.exports.createEvent = async (req, res) => {
   }
 };
 
+module.exports.getMyEvents = async (req, res) => {
+  console.log("Requête reçue pour récupérer les événements de l'utilisateur");
+
+  try {
+    const userId = req.user.id;  // Utilisation de l'ID utilisateur provenant de la session/token (selon votre mécanisme d'authentification)
+
+    const sortField = req.query.sort || "start_datetime"; // Tri par défaut : date
+    const validSortFields = ["players_count", "start_datetime", "organisateur"];
+    const orderBy = validSortFields.includes(sortField)
+      ? sortField
+      : "start_datetime";
+    const sortColumn =
+      orderBy === "organisateur" ? "u.username" : `e.${orderBy}`;
+
+    // Récupère les événements créés par l'utilisateur connecté
+    const result = await pgClient.query(`
+      SELECT e.id, e.title, e.description, e.players_count, e.start_datetime, e.end_datetime, e.is_approved, u.username AS organisateur
+      FROM events e
+      JOIN users u ON e.user_id = u.id
+      WHERE e.user_id = $1
+      ORDER BY ${sortColumn} DESC
+      LIMIT 10
+    `, [userId]);
+
+    const events = result.rows; // Récupère les événements sous forme d'un tableau d'objets JavaScript
+    let eventsHtml = "";
+
+    // Génère du HTML pour chaque événement
+    events.forEach((event) => {
+      const approvalStatus = event.is_approved ? "Accepté" : "En attente"; // Affiche le statut d'acceptation
+
+      eventsHtml += `
+        <div class="flex flex-col justify-between bg-[#26232A] border 
+        border-[#E5E7EB] p-4 rounded-lg w-64 shadow-md hover:shadow-lg transition-transform hover:scale-105 cursor-pointer flex-shrink-0 gap-0.5" 
+        @click="setTimeout(() => { isOpen = true }, 200)"
+        hx-get="https://esportify-backend.onrender.com/api/event/${event.id}"
+        hx-target="#popup-content"
+        hx-swap="innerHTML"
+        >
+          <div>
+            <h2 class="text-lg font-heading text-[6e4262] leading-tight mb-2">${
+              event.title
+            }</h2>
+          </div>
+          <div>
+            <p class="text-sm text-gray-400">Joueurs : ${
+              event.players_count
+            }</p>
+            <p class="text-sm">Début : ${new Date(
+              event.start_datetime
+            ).toLocaleString()}</p>
+            <p class="text-sm">Fin : ${new Date(
+              event.end_datetime
+            ).toLocaleString()}</p>
+            <p class="text-sm">Statut : ${approvalStatus}</p>  <!-- Affiche le statut d'acceptation -->
+          </div>
+        </div>
+      `;
+    });
+
+    // Renvoie le fragment HTML à HTMX
+    console.log("Événements récupérés avec succès");
+    res.send(eventsHtml);
+  } catch (err) {
+    console.error("Erreur dans getMyEvents :", err);
+    res
+      .status(500)
+      .json({ error: "Erreur serveur lors de la récupération de vos événements" });
+  }
+};
+
+
+module.exports.updateEvent = async (req, res) => {
+  const { eventId, title, description, players_count, start_datetime, end_datetime } = req.body;
+  const { userId, role } = req.user;
+
+  // Validation des données
+  if (new Date(start_datetime) >= new Date(end_datetime)) {
+    return res.send('<p class="text-red-500">La date de début doit être avant la date de fin.</p>');
+  }
+
+  if (isNaN(new Date(start_datetime)) || isNaN(new Date(end_datetime))) {
+    return res.send('<p class="text-red-500">Les dates fournies ne sont pas valides.</p>');
+  }
+
+  try {
+    // Vérifier si l'événement existe
+    const eventResult = await pgClient.query(
+      'SELECT * FROM events WHERE id = $1 AND user_id = $2',
+      [eventId, userId]
+    );
+
+    if (eventResult.rowCount === 0) {
+      return res.send('<p class="text-red-500">Événement non trouvé ou vous n\'êtes pas autorisé à le modifier.</p>');
+    }
+
+    // Vérifier s'il y a un chevauchement avec d'autres événements
+    const overlappingEvents = await pgClient.query(
+      `SELECT * FROM events WHERE id != $1 AND (
+         (start_datetime < $2 AND end_datetime > $2) OR
+         (start_datetime < $3 AND end_datetime > $3) OR
+         (start_datetime >= $2 AND end_datetime <= $3)
+      )`,
+      [eventId, start_datetime, end_datetime]
+    );
+
+    if (overlappingEvents.rowCount > 0) {
+      return res.send('<p class="text-red-500">Il existe déjà un événement qui se chevauche avec celui-ci.</p>');
+    }
+
+    // Mettre à jour l'événement
+    const updateResult = await pgClient.query(
+      `UPDATE events 
+       SET title = $1, description = $2, players_count = $3, start_datetime = $4, end_datetime = $5
+       WHERE id = $6 AND user_id = $7 RETURNING id`,
+      [title, description, players_count, start_datetime, end_datetime, eventId, userId]
+    );
+
+    if (updateResult.rowCount === 0) {
+      return res.send('<p class="text-red-500">Erreur lors de la mise à jour de l\'événement.</p>');
+    }
+
+    res.status(200).send('<p class="text-green-500">Événement mis à jour avec succès !</p>');
+  } catch (err) {
+    console.error(err);
+    console.error('Code d\'erreur :', err.code);
+    console.error('Message d\'erreur :', err.message);
+    // Gérer les erreurs spécifiques de la base de données
+    if (err.code === 'P0001') {  // Custom PostgreSQL error code for overlap
+      return res.send(`<div class="text-red-500">
+        Il existe déjà un événement qui se chevauche avec celui-ci.
+      </div>`);
+    } else if (err.code === '23505') {
+      return res.send('<p class="text-red-500">Un événement similaire existe déjà.</p>');
+    } else if (err.code === '23514') {
+      return res.send('<p class="text-red-500">Les données fournies ne respectent pas les contraintes.</p>');
+    } else if (err.code === '23503') {
+      return res.send('<p class="text-red-500">Utilisateur non trouvé. Veuillez vous reconnecter.</p>');
+    } else {
+      return res.send('<p class="text-red-500">Erreur interne du serveur. Veuillez réessayer plus tard.</p>');
+    }
+  }
+};
+
+
 // Route pour les administrateurs - approuver un événement
 module.exports.approveEvent = async (req, res) => {
   const eventId = req.params.id;
