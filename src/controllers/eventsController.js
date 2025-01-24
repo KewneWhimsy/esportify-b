@@ -86,24 +86,7 @@ module.exports.getEventById = async (req, res) => {
     }
     const event = result.rows[0];
 
-    // Tentative de décoder le token JWT si présent pour savoir si l'utilisateur est connecté
-    let userRole = req.user || 'visiteur';
-    console.log("Rôle userRole avant décodage jwt :", userRole);
-    let userId = req.user || null;
-    const authHeader = req.headers.authorization;
-    if (authHeader) {
-      const token = authHeader.split(" ")[1];
-      try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        userRole = decoded.role;
-        userId = decoded.userId;
-
-        console.log("Rôle userRole après  décodage jwt :", userRole);
-
-      } catch (err) {
-        console.error("Erreur lors du décodage du token JWT", err);
-      }
-    }
+    
 
     // Vérifier si l'utilisateur a déjà favorisé cet événement
     const isFavorited = userId? (await pgClient.query(
@@ -190,6 +173,8 @@ module.exports.createEvent = async (req, res) => {
   console.log("POST createEvent");
   const { title, description, players_count, start_datetime, end_datetime } = req.body;
   const { userId, role } = req.user;
+  console.log("POST userId");
+
 
   // Validation des données
   
@@ -238,7 +223,7 @@ module.exports.getMyEvents = async (req, res) => {
   console.log("GET MyEvents");
 
   try {
-    const userId = req.user.id;  // Utilisation de l'ID utilisateur provenant du token transmi par le middleware
+    const userId = req.user // Utilisation de l'ID utilisateur provenant du token transmi par le middleware
     console.log("userId :", userId);
     const sortField = req.query.sort || "start_datetime"; // Tri par défaut : date
     const validSortFields = ["players_count", "start_datetime", "organisateur"];
