@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 
 //Renvoi un tableau contenant tout les événements
 module.exports.getAllEvents = async (req, res) => {
-  console.log("Requête reçue pour récupérer tous les événements");
+  console.log("GET AllEvents");
   try {
     const sortField = req.query.sort || "start_datetime"; // Tri par défaut : date
     const validSortFields = ["players_count", "start_datetime", "organisateur"];
@@ -68,6 +68,7 @@ module.exports.getAllEvents = async (req, res) => {
 
 //Renvoie la vue détaillée d'un événement + bouton toggle favoris pour l'utilisateur connecté
 module.exports.getEventById = async (req, res) => {
+  console.log("GET EventById");
   const { id } = req.params;
 
   try {
@@ -186,6 +187,7 @@ module.exports.getEventById = async (req, res) => {
 };
 
 module.exports.createEvent = async (req, res) => {
+  console.log("POST createEvent");
   const { title, description, players_count, start_datetime, end_datetime } = req.body;
   const { userId, role } = req.user;
 
@@ -233,7 +235,7 @@ module.exports.createEvent = async (req, res) => {
 };
 
 module.exports.getMyEvents = async (req, res) => {
-  console.log("Requête reçue pour récupérer les événements de l'utilisateur");
+  console.log("GET MyEvents");
 
   try {
     const userId = req.user.id;  // Utilisation de l'ID utilisateur provenant du token transmi par le middleware
@@ -306,6 +308,7 @@ module.exports.getMyEvents = async (req, res) => {
 
 
 module.exports.updateEvent = async (req, res) => {
+  console.log("POST updateEvent");
   const { eventId, title, description, players_count, start_datetime, end_datetime } = req.body;
   const { userId, role } = req.user;
 
@@ -379,7 +382,8 @@ module.exports.updateEvent = async (req, res) => {
 
 
 // Route pour les administrateurs - approuver un événement
-module.exports.approveEvent = async (req, res) => {
+module.exports.approveEvent = async (req, res) => {createEvent
+  console.log("POST approveEvent");
   const eventId = req.params.id;
 
   // Logique pour approuver l'événement
