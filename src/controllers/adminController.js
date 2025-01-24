@@ -238,7 +238,7 @@ function getRoleButtons(currentRole, userId) {
       <button
         hx-post="https://esportify-backend.onrender.com/admin/users/demote/${userId}/orga"
         hx-swap="outerHTML"
-        hx-target="#user-${user.id}"
+        hx-target="#user-${userId}"
         class="px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-700 transition-colors"
       >
         Rétrograder
@@ -249,7 +249,7 @@ function getRoleButtons(currentRole, userId) {
       <button
         hx-post="https://esportify-backend.onrender.com/admin/users/promote/${userId}/admin"
         hx-swap="outerHTML"
-        hx-target="#user-${user.id}"
+        hx-target="#user-${userId}"
         class="px-3 py-1 bg-blue-900 text-white rounded hover:bg-yellow-600 transition-colors"
       >
         Promouvoir
@@ -257,7 +257,7 @@ function getRoleButtons(currentRole, userId) {
       <button
         hx-post="https://esportify-backend.onrender.com/admin/users/demote/${userId}/joueur"
         hx-swap="outerHTML"
-        hx-target="#user-${user.id}"
+        hx-target="#user-${userId}"
         class="px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-700 transition-colors"
       >
         Rétrograder
@@ -268,7 +268,7 @@ function getRoleButtons(currentRole, userId) {
       <button
         hx-post="https://esportify-backend.onrender.com/admin/users/promote/${userId}/orga"
         hx-swap="outerHTML"
-        hx-target="#user-${user.id}"
+        hx-target="#user-${userId}"
         class="px-3 py-1 bg-blue-900 text-white rounded hover:bg-yellow-600 transition-colors"
       >
         Promouvoir
@@ -276,7 +276,7 @@ function getRoleButtons(currentRole, userId) {
       <button
         hx-post="https://esportify-backend.onrender.com/admin/users/demote/${userId}/visiteur"
         hx-swap="outerHTML"
-        hx-target="#user-${user.id}"
+        hx-target="#user-${userId}"
         class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
       >
         Bannir
@@ -287,7 +287,7 @@ function getRoleButtons(currentRole, userId) {
       <button
         hx-post="https://esportify-backend.onrender.com/admin/users/promote/${userId}/joueur"
         hx-swap="outerHTML"
-        hx-target="#user-${user.id}"
+        hx-target="#user-${userId}"
         class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
       >
         Débannir
@@ -307,8 +307,8 @@ module.exports.getUsersWithRoles = async (req, res) => {
     `);
 
     const users = result.rows;
+    
     let usersHtml = "";
-
     users.forEach((user) => {
       usersHtml += `
         <tr id="user-${user.id}" class="border-b">
