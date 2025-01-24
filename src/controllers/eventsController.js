@@ -236,8 +236,8 @@ module.exports.getMyEvents = async (req, res) => {
   console.log("Requête reçue pour récupérer les événements de l'utilisateur");
 
   try {
-    const userId = req.user.id;  // Utilisation de l'ID utilisateur provenant de la session/token (selon votre mécanisme d'authentification)
-
+    const userId = req.user.id;  // Utilisation de l'ID utilisateur provenant du token transmi par le middleware
+    console.log("userId :", userId);
     const sortField = req.query.sort || "start_datetime"; // Tri par défaut : date
     const validSortFields = ["players_count", "start_datetime", "organisateur"];
     const orderBy = validSortFields.includes(sortField)
@@ -247,6 +247,7 @@ module.exports.getMyEvents = async (req, res) => {
       orderBy === "organisateur" ? "u.username" : `e.${orderBy}`;
 
     // Récupère les événements créés par l'utilisateur connecté
+    console.log("Sort Column :", sortColumn);
     const result = await pgClient.query(`
       SELECT e.id, e.title, e.description, e.players_count, e.start_datetime, e.end_datetime, e.is_approved, u.username AS organisateur
       FROM events e
