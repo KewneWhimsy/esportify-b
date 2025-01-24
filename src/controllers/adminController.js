@@ -22,6 +22,7 @@ module.exports.getPendingEvents = async (req, res) => {
           <td class="px-4 py-3">
             ${event.title}
             <button @click="setTimeout(() => { isOpen = true }, 200)"
+            class="ml-2 text-2xl"
             hx-get="https://esportify-backend.onrender.com/api/event/${event.id}"
             hx-target="#popup-content"
             hx-swap="innerHTML">
