@@ -61,7 +61,7 @@ module.exports.getPendingEvents = async (req, res) => {
 
 // Renvoi un tableau contenant les événements validés
 module.exports.getApprovedEvents = async (req, res) => {
-  console.log("Requête reçue pour récupérer les événements validés");
+  console.log("GET ApprovedEvents");
   try {
     const result = await pgClient.query(`
       SELECT e.id, e.title, e.description, e.players_count, 
@@ -112,6 +112,7 @@ module.exports.getApprovedEvents = async (req, res) => {
 
 // Approuver un événement
 module.exports.approveEvent = async (req, res) => {
+  console.log("POST ApprovedEvents");
   const eventId = req.params.eventId;
   console.log(`Approbation de l'événement ${eventId}`);
   try {
@@ -173,6 +174,7 @@ module.exports.approveEvent = async (req, res) => {
 
 // Refuser un événement
 module.exports.rejectEvent = async (req, res) => {
+  console.log("DELETE rejectEvent");
   const eventId = req.params.eventId;
   console.log(`Refus de l'événement ${eventId}`);
   try {
@@ -190,6 +192,7 @@ module.exports.rejectEvent = async (req, res) => {
 
 // Suspendre un événement (réinitialiser is_approved à FALSE)
 module.exports.suspendEvent = async (req, res) => {
+  console.log("POST suspendEvent");
   const eventId = req.params.eventId;
   console.log(`Suspension de l'événement ${eventId}`);
   try {
@@ -335,7 +338,7 @@ function getRoleButtons(currentRole, userId) {
 
 // Renvoi un tableau contenant les utilisateurs et leurs droits
 module.exports.getUsersWithRoles = async (req, res) => {
-  console.log("Requête reçue pour récupérer les utilisateurs");
+  console.log("GET UsersWithRoles");
   try {
     //récupére tout les utilisateurs sauf le compte admin id=1
     const result = await pgClient.query(`
@@ -370,6 +373,7 @@ module.exports.getUsersWithRoles = async (req, res) => {
 
 // Promouvoir un utilisateur
 module.exports.promoteUser = async (req, res) => {
+  console.log("POST promoteUser");
   const { userId, newRole } = req.params;
   console.log(`Promotion de l'utilisateur ${userId} vers le rôle ${newRole}`);
   try {
@@ -410,6 +414,7 @@ module.exports.promoteUser = async (req, res) => {
 
 // Rétrograder un utilisateur
 module.exports.demoteUser = async (req, res) => {
+  console.log("POST demoteUser");
   const { userId, newRole } = req.params;
   console.log(`Rétrogradation de l'utilisateur ${userId} vers le rôle ${newRole}`);
   if (userId == 1) {
