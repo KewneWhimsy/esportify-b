@@ -337,9 +337,11 @@ function getRoleButtons(currentRole, userId) {
 module.exports.getUsersWithRoles = async (req, res) => {
   console.log("Requête reçue pour récupérer les utilisateurs");
   try {
+    //récupére tout les utilisateurs sauf le compte admin id=1
     const result = await pgClient.query(`
       SELECT id, username, role
       FROM users
+      WHERE id != 1
     `);
 
     const users = result.rows;
@@ -348,7 +350,7 @@ module.exports.getUsersWithRoles = async (req, res) => {
     users.forEach((user) => {
       usersHtml += `
         <tr id="user-${user.id}" class="border-b">
-          <td class="px-4 py-3">${user.username} ${user.id}</td>
+          <td class="px-4 py-3">${user.username}</td>
           <td class="px-4 py-3 ${getUserRoleColor(user.role)}">
             ${user.role}
           </td>
