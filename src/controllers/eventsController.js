@@ -86,8 +86,8 @@ module.exports.getEventById = async (req, res) => {
     }
     const event = result.rows[0];
 
-    const userRole = req.user || 'visiteur';
-    const userId = req.user || null;    
+    const userRole = req.user.role || 'visiteur';
+    const userId = req.user.id || null;    
 
     // Vérifier si l'utilisateur a déjà favorisé cet événement
     const isFavorited = userId? (await pgClient.query(
