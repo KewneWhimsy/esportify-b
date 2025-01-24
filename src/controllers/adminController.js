@@ -1,7 +1,7 @@
 const { pgClient } = require("../../config/dbConnection.js");
 
 // Renvoi un tableau contenant les événements en attente de modération
-module.exports.getPendingEvents = async (res) => {
+module.exports.getPendingEvents = async (req, res) => {
   console.log("Requête reçue pour récupérer les événements en attente");
   try {
     const result = await pgClient.query(`
@@ -60,7 +60,7 @@ module.exports.getPendingEvents = async (res) => {
 };
 
 // Renvoi un tableau contenant les événements validés
-module.exports.getApprovedEvents = async (res) => {
+module.exports.getApprovedEvents = async (req, res) => {
   console.log("Requête reçue pour récupérer les événements validés");
   try {
     const result = await pgClient.query(`
@@ -334,7 +334,7 @@ function getRoleButtons(currentRole, userId) {
 }
 
 // Renvoi un tableau contenant les utilisateurs et leurs droits
-module.exports.getUsersWithRoles = async (res) => {
+module.exports.getUsersWithRoles = async (req, res) => {
   console.log("Requête reçue pour récupérer les utilisateurs");
   try {
     //récupére tout les utilisateurs sauf le compte admin id=1
