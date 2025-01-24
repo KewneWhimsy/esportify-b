@@ -307,12 +307,12 @@ module.exports.getUsersWithRoles = async (req, res) => {
     `);
 
     const users = result.rows;
-    
+
     let usersHtml = "";
     users.forEach((user) => {
       usersHtml += `
         <tr id="user-${user.id}" class="border-b">
-          <td class="px-4 py-3">${user.username}</td>
+          <td class="px-4 py-3">${user.username} ${user.id}</td>
           <td class="px-4 py-3 ${getUserRoleColor(user.role)}">
             ${user.role}
           </td>
