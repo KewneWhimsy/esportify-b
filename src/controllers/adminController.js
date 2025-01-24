@@ -22,7 +22,7 @@ module.exports.getPendingEvents = async (req, res) => {
           <td class="px-4 py-3">
             ${event.title}
             <button @click="setTimeout(() => { isOpen = true }, 200)"
-            class="text-lg hover:scale-110 transition-transform"
+            class="text-lg hover:text-yellow-600 transition-colors"
             hx-get="https://esportify-backend.onrender.com/api/event/${event.id}"
             hx-target="#popup-content"
             hx-swap="innerHTML">
@@ -81,7 +81,7 @@ module.exports.getApprovedEvents = async (req, res) => {
           <td class="px-4 py-3">
             ${event.title}
             <button @click="setTimeout(() => { isOpen = true }, 200)"
-            class="hover:scale-110 transition-transform"
+            class="hover:text-yellow-600 transition-colors"
             hx-get="https://esportify-backend.onrender.com/api/event/${event.id}"
             hx-target="#popup-content"
             hx-swap="innerHTML">
@@ -136,7 +136,7 @@ module.exports.approveEvent = async (req, res) => {
         <td class="px-4 py-3">
           ${event.title}
           <button @click="setTimeout(() => { isOpen = true }, 200)" 
-            class="hover:scale-110 transition-transform"
+            class="hover:text-yellow-600 transition-colors"
             hx-get="https://esportify-backend.onrender.com/api/event/${event.id}"
             hx-target="#popup-content"
             hx-swap="innerHTML">
@@ -217,7 +217,7 @@ module.exports.suspendEvent = async (req, res) => {
         <td class="px-4 py-3">
           ${event.title}
           <button @click="setTimeout(() => { isOpen = true }, 200)"
-            class="text-2xl hover:scale-110 transition-transform"
+            class="text-2xl hover:text-yellow-600 transition-colors"
             hx-get="https://esportify-backend.onrender.com/api/event/${event.id}"
             hx-target="#popup-content"
             hx-swap="innerHTML">
