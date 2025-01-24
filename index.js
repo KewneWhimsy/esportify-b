@@ -7,6 +7,16 @@ const { initializeDbPg } = require("./initData.js"); // Import fonction d'initia
 
 const app = express(); // Crée une instance d'application Express
 
+// Route de vérification de l'état du serveur
+app.get('/health', (req, res) => {
+  res.status(200).send({ status: 'ok' });
+});
+
+// Route de test
+app.get("/", (req, res) => {
+  res.send("Hello World!");
+});
+
 // Middleware pour parser le JSON
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

@@ -210,7 +210,7 @@ module.exports.createEvent = async (req, res) => {
       [title, description, players_count, is_approved, start_datetime, end_datetime, userId]
     );
 
-    res.status(200).send(`<p class="text-green-500">Événement créé avec succès !</p>`);
+    res.status(200).send(`<p class="text-green-500">Événement créé avec succès !<br>(en attente de modération)</p>`);
   } catch (err) {
     console.error(err);
     console.error('Code d\'erreur :', err.code);
