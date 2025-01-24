@@ -1,7 +1,7 @@
 const { pgClient } = require("../../config/dbConnection.js");
 
 // Renvoi un tableau contenant les événements en attente de modération
-module.exports.getPendingEvents = async (req, res) => {
+module.exports.getPendingEvents = async (res) => {
   console.log("Requête reçue pour récupérer les événements en attente");
   try {
     const result = await pgClient.query(`
@@ -60,7 +60,7 @@ module.exports.getPendingEvents = async (req, res) => {
 };
 
 // Renvoi un tableau contenant les événements validés
-module.exports.getApprovedEvents = async (req, res) => {
+module.exports.getApprovedEvents = async (res) => {
   console.log("Requête reçue pour récupérer les événements validés");
   try {
     const result = await pgClient.query(`
@@ -334,7 +334,7 @@ function getRoleButtons(currentRole, userId) {
 }
 
 // Renvoi un tableau contenant les utilisateurs et leurs droits
-module.exports.getUsersWithRoles = async (req, res) => {
+module.exports.getUsersWithRoles = async (res) => {
   console.log("Requête reçue pour récupérer les utilisateurs");
   try {
     //récupére tout les utilisateurs sauf le compte admin id=1
@@ -411,14 +411,10 @@ module.exports.promoteUser = async (req, res) => {
 // Rétrograder un utilisateur
 module.exports.demoteUser = async (req, res) => {
   const { userId, newRole } = req.params;
-  
-  // Vérifie que l'utilisateur n'est pas le super admin
-  if (parseInt(userId, 10) === 1) {
-    return res.status(403).send("Modification du super admin interdite");
-  }
-
   console.log(`Rétrogradation de l'utilisateur ${userId} vers le rôle ${newRole}`);
-  
+  if (userId == 1) {
+    return res.send("Utilisateur super admin");
+  }
   try {
     // Met à jour le rôle
     await pgClient.query(
