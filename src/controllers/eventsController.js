@@ -347,14 +347,14 @@ module.exports.myEventById = async (req, res) => {
     <!-- Titre -->
     <div>
       <label for="title" class="block text-sm font-medium"
-        >Modifier ${event.title}</label
+        >Titre</label
       >
       <input
         type="text"
         id="title"
         name="title"
         class="bg-[#161215] text-text w-full mt-1 border rounded px-3 py-2"
-        placeholder="${event.title}"
+        value="${event.title}"
       />
     </div>
 
@@ -367,7 +367,7 @@ module.exports.myEventById = async (req, res) => {
         id="description"
         name="description"
         class="bg-[#161215] text-text w-full mt-1 border rounded px-3 py-2 min-h-72 min-w-72"
-        placeholder="${event.description}"></textarea>
+        value="${event.description}"></textarea>
     </div>
 
     <!-- Nombre de joueurs -->
@@ -381,7 +381,7 @@ module.exports.myEventById = async (req, res) => {
         name="players_count"
         min="2"
         class="bg-[#161215] text-text w-full mt-1 border rounded px-3 py-2"
-        placeholder="${event.players_count}"
+        value="${event.players_count}"
       />
     </div>
 
