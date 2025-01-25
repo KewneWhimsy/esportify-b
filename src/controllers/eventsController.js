@@ -188,8 +188,6 @@ module.exports.createEvent = async (req, res) => {
   console.log("POST createEvent");
   const { title, description, players_count, start_datetime, end_datetime } = req.body;
   const { userId, role } = req.user;
-  console.log("POST userId");
-
 
   // Validation des données
   
@@ -320,8 +318,8 @@ module.exports.getMyEvents = async (req, res) => {
 //Renvoie la vue détaillée d'un événement + bouton toggle favoris pour l'utilisateur connecté
 module.exports.myEventById = async (req, res) => {
   console.log("GET myEventById");
-  const eventId = req.params.id;
-  console.log(id)
+  const eventId = req.params;
+  console.log(eventId)
 
   try {
     const result = await pgClient.query(
