@@ -285,7 +285,8 @@ module.exports.getMyEvents = async (req, res) => {
         >
           <div>
             <h2 class="text-lg font-heading text-[#6e4262] leading-tight mb-2">
-              ${event.title}</h2>
+              ${event.title}
+            </h2>
           </div>
           <div>
             <p class="text-sm text-gray-400">Joueurs : ${event.players_count}</p>
@@ -367,7 +368,9 @@ module.exports.myEventById = async (req, res) => {
         id="description"
         name="description"
         class="bg-[#161215] text-text w-full mt-1 border rounded px-3 py-2 min-h-72 min-w-72"
-        value="${event.description}"></textarea>
+      >
+        ${event.description}
+      </textarea>
     </div>
 
     <!-- Nombre de joueurs -->
