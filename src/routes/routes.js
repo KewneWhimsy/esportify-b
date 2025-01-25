@@ -27,6 +27,7 @@ router.get("/api/favorites", authenticateToken, checkRole(["joueur", "orga", "ad
 // Routes orga+
 router.post("/api/events", authenticateToken, checkRole(["orga", "admin"]), eventsController.createEvent);
 router.get("/api/myevents", authenticateToken, checkRole(["orga", "admin"]), eventsController.getMyEvents);
+router.get("/api/myevent/:eventId", authenticateToken, checkRole(["orga", "admin"]), eventsController.myEventById);
 router.post("/api/events/update/:eventId", authenticateToken, checkRole(["orga", "admin"]), eventsController.updateEvent);
 
 // Routes admin

@@ -281,12 +281,12 @@ module.exports.getMyEvents = async (req, res) => {
         <div class="flex flex-col justify-between bg-[#26232A] border 
         border-[#E5E7EB] p-4 rounded-lg w-64 shadow-md hover:shadow-lg transition-transform hover:scale-105 cursor-pointer flex-shrink-0 gap-0.5" 
         @click="setTimeout(() => { isOpen = true }, 200)"
-        hx-get="https://esportify-backend.onrender.com/api/event/${event.id}"
+        hx-get="https://esportify-backend.onrender.com/api/myevent/${event.id}"
         hx-target="#popup-content"
         hx-swap="innerHTML"
         >
           <div>
-            <h2 class="text-lg font-heading text-[6e4262] leading-tight mb-2">${
+            <h2 class="text-lg font-heading text-[#6e4262] leading-tight mb-2">${
               event.title
             }</h2>
           </div>
@@ -317,6 +317,142 @@ module.exports.getMyEvents = async (req, res) => {
   }
 };
 
+//Renvoie la vue détaillée d'un événement + bouton toggle favoris pour l'utilisateur connecté
+module.exports.myEventById = async (req, res) => {
+  console.log("GET EventById");
+  const { id } = req.params;
+
+  try {
+    const result = await pgClient.query(
+      `
+      SELECT e.id, e.title, e.description, e.players_count, e.start_datetime, e.end_datetime, u.username AS organisateur
+      FROM events e
+      JOIN users u ON e.user_id = u.id
+      WHERE e.id = $1
+    `,
+      [id]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).send("<p>Événement non trouvé</p>");
+    }
+    const event = result.rows[0];
+
+    const eventHtml = `
+  <div
+  class="border border-gray-300 p-6 rounded-lg shadow-lg w-full"
+  >
+    <h2 class="text-2xl font-bold mb-4 font-heading text-heading leading-tight">${event.title}</h2>
+    <p class="mb-4">${event.description}</p>
+    <p><strong>Joueurs :</strong> ${event.players_count}</p>
+    <p><strong>Organisateur :</strong> ${event.organisateur}</p>
+    <p><strong>Début :</strong> ${new Date(event.start_datetime).toLocaleString()}</p>
+    <p><strong>Fin :</strong> ${new Date(event.end_datetime).toLocaleString()}</p>
+
+    <form
+    id="formPopupCSS"
+    class="inset-0 w-full rounded max-w-[900px] mx-auto items-center justify-center z-50 px-5 py-3 transition-opacity"
+    hx-post="https://esportify-backend.onrender.com/api/myevent/${event.id}"
+    hx-target="#form-message"
+    hx-swap="innerHTML"
+    hx-trigger="submit"
+    class="space-y-4"
+  >
+    <!-- Titre -->
+    <div>
+      <label for="title" class="block text-sm font-medium"
+        >${event.title}</label
+      >
+      <input
+        type="text"
+        id="title"
+        name="title"
+        required
+        class="bg-[#161215] text-text w-full mt-1 border rounded px-3 py-2"
+        placeholder="${event.title}"
+      />
+    </div>
+
+    <!-- Description -->
+    <div>
+      <label for="description" class="block text-sm font-medium"
+        >Description</label
+      >
+      <textarea
+        id="description"
+        name="description"
+        required
+        class="bg-[#161215] text-text w-full mt-1 border rounded px-3 py-2 min-h-72 min-w-72"
+        placeholder="${event.description}"></textarea>
+    </div>
+
+    <!-- Nombre de joueurs -->
+    <div>
+      <label for="players_count" class="block text-sm font-medium"
+        >Nombre de joueurs</label
+      >
+      <input
+        type="number"
+        id="players_count"
+        name="players_count"
+        required
+        min="2"
+        class="bg-[#161215] text-text w-full mt-1 border rounded px-3 py-2"
+        placeholder="${event.players_count}"
+      />
+    </div>
+
+    <!-- Date et heure de début -->
+    <div>
+      <label for="start_datetime" class="block text-sm font-medium"
+        >Date et heure de début</label
+      >
+      <input
+        type="datetime-local"
+        id="start_datetime"
+        name="start_datetime"
+        required
+        class="bg-[#161215] text-text w-full mt-1 border rounded px-3 py-2"
+        value="${event.start_datetime}"
+      />
+    </div>
+
+    <!-- Date et heure de fin -->
+    <div>
+      <label for="end_datetime" class="block text-sm font-medium"
+        >Date et heure de fin</label
+      >
+      <input
+        type="datetime-local"
+        id="end_datetime"
+        name="end_datetime"
+        required
+        class="bg-[#161215] text-text w-full mt-1 border rounded px-3 py-2"
+        value="${event.end_datetime}"
+      />
+    </div>
+
+    <!-- Soumettre -->
+    <div>
+      <button
+        type="submit"
+        class="w-full bg-[#5e3554] hover:bg-yellow-600 hover:text-shadow text-white px-4 py-2 mt-10 rounded transition-colors"
+      >
+        Créer l'événement
+      </button>
+  </div>
+`;
+
+    res.send(eventHtml);
+  } catch (err) {
+    console.error(
+      "Erreur lors de la récupération des détails de l'événement",
+      err
+    );
+    res.status(500).json({
+      error: "Erreur lors de la récupération des détails de l'événement",
+    });
+  }
+};
 
 module.exports.updateEvent = async (req, res) => {
   console.log("POST updateEvent");
