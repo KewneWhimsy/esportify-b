@@ -320,7 +320,7 @@ module.exports.getMyEvents = async (req, res) => {
 //Renvoie la vue détaillée d'un événement + bouton toggle favoris pour l'utilisateur connecté
 module.exports.myEventById = async (req, res) => {
   console.log("GET myEventById");
-  const { id } = req.params;
+  const eventId = req.params.id;
   console.log(id)
 
   try {
@@ -331,7 +331,7 @@ module.exports.myEventById = async (req, res) => {
       JOIN users u ON e.user_id = u.id
       WHERE e.id = $1
     `,
-      [id]
+      [eventId]
     );
     if (result.rows.length === 0) {
       return res.status(404).send("<p>Événement non trouvé</p>");
