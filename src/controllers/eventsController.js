@@ -284,7 +284,7 @@ module.exports.getMyEvents = async (req, res) => {
         hx-swap="innerHTML"
         >
           <div>
-            <h2 class="text-lg font-heading text-[#6e4262] leading-tight mb-2">
+            <h2 id="titreMyEvent" class="text-lg font-heading text-[#6e4262] leading-tight mb-2">
               ${event.title}
             </h2>
           </div>
@@ -368,9 +368,7 @@ module.exports.myEventById = async (req, res) => {
         id="description"
         name="description"
         class="bg-[#161215] text-text w-full mt-1 border rounded px-3 py-2 min-h-72 min-w-72"
-      >
-        ${event.description}
-      </textarea>
+      >${event.description}</textarea>
     </div>
 
     <!-- Nombre de joueurs -->
@@ -469,33 +467,24 @@ module.exports.updateEvent = async (req, res) => {
       return res.send('<p class="text-red-500">Événement non trouvé ou vous n\'êtes pas autorisé à le modifier.</p>');
     }
 
-    // Vérifier s'il y a un chevauchement avec d'autres événements
-    const overlappingEvents = await pgClient.query(
-      `SELECT * FROM events WHERE id != $1 AND (
-         (start_datetime < $2 AND end_datetime > $2) OR
-         (start_datetime < $3 AND end_datetime > $3) OR
-         (start_datetime >= $2 AND end_datetime <= $3)
-      )`,
-      [eventId, start_datetime, end_datetime]
-    );
-
     if (overlappingEvents.rowCount > 0) {
       return res.send('<p class="text-red-500">Il existe déjà un événement qui se chevauche avec celui-ci.</p>');
     }
-
+    // Déterminer la valeur de is_approved
+    const is_approved = role === 'admin' ? true : false;
     // Mettre à jour l'événement
     const updateResult = await pgClient.query(
       `UPDATE events 
-       SET title = $1, description = $2, players_count = $3, start_datetime = $4, end_datetime = $5
-       WHERE id = $6 AND user_id = $7 RETURNING id`,
-      [title, description, players_count, start_datetime, end_datetime, eventId, userId]
+       SET title = $1, description = $2, players_count = $3, is_approved = $4, start_datetime = $5, end_datetime = $6
+       WHERE id = $7 AND user_id = $8 RETURNING id`,
+      [title, description, players_count, is_approved, start_datetime, end_datetime, eventId, userId]
     );
 
     if (updateResult.rowCount === 0) {
       return res.send('<p class="text-red-500">Erreur lors de la mise à jour de l\'événement.</p>');
     }
 
-    res.status(200).send('<p class="text-green-500">Événement mis à jour avec succès !</p>');
+    res.status(200).send('<p class="text-green-500">Événement mis à jour avec succès !<br/>(en attente de modération)</p>');
   } catch (err) {
     console.error(err);
     console.error('Code d\'erreur :', err.code);
@@ -519,7 +508,7 @@ module.exports.updateEvent = async (req, res) => {
 
 
 // Route pour les administrateurs - approuver un événement
-module.exports.approveEvent = async (req, res) => {createEvent
+module.exports.approveEvent = async (req, res) => {
   console.log("POST approveEvent");
   const eventId = req.params.id;
 
