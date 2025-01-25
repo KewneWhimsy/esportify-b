@@ -319,8 +319,9 @@ module.exports.getMyEvents = async (req, res) => {
 
 //Renvoie la vue détaillée d'un événement + bouton toggle favoris pour l'utilisateur connecté
 module.exports.myEventById = async (req, res) => {
-  console.log("GET EventById");
+  console.log("GET myEventById");
   const { id } = req.params;
+  console.log(id)
 
   try {
     const result = await pgClient.query(
@@ -341,20 +342,11 @@ module.exports.myEventById = async (req, res) => {
   <div
   class="border border-gray-300 p-6 rounded-lg shadow-lg w-full"
   >
-    <h2 class="text-2xl font-bold mb-4 font-heading text-heading leading-tight">${event.title}</h2>
-    <p class="mb-4">${event.description}</p>
-    <p><strong>Joueurs :</strong> ${event.players_count}</p>
-    <p><strong>Organisateur :</strong> ${event.organisateur}</p>
-    <p><strong>Début :</strong> ${new Date(event.start_datetime).toLocaleString()}</p>
-    <p><strong>Fin :</strong> ${new Date(event.end_datetime).toLocaleString()}</p>
-
     <form
-    id="formPopupCSS"
     class="inset-0 w-full rounded max-w-[900px] mx-auto items-center justify-center z-50 px-5 py-3 transition-opacity"
     hx-post="https://esportify-backend.onrender.com/api/myevent/${event.id}"
-    hx-target="#form-message"
+    hx-target="#form-messageup"
     hx-swap="innerHTML"
-    hx-trigger="submit"
     class="space-y-4"
   >
     <!-- Titre -->
@@ -412,7 +404,7 @@ module.exports.myEventById = async (req, res) => {
         name="start_datetime"
         required
         class="bg-[#161215] text-text w-full mt-1 border rounded px-3 py-2"
-        value="${event.start_datetime}"
+        value="${new Date(event.start_datetime).toISOString().slice(0, -1)}"
       />
     </div>
 
@@ -427,7 +419,7 @@ module.exports.myEventById = async (req, res) => {
         name="end_datetime"
         required
         class="bg-[#161215] text-text w-full mt-1 border rounded px-3 py-2"
-        value="${event.end_datetime}"
+        value="${new Date(event.end_datetime).toISOString().slice(0, -1)}"
       />
     </div>
 
@@ -437,10 +429,12 @@ module.exports.myEventById = async (req, res) => {
         type="submit"
         class="w-full bg-[#5e3554] hover:bg-yellow-600 hover:text-shadow text-white px-4 py-2 mt-10 rounded transition-colors"
       >
-        Créer l'événement
+        Mettre à jour
       </button>
-  </div>
-`;
+    </div>
+    <!-- Message de retour -->
+    <div id="form-messageup" class="text-sm text-center mt-4"></div>
+    `;
 
     res.send(eventHtml);
   } catch (err) {
