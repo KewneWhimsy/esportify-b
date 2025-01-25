@@ -284,14 +284,11 @@ module.exports.getMyEvents = async (req, res) => {
         hx-swap="innerHTML"
         >
           <div>
-            <h2 class="text-lg font-heading text-[#6e4262] leading-tight mb-2">${
-              event.title
-            }</h2>
+            <h2 class="text-lg font-heading text-[#6e4262] leading-tight mb-2">
+              ${event.title}</h2>
           </div>
           <div>
-            <p class="text-sm text-gray-400">Joueurs : ${
-              event.players_count
-            }</p>
+            <p class="text-sm text-gray-400">Joueurs : ${event.players_count}</p>
             <p class="text-sm">Début : ${new Date(
               event.start_datetime
             ).toLocaleString()}</p>
@@ -318,7 +315,7 @@ module.exports.getMyEvents = async (req, res) => {
 //Renvoie la vue détaillée d'un événement + bouton toggle favoris pour l'utilisateur connecté
 module.exports.myEventById = async (req, res) => {
   console.log("GET myEventById");
-  const eventId = req.params;
+  const eventId = req.params.eventId;
   console.log(eventId)
 
   try {
