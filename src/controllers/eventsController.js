@@ -440,8 +440,9 @@ module.exports.myEventById = async (req, res) => {
 
 module.exports.updateEvent = async (req, res) => {
   console.log("POST updateEvent");
-  const { eventId, title, description, players_count, start_datetime, end_datetime } = req.body;
+  const { title, description, players_count, start_datetime, end_datetime } = req.body;
   const { userId, role } = req.user;
+  const eventId = req.params.eventId;
 
   // Validation des données
   if (new Date(start_datetime) >= new Date(end_datetime)) {
