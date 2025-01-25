@@ -284,7 +284,7 @@ module.exports.getMyEvents = async (req, res) => {
         hx-swap="innerHTML"
         >
           <div>
-            <h2 id="titreMyEvent" class="text-lg font-heading text-[#6e4262] leading-tight mb-2">
+            <h2 id="titreMyEvent" class="text-lg font-heading text-myEvent leading-tight mb-2">
               ${event.title}
             </h2>
           </div>
@@ -462,16 +462,28 @@ module.exports.updateEvent = async (req, res) => {
       'SELECT * FROM events WHERE id = $1 AND user_id = $2',
       [eventId, userId]
     );
-
     if (eventResult.rowCount === 0) {
       return res.send('<p class="text-red-500">Événement non trouvé ou vous n\'êtes pas autorisé à le modifier.</p>');
     }
 
+    const overlappingEvents = await pgClient.query(
+      `SELECT * FROM events 
+       WHERE user_id = $4 AND id != $1 AND (
+         (start_datetime < $2 AND end_datetime > $2) OR
+         (start_datetime < $3 AND end_datetime > $3) OR
+         (start_datetime >= $2 AND end_datetime <= $3)
+       )`,
+      [eventId, start_datetime, end_datetime, userId]
+    );
     if (overlappingEvents.rowCount > 0) {
       return res.send('<p class="text-red-500">Il existe déjà un événement qui se chevauche avec celui-ci.</p>');
     }
+    if (new Date(start_datetime) >= new Date(end_datetime)) {
+      return res.send("La date de début doit être avant la date de fin.");
+    }
     // Déterminer la valeur de is_approved
     const is_approved = role === 'admin' ? true : false;
+
     // Mettre à jour l'événement
     const updateResult = await pgClient.query(
       `UPDATE events 
