@@ -425,6 +425,11 @@ module.exports.myEventById = async (req, res) => {
     </div>
     <!-- Message de retour -->
     <div id="form-messageup" class="text-sm text-center mt-4"></div>
+    <style>
+    input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+      filter: invert(1); /* Icone blanche */
+    }
+    </style>
     `;
 
     res.send(eventHtml);
