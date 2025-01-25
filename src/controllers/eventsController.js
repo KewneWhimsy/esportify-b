@@ -339,7 +339,7 @@ module.exports.myEventById = async (req, res) => {
   >
     <form
     class="inset-0 w-full rounded max-w-[900px] mx-auto items-center justify-center z-50 px-5 py-3 transition-opacity"
-    hx-post="https://esportify-backend.onrender.com/api/myevent/${event.id}"
+    hx-post="https://esportify-backend.onrender.com/api/events/update/${event.id}"
     hx-target="#form-messageup"
     hx-swap="innerHTML"
     class="space-y-4"
@@ -347,13 +347,12 @@ module.exports.myEventById = async (req, res) => {
     <!-- Titre -->
     <div>
       <label for="title" class="block text-sm font-medium"
-        >${event.title}</label
+        >Modifier ${event.title}</label
       >
       <input
         type="text"
         id="title"
         name="title"
-        required
         class="bg-[#161215] text-text w-full mt-1 border rounded px-3 py-2"
         placeholder="${event.title}"
       />
@@ -367,7 +366,6 @@ module.exports.myEventById = async (req, res) => {
       <textarea
         id="description"
         name="description"
-        required
         class="bg-[#161215] text-text w-full mt-1 border rounded px-3 py-2 min-h-72 min-w-72"
         placeholder="${event.description}"></textarea>
     </div>
@@ -381,7 +379,6 @@ module.exports.myEventById = async (req, res) => {
         type="number"
         id="players_count"
         name="players_count"
-        required
         min="2"
         class="bg-[#161215] text-text w-full mt-1 border rounded px-3 py-2"
         placeholder="${event.players_count}"
@@ -397,7 +394,6 @@ module.exports.myEventById = async (req, res) => {
         type="datetime-local"
         id="start_datetime"
         name="start_datetime"
-        required
         class="bg-[#161215] text-text w-full mt-1 border rounded px-3 py-2"
         value="${new Date(event.start_datetime).toISOString().slice(0, -1)}"
       />
@@ -412,7 +408,6 @@ module.exports.myEventById = async (req, res) => {
         type="datetime-local"
         id="end_datetime"
         name="end_datetime"
-        required
         class="bg-[#161215] text-text w-full mt-1 border rounded px-3 py-2"
         value="${new Date(event.end_datetime).toISOString().slice(0, -1)}"
       />
