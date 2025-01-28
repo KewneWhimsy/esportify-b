@@ -115,6 +115,7 @@ module.exports.getEventById = async (req, res) => {
     console.log("en cours :", isOngoing);
     const eventHtml = `
   <div x-data="{ rolee: '${userRole}', favorite: ${isFavorited}, ongoing: ${isOngoing} }" 
+  x-init="console.log('Initialisation :', { rolee, favorite, ongoing })"
   class="border border-gray-300 p-6 rounded-lg shadow-lg w-full"
   >
     <h2 class="text-2xl font-bold mb-4 font-heading text-heading leading-tight">${event.title}</h2>
