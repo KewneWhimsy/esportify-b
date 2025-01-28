@@ -112,7 +112,7 @@ module.exports.getEventById = async (req, res) => {
     // Vérifier si l'événement est en cours
     const now = new Date();
     const isOngoing = new Date(event.start_datetime) <= now && now <= new Date(event.end_datetime);
-
+    console.log("en cours :", isOngoing);
     const eventHtml = `
   <div x-data="{ rolee: '${userRole}', favorite: ${isFavorited}, ongoing: ${isOngoing} }" 
   class="border border-gray-300 p-6 rounded-lg shadow-lg w-full"
