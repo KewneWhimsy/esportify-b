@@ -165,8 +165,9 @@ module.exports.getEventById = async (req, res) => {
         >
           Plus intéressé
         </button>
-        <!-- Bouton Rejoindre -->
-        <button
+      </div>
+      <!-- Bouton Rejoindre -->
+      <button
         x-show="favorite && ongoing"
         :class="{ 'hidden': !favorite || !ongoing }"
         id="boutonRejoindre"
@@ -177,7 +178,6 @@ module.exports.getEventById = async (req, res) => {
       >
         Rejoindre
       </button>
-      </div>
       <button
         @click="isOpen = false"
         class="ml-auto bg-red-700 text-white px-4 py-2 rounded hover:bg-red-800"
