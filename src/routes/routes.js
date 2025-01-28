@@ -10,6 +10,7 @@ const eventsController = require('../controllers/eventsController.js');
 const authController = require('../controllers/authController.js');
 const favoritesController = require('../controllers/favoritesController.js');
 const adminController = require('../controllers/adminController.js');
+const roomController = require('../controllers/roomController.js');
 
 // === Routes publiques ===
 router.get("/api/events", eventsController.getAllEvents);
