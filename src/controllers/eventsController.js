@@ -173,10 +173,12 @@ module.exports.getEventById = async (req, res) => {
         Fermer
       </button>
       <!-- Bouton Rejoindre -->
-      <a
+      <button
         x-show="registered && ongoing" 
         id="boutonRejoindre"
-        hx-post="/api/event-action"
+        hx-get="https://esportify-backend.onrender.com/api/room/${id}"
+        hx-target="body"
+        hx-push-url="/event/${id}/room"
         hx-vals='${JSON.stringify({
           event_id: id,
           user_id: userId,
@@ -186,7 +188,7 @@ module.exports.getEventById = async (req, res) => {
         class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
       >
         Rejoindre
-      </a>
+      </button>
     </div>
   </div>
 `;
