@@ -165,6 +165,17 @@ module.exports.getEventById = async (req, res) => {
         >
           Plus intéressé
         </button>
+        <!-- Bouton Rejoindre -->
+        <button
+        x-show="favorite && ongoing" 
+        id="boutonRejoindre"
+        hx-get="https://esportify-backend.onrender.com/api/room/${id}"
+        hx-target="body"
+        hx-push-url="/event/${id}/room"
+        class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+      >
+        Rejoindre
+      </button>
       </div>
       <button
         @click="isOpen = false"
@@ -172,23 +183,7 @@ module.exports.getEventById = async (req, res) => {
       >
         Fermer
       </button>
-      <!-- Bouton Rejoindre -->
-      <button
-        x-show="registered && ongoing" 
-        id="boutonRejoindre"
-        hx-get="https://esportify-backend.onrender.com/api/room/${id}"
-        hx-target="body"
-        hx-push-url="/event/${id}/room"
-        hx-vals='${JSON.stringify({
-          event_id: id,
-          user_id: userId,
-        })}'
-        hx-headers='{"Content-Type": "application/json"}'
-        hx-encoding="json"
-        class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-      >
-        Rejoindre
-      </button>
+      
     </div>
   </div>
 `;
