@@ -109,8 +109,12 @@ module.exports.getEventById = async (req, res) => {
       [userId, id]
     )).rowCount > 0 : false;
 
+    // Vérifier si l'événement est en cours
+    const now = new Date();
+    const isOngoing = new Date(event.start_datetime) <= now && now <= new Date(event.end_datetime);
+
     const eventHtml = `
-  <div x-data="{ rolee: '${userRole}', favorite: ${isFavorited} }" 
+  <div x-data="{ rolee: '${userRole}', favorite: ${isFavorited}, ongoing: ${isOngoing} }" 
   class="border border-gray-300 p-6 rounded-lg shadow-lg w-full"
   >
     <h2 class="text-2xl font-bold mb-4 font-heading text-heading leading-tight">${event.title}</h2>
@@ -168,6 +172,21 @@ module.exports.getEventById = async (req, res) => {
       >
         Fermer
       </button>
+      <!-- Bouton Rejoindre -->
+      <a
+        x-show="registered && ongoing" 
+        id="boutonRejoindre"
+        hx-post="/api/event-action"
+        hx-vals='${JSON.stringify({
+          event_id: id,
+          user_id: userId,
+        })}'
+        hx-headers='{"Content-Type": "application/json"}'
+        hx-encoding="json"
+        class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+      >
+        Rejoindre
+      </a>
     </div>
   </div>
 `;
