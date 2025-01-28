@@ -1,6 +1,6 @@
 const { pgClient } = require("../../config/dbConnection.js");
 
-module.exports.getEventSpecial = async (req, res) => {
+module.exports.getEventRoom = async (req, res) => {
     const { id } = req.params;
   
     try {
