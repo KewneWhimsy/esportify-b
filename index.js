@@ -65,20 +65,33 @@ async function startServer() {
         console.log(`[WS] Message reçu :`, message.toString());
 
         const parsedMessage = JSON.parse(message.toString());
+        const chatMessage = parsedMessage.chat_message;
+
+        if (!chatMessage || chatMessage.trim() === "") {
+          console.warn(`[WS] Message ignoré, contenu vide.`);
+          return;
+        }
+
         console.log(`[WS] Message parsé :`, parsedMessage);
 
-        room.messages.push(parsedMessage.chat_message);
-        console.log(
-          `[WS] Message ajouté à l'historique :`,
-          parsedMessage.chat_message
-        );
+        // Ajout du message à l'historique
+        room.messages.push(chatMessage);
+        console.log(`[WS] Message ajouté à l'historique :`, chatMessage);
 
+        // Diffusion du message à toutes les connexions
         const messagesList = room.messages
           .map((message) => `<li>${message}</li>`)
           .join("");
         room.connections.forEach((connection) => {
           console.log(`[WS] Envoi du message à la connexion`);
           connection.send(`<ul id='chat_room'>${messagesList}</ul>`);
+        });
+        // Gestion de la déconnexion
+        ws.on("close", () => {
+          room.connections.splice(room.connections.indexOf(ws), 1);
+          console.log(
+            `[WS] Connexion fermée. Restant : ${room.connections.length}`
+          );
         });
       });
     });
