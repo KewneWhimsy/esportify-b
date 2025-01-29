@@ -41,20 +41,11 @@ module.exports.getEventRoom = async (req, res) => {
           <div id="chat_room">
             ...
           </div>
-          <div class="chat-input">
-            <input id="messageInput" name="message" placeholder="Écrivez votre message...">
-            <button id="sendMessageButton">Envoyer</button>
-          </div>
+        <div class="chat-input">
+          <input id="messageInput" name="message" placeholder="Écrivez votre message..." required>
+          <button ws-send="message:messageInput.value">Envoyer</button>
         </div>
-        <script>
-        document.getElementById("sendMessageButton").addEventListener("click", function() {
-          const message = document.getElementById("messageInput").value;
-          const wsMessage = JSON.stringify({ message: message });
-          // Envoyer le message via WebSocket
-          const ws = new WebSocket('wss://esportify-backend.onrender.com/api/room/chat/${id}');
-          ws.send(wsMessage);
-        });
-        </script>
+        </div>
       `;
   
       res.send(specialPageHtml);
