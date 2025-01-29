@@ -46,13 +46,13 @@ module.exports.getEventRoom = async (req, res) => {
           <!-- Chat input section -->
           <div class="chat-input w-full">
             <form id="chatForm" ws-send class="flex items-center gap-2">
-              <input class="bg-[#4d2d45]" 
+              <input class="bg-background w-full" 
                 id="messageInput" 
                 name="chat_message" 
                 placeholder="Écrivez votre message..." 
                 required
               >
-              <button class="bg-[#4d2d45] rounded p-6 hover:bg-[#532447]" type="submit">
+              <button class="bg-[#4d2d45] rounded p-4 hover:bg-[#532447]" type="submit">
                 Envoyer
               </button>
             </form>

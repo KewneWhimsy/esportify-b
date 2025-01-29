@@ -175,7 +175,7 @@ module.exports.getEventById = async (req, res) => {
             
             id="boutonRejoindre"
             hx-get="https://esportify-backend.onrender.com/api/room/${id}"
-            hx-target="body"
+            hx-target="slot"
             class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
           >
             Rejoindre
