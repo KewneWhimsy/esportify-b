@@ -43,7 +43,7 @@ module.exports.getEventRoom = async (req, res) => {
           </div>
         <div class="chat-input">
           <input id="messageInput" name="message" placeholder="Écrivez votre message..." required>
-          <button ws-send="message:messageInput.value">Envoyer</button>
+          <button ws-send='{"message": this.previousElementSibling.value}'>Envoyer</button>
         </div>
         </div>
       `;
