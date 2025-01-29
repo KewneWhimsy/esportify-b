@@ -41,7 +41,7 @@ module.exports.getEventRoom = async (req, res) => {
           <div id="chat_room">
             ...
           </div>
-          <form id="form" ws-send="send">
+          <form id="form" ws-send="send" hx-on:submit.prevent>
             <input name="chat_message" placeholder="Écrivez votre message...">
             <button type="submit">Envoyer</button>
           </form>
