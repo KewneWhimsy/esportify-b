@@ -149,7 +149,7 @@ module.exports.getEventById = async (req, res) => {
         >
           Je participe
         </button>
-        <div x-show="favorite">
+        <div x-data="{ ongoing: ${isOngoing} }" x-show="favorite">
           <!-- Bouton pour retirer des favoris -->
           <button
             x-show="!ongoing"
