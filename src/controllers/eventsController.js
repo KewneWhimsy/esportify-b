@@ -169,7 +169,8 @@ module.exports.getEventById = async (req, res) => {
         </button>
         <!-- Bouton Rejoindre -->
         <button
-          x-show="favorite && ongoing"
+          x-show="typeof isOngoing !== 'undefined' && favorite && isOngoing"
+          :class="{ 'hidden': typeof isOngoing === 'undefined' || !isOngoing || !favorite }"
           id="boutonRejoindre"
           hx-get="https://esportify-backend.onrender.com/api/room/${id}"
           hx-target="body"
