@@ -64,11 +64,6 @@ async function startServer() {
         const parsedMessage = JSON.parse(message.toString());
         console.log(`[WS] Message parsé :`, parsedMessage);
 
-        if (!parsedMessage.message) {
-          console.warn(`[WS] Message ignoré car vide`);
-          return;
-        }
-
         room.messages.push(parsedMessage.message);
         console.log(`[WS] Message ajouté à l'historique :`, parsedMessage.message);
 
