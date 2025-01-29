@@ -115,8 +115,8 @@ module.exports.getEventById = async (req, res) => {
     console.log("en cours :", isOngoing);
 
     const eventHtml = `
-  <div x-data="{ rolee: '${userRole}', favorite: ${isFavorited}, isOngoing: ${isOngoing} }" 
-  x-init="console.log('Initialisation :', { rolee, favorite, isOngoing })"
+  <div x-data="{ rolee: '${userRole}', favorite: ${isFavorited}, ongoing: ${isOngoing} }" 
+  x-init="console.log('Initialisation :', { rolee, favorite, ongoing })"
   class="border border-gray-300 p-6 rounded-lg shadow-lg w-full"
   >
     <h2 class="text-2xl font-bold mb-4 font-heading text-heading leading-tight">${event.title}</h2>
@@ -167,19 +167,19 @@ module.exports.getEventById = async (req, res) => {
         >
           Plus intéressé
         </button>
+        <!-- Bouton Rejoindre -->
+        <button
+          x-show="favorite && ongoing"
+          id="boutonRejoindre"
+          hx-get="https://esportify-backend.onrender.com/api/room/${id}"
+          hx-target="body"
+          hx-push-url="/event/${id}/room"
+          class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+        >
+          Rejoindre
+        </button>
       </div>
-      <!-- Bouton Rejoindre -->
-      <button
-        x-show="favorite && isOngoing"
-        :class="{ 'hidden': !isOngoing || !favorite }"
-        id="boutonRejoindre"
-        hx-get="https://esportify-backend.onrender.com/api/room/${id}"
-        hx-target="body"
-        hx-push-url="/event/${id}/room"
-        class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-      >
-        Rejoindre
-      </button>
+      
       <button
         @click="isOpen = false"
         class="ml-auto bg-red-700 text-white px-4 py-2 rounded hover:bg-red-800"
