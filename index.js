@@ -41,7 +41,7 @@ async function startServer() {
       console.log(`[WS] Connexion ouverte pour la room ${roomId}`);
       const room = chatRooms.get(roomId) || {
         messages: [],
-        connections: []
+        connections: [],
       };
 
       if (!chatRooms.has(roomId)) {
@@ -54,34 +54,32 @@ async function startServer() {
 
       // Envoi des messages existants au nouveau connecté
       if (room.messages.length > 0) {
-        const messagesList = room.messages.map((message) => `<li>${message}</li>`).join('');
+        const messagesList = room.messages
+          .map((message) => `<li>${message}</li>`)
+          .join("");
         ws.send(`<ul id='chat_room'>${messagesList}</ul>`);
       }
 
       // Gestion des messages entrants
       ws.on("message", function incoming(message) {
         console.log(`[WS] Message reçu :`, message.toString());
-        try {
-          const parsedMessage = JSON.parse(message.toString());
-          console.log(`[WS] Message parsé :`, parsedMessage);
-      
-          // Assurez-vous que le message envoyé contient la propriété `message`
-          if (!parsedMessage.message) {
-            console.warn(`[WS] Message ignoré car vide`);
-            return;
-          }
-      
-          room.messages.push(parsedMessage.message);
-          console.log(`[WS] Message ajouté à l'historique :`, parsedMessage.message);
-      
-          const messagesList = room.messages.map(message => `<li>${message}</li>`).join('');
-          room.connections.forEach(connection => {
-            console.log(`[WS] Envoi du message à la connexion`);
-            connection.send(`<ul id='chat_room'>${messagesList}</ul>`);
-          });
-        } catch (error) {
-          console.error(`[WS] Erreur lors du traitement du message :`, error);
-        }
+
+        const parsedMessage = JSON.parse(message.toString());
+        console.log(`[WS] Message parsé :`, parsedMessage);
+
+        room.messages.push(parsedMessage.chat_message);
+        console.log(
+          `[WS] Message ajouté à l'historique :`,
+          parsedMessage.chat_message
+        );
+
+        const messagesList = room.messages
+          .map((message) => `<li>${message}</li>`)
+          .join("");
+        room.connections.forEach((connection) => {
+          console.log(`[WS] Envoi du message à la connexion`);
+          connection.send(`<ul id='chat_room'>${messagesList}</ul>`);
+        });
       });
     });
 
