@@ -39,14 +39,14 @@ module.exports.getEventRoom = async (req, res) => {
         <div hx-ext="ws" ws-connect="wss://esportify-backend.onrender.com/api/room/chat/${id}" hx-swap="beforeend">
           <div id="notifications" class="mb-4"></div>
           <!-- Chatroom container -->
-          <div id="chat_room">
+          <div id="chat_room" class="flex-grow overflow-y-auto">
             <!-- Messages will be displayed here -->
           </div>
 
           <!-- Chat input section -->
-          <div class="chat-input w-full">
+          <div class="chat-input w-80% mt-auto"">
             <form id="chatForm" ws-send class="flex items-center gap-2">
-              <input class="bg-background w-full" 
+              <input class="bg-[#161215] border p-2 rounded w-full" 
                 id="messageInput" 
                 name="chat_message" 
                 placeholder="Écrivez votre message..." 
