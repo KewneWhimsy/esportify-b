@@ -117,6 +117,7 @@ module.exports.showFavorited = async (req, res) => {
       JOIN users u ON e.user_id = u.id
       JOIN favorites f ON f.event_id = e.id
       WHERE f.user_id = $1
+      AND e.start_datetime >= NOW()
       ORDER BY ${sortColumn} ASC
       `,
       [userId]
