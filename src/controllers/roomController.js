@@ -41,8 +41,8 @@ module.exports.getEventRoom = async (req, res) => {
           <div id="chat_room">
             ...
           </div>
-          <form class="chat-input">
-            <input name="chat_message" placeholder="Écrivez votre message...">
+          <form class="chat-input" hx-post="/api/room/chat/${id}" hx-target="#chat_room" hx-swap="innerHTML">
+            <input name="chat_message" placeholder="Écrivez votre message..." required>
           </form>
         </div>
       `;
@@ -54,3 +54,25 @@ module.exports.getEventRoom = async (req, res) => {
     }
   };
   
+  // Route pour gérer l'ajout d'un message dans la chat room
+  module.exports.sendMessageRoom = async (req, res) => {
+    const roomId = req.params.roomId;
+  const { chat_message } = req.body;
+
+  const room = chatRooms.get(roomId);
+  if (!room) {
+    return res.status(404).send("<p>Room not found</p>");
+  }
+
+  // Ajoute le message à la liste des messages de la room
+  room.messages.push(chat_message);
+
+  // Envoie les messages actualisés à toutes les connexions WebSocket de la room
+  const messagesList = room.messages.map(msg => `<li>${msg}</li>`).join('');
+  room.connections.forEach(connection => {
+    connection.send(`<ul id='chat_room'>${messagesList}</ul>`);
+  });
+
+  // Renvoie la liste des messages sous forme de HTML, prête à être insérée
+  res.send(`<ul id="chat_room">${messagesList}</ul>`);
+};

@@ -25,6 +25,7 @@ router.post("/api/login", authController.login);
 router.post("/api/favorites", authenticateToken, checkRole(["joueur", "orga", "admin"]), favoritesController.toggleFavorite);
 router.get("/api/favorites", authenticateToken, checkRole(["joueur", "orga", "admin"]), favoritesController.showFavorited);
 router.get("/api/room/:id", authenticateToken, checkRole(["joueur", "orga", "admin"]), roomController.getEventRoom);
+router.post("/api/room/:id", authenticateToken, checkRole(["joueur", "orga", "admin"]), roomController.sendMessageRoom);
 
 // Routes orga+
 router.post("/api/events", authenticateToken, checkRole(["orga", "admin"]), eventsController.createEvent);
