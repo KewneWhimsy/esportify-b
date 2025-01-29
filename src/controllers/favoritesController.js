@@ -56,7 +56,9 @@ module.exports.toggleFavorite = async (req, res) => {
   // Génération du bouton mis à jour
 
   const buttonHtml = isFavoritedBool
-    ? `<div x-data="{ ongoing: ${isOngoing} }" x-show="favorite">
+    ? `<div x-data='${JSON.stringify({
+              ongoing: isOngoing,
+            })}' x-show="favorite">
           <!-- Bouton pour retirer des favoris -->
           <button
             x-show="!ongoing"
