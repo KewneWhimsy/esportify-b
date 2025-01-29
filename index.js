@@ -52,14 +52,16 @@ async function startServer() {
 
       // Envoi des messages existants au nouveau connecté
       if (room.messages.length > 0) {
-        const messagesList = room.messages.map((message) => `<li>${message}</li>`).join('');
+        const messagesList = room.messages.map((msg) => `<li>${msg}</li>`).join('');
         ws.send(`<ul id='chat_room'>${messagesList}</ul>`);
       }
 
       // Gestion des messages entrants
       ws.on("message", function incoming(message) {
         const parsedMessage = JSON.parse(message.toString());
-        room.messages.push(parsedMessage.chat_message);
+        if (!parsedMessage.message) return; // Vérification pour éviter les messages vides
+        
+        room.messages.push(parsedMessage.message);
         
         const messagesList = room.messages.map(msg => `<li>${msg}</li>`).join('');
         room.connections.forEach(connection => {
