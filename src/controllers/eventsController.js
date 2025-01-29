@@ -159,7 +159,6 @@ module.exports.getEventById = async (req, res) => {
               event_id: id,
               user_id: userId,
               isFavorited: false,
-              ongoing: ongoing,
             })}'
             hx-headers='{"Content-Type": "application/json"}'
             hx-encoding="json"

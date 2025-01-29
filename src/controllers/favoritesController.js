@@ -3,13 +3,30 @@ const jwt = require("jsonwebtoken");
 
 // Route pour ajouter ou retirer un favori
 module.exports.toggleFavorite = async (req, res) => {
-  const { event_id, user_id, isFavorited, ongoing } = req.body;
+  const { event_id, user_id, isFavorited } = req.body;
 
   console.log("isFavorited:", isFavorited, "Type:", typeof isFavorited);
   let isFavoritedBool = isFavorited === true || isFavorited === "true";
   console.log("isFavoritedBool:", isFavoritedBool);
 
   try {
+    // Récupérer l'événement de la base de données pour obtenir start_datetime et end_datetime
+    const result = await pgClient.query(
+      `SELECT start_datetime, end_datetime FROM events WHERE id = $1`,
+      [event_id]
+    );
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Event not found" });
+    }
+
+    const event = result.rows[0];
+    const now = new Date();
+    
+    // Vérifier si l'événement est en cours
+    const isOngoing = new Date(event.start_datetime) <= now && now <= new Date(event.end_datetime);
+    console.log("En cours:", isOngoing);
+
     // Fonction pour mettre à jour les favoris
     if (isFavoritedBool) {
       // Ajouter un favori
@@ -39,7 +56,7 @@ module.exports.toggleFavorite = async (req, res) => {
   // Génération du bouton mis à jour
 
   const buttonHtml = isFavoritedBool
-    ? `<div x-data="{ ongoing: ${ongoing} }" x-show="favorite">
+    ? `<div x-data="{ ongoing: ${isOngoing} }" x-show="favorite">
           <!-- Bouton pour retirer des favoris -->
           <button
             x-show="!ongoing"
