@@ -41,8 +41,9 @@ module.exports.getEventRoom = async (req, res) => {
           <div id="chat_room">
             ...
           </div>
-          <form form id="form" ws-send>
+          <form id="form" ws-send>
             <input name="chat_message" placeholder="Écrivez votre message...">
+            <button type="submit">Envoyer</button>
           </form>
         </div>
         <script src="https://unpkg.com/htmx.org@1.9.12/dist/ext/ws.js"></script>
