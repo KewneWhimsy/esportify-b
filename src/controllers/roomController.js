@@ -43,22 +43,9 @@ module.exports.getEventRoom = async (req, res) => {
           </div>
         <div class="chat-input">
           <input id="messageInput" name="message" placeholder="Écrivez votre message..." required>
-          <button id="sendMessageButton">Envoyer</button>
+          <button ws-send="message:messageInput.value">Envoyer</button>
         </div>
         </div>
-        <script>
-  const sendMessageButton = document.getElementById("sendMessageButton");
-  const messageInput = document.getElementById("messageInput");
-
-  sendMessageButton.addEventListener("click", () => {
-    const message = messageInput.value;
-    if (message.trim()) {
-      // Envoie du message sous format JSON via WebSocket
-      const wsMessage = JSON.stringify({ message: message });
-      socket.send(wsMessage);  //
-    }
-  });
-</script>
       `;
   
       res.send(specialPageHtml);
