@@ -149,10 +149,10 @@ module.exports.getEventById = async (req, res) => {
         >
           Je participe
         </button>
-
+        <div x-show="favorite">
         <!-- Bouton pour retirer des favoris -->
         <button
-          x-show="favorite"
+          x-show="!ongoing"
           hx-post="https://esportify-backend.onrender.com/api/favorites"
           hx-target="#favorite-button"
           hx-vals='${JSON.stringify({
@@ -169,8 +169,7 @@ module.exports.getEventById = async (req, res) => {
         </button>
         <!-- Bouton Rejoindre -->
         <button
-          x-show="typeof isOngoing !== 'undefined' && favorite && isOngoing"
-          :class="{ 'hidden': typeof isOngoing === 'undefined' || !isOngoing || !favorite }"
+          x-show="ongoing"
           id="boutonRejoindre"
           hx-get="https://esportify-backend.onrender.com/api/room/${id}"
           hx-target="body"
@@ -179,6 +178,7 @@ module.exports.getEventById = async (req, res) => {
         >
           Rejoindre
         </button>
+        </div>
       </div>
       
       <button
