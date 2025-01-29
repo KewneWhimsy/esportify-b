@@ -29,6 +29,9 @@ module.exports.getEventRoom = async (req, res) => {
       }
       // Générez le contenu HTML de la page spéciale
       const specialPageHtml = `
+        <a href="index.html" class="flex items-center">
+          <img src="logo-header.png" alt="Logo Esportify" class="h-20 w-auto" />
+        </a>
         <div class="p-6">
           <h1 class="text-3xl font-bold mb-4">${event.title} - Room</h1>
           <p>${event.description}</p>
