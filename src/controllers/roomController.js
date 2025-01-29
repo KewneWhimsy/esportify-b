@@ -41,10 +41,10 @@ module.exports.getEventRoom = async (req, res) => {
           <div id="chat_room">
             ...
           </div>
-          <div class="chat-input">
+          <div class="chat-input w-full h-100%">
             <form id="chatForm" ws-send>
               <input id="messageInput" name="chat_message" placeholder="Écrivez votre message..." required>
-              <button type="submit">Envoyer</button>
+              <button class="bg-[#4d2d45] p-6 rounded" type="submit">Envoyer</button>
             </form>
           </div>
         </div>
@@ -53,6 +53,11 @@ module.exports.getEventRoom = async (req, res) => {
             event.preventDefault(); // Empêche le rechargement de la page
           })
         </script>
+        <style>
+          input {
+            border: 1px solid #4d2d45; /* Bordure personnalisée */
+          }
+        </style>
       `;
   
       res.send(specialPageHtml);
