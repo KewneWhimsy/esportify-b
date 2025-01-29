@@ -38,12 +38,14 @@ async function startServer() {
     // Route WebSocket pour la chatroom
     app.ws("/api/room/chat/:roomId", function connection(ws, req) {
       const roomId = req.params.roomId;
+      console.log(`[WS] Connexion ouverte pour la room ${roomId}`);
       const room = chatRooms.get(roomId) || {
         messages: [],
         connections: []
       };
 
       if (!chatRooms.has(roomId)) {
+        console.log(`[WS] Création de la room ${roomId}`);
         chatRooms.set(roomId, room);
       }
 
@@ -58,11 +60,21 @@ async function startServer() {
 
       // Gestion des messages entrants
       ws.on("message", function incoming(message) {
+        console.log(`[WS] Message reçu :`, message.toString());
         const parsedMessage = JSON.parse(message.toString());
+        console.log(`[WS] Message parsé :`, parsedMessage);
+
+        if (!parsedMessage.message) {
+          console.warn(`[WS] Message ignoré car vide`);
+          return;
+        }
+
         room.messages.push(parsedMessage.message);
-        
-        const messagesList = room.messages.map(msg => `<li>${msg}</li>`).join('');
+        console.log(`[WS] Message ajouté à l'historique :`, parsedMessage.message);
+
+        const messagesList = room.messages.map(message => `<li>${message}</li>`).join('');
         room.connections.forEach(connection => {
+          console.log(`[WS] Envoi du message à la connexion ${index}`);
           connection.send(`<ul id='chat_room'>${messagesList}</ul>`);
         });
       });
@@ -70,6 +82,7 @@ async function startServer() {
       // Gestion de la déconnexion
       ws.on("close", () => {
         room.connections.splice(room.connections.indexOf(ws), 1);
+        console.log(`[WS] Connexion fermée. Restant : ${room.connections.length}`);
       });
     });
 
