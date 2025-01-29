@@ -61,23 +61,27 @@ async function startServer() {
       // Gestion des messages entrants
       ws.on("message", function incoming(message) {
         console.log(`[WS] Message reçu :`, message.toString());
-        const parsedMessage = JSON.parse(message.toString());
-        console.log(`[WS] Message parsé :`, parsedMessage);
-
-        room.messages.push(parsedMessage.message);
-        console.log(`[WS] Message ajouté à l'historique :`, parsedMessage.message);
-
-        const messagesList = room.messages.map(message => `<li>${message}</li>`).join('');
-        room.connections.forEach(connection => {
-          console.log(`[WS] Envoi du message à la connexion ${index}`);
-          connection.send(`<ul id='chat_room'>${messagesList}</ul>`);
-        });
-      });
-
-      // Gestion de la déconnexion
-      ws.on("close", () => {
-        room.connections.splice(room.connections.indexOf(ws), 1);
-        console.log(`[WS] Connexion fermée. Restant : ${room.connections.length}`);
+        try {
+          const parsedMessage = JSON.parse(message.toString());
+          console.log(`[WS] Message parsé :`, parsedMessage);
+      
+          // Assurez-vous que le message envoyé contient la propriété `message`
+          if (!parsedMessage.message) {
+            console.warn(`[WS] Message ignoré car vide`);
+            return;
+          }
+      
+          room.messages.push(parsedMessage.message);
+          console.log(`[WS] Message ajouté à l'historique :`, parsedMessage.message);
+      
+          const messagesList = room.messages.map(message => `<li>${message}</li>`).join('');
+          room.connections.forEach(connection => {
+            console.log(`[WS] Envoi du message à la connexion`);
+            connection.send(`<ul id='chat_room'>${messagesList}</ul>`);
+          });
+        } catch (error) {
+          console.error(`[WS] Erreur lors du traitement du message :`, error);
+        }
       });
     });
 
