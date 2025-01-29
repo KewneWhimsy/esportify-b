@@ -36,7 +36,7 @@ module.exports.getEventRoom = async (req, res) => {
           <p><strong>Fin :</strong> ${new Date(event.end_datetime).toLocaleString()}</p>
           <p><strong>Organisateur :</strong> ${event.organisateur}</p>
         </div>
-        <div hx-ext="ws" ws-connect="ws://esportify-backend.onrender.com/api/room/chat/${id}" hx-swap="beforeend">
+        <div hx-ext="ws" ws-connect="wss://esportify-backend.onrender.com/api/room/chat/${id}" hx-swap="beforeend">
           <div id="notifications"></div>
           <div id="chat_room">
             ...
