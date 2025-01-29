@@ -41,7 +41,7 @@ module.exports.getEventRoom = async (req, res) => {
           <div id="chat_room">
             ...
           </div>
-          <form class="chat-input" hx-post="/api/room/chat/${id}" hx-target="#chat_room" hx-swap="innerHTML">
+          <form class="chat-input" hx-post="https://esportify-backend.onrender.com/api/room/chat/${id}" hx-target="#chat_room" hx-swap="innerHTML">
             <input name="chat_message" placeholder="Écrivez votre message..." required>
           </form>
         </div>
