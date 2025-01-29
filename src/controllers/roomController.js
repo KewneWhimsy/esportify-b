@@ -48,6 +48,11 @@ module.exports.getEventRoom = async (req, res) => {
             </form>
           </div>
         </div>
+        <script>
+          document.getElementById('chatForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Empêche le rechargement de la page
+          })
+        </script>
       `;
   
       res.send(specialPageHtml);
