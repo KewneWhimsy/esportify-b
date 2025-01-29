@@ -54,7 +54,7 @@ module.exports.getEventRoom = async (req, res) => {
           })
         </script>
         <style>
-          input {
+          input, textarea {
             border: 1px solid #4d2d45; /* Bordure personnalisée */
           }
         </style>
