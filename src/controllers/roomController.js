@@ -30,12 +30,22 @@ module.exports.getEventRoom = async (req, res) => {
       // Générez le contenu HTML de la page spéciale
       const specialPageHtml = `
         <div class="p-6">
-          <h1 class="text-3xl font-bold mb-4">${event.title} - Page spéciale</h1>
+          <h1 class="text-3xl font-bold mb-4">${event.title} - Room</h1>
           <p>${event.description}</p>
           <p><strong>Début :</strong> ${new Date(event.start_datetime).toLocaleString()}</p>
           <p><strong>Fin :</strong> ${new Date(event.end_datetime).toLocaleString()}</p>
           <p><strong>Organisateur :</strong> ${event.organisateur}</p>
         </div>
+        <div hx-ext="ws" ws-connect=""ws://https://esportify-backend.onrender.com/api/room/chat/${id}">
+          <div id="notifications"></div>
+          <div id="chat_room">
+            ...
+          </div>
+          <form form id="form" ws-send>
+            <input name="chat_message" placeholder="Écrivez votre message...">
+          </form>
+        </div>
+        <script src="https://unpkg.com/htmx.org@1.9.12/dist/ext/ws.js"></script>
       `;
   
       res.send(specialPageHtml);

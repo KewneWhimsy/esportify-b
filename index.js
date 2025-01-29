@@ -4,6 +4,7 @@ const corsOptions = require("./config/corsOptions.js");
 const routes = require("./src/routes/routes.js"); // Import des routes
 const { connectToDB } = require("./config/dbConnection.js"); // Import fonction de connexion
 const { initializeDbPg } = require("./initData.js"); // Import fonction d'initialisation de la bdd postgres
+const expressWs = require("express-ws");
 
 const app = express(); // Crée une instance d'application Express
 
@@ -13,6 +14,12 @@ app.use(express.urlencoded({ extended: true }));
 
 // Applique CORS à toutes les requêtes
 app.use(cors(corsOptions)); // L'app Express utilise CORS avec ses options configurées
+
+// Initialisation du serveur WebSocket
+expressWs(app);
+
+// Gestion des messages et des connections par room
+const chatRooms = new Map(); // Structure de données pour stocker les messages et connections par room
 
 // Fonction asynchrone pour démarrer l'application
 async function startServer() {
@@ -27,6 +34,44 @@ async function startServer() {
 
     // Étape 3: Montage des routes
     app.use("/", routes);
+
+    // Route WebSocket pour la chatroom
+    app.ws("/api/room/chat/:roomId", function connection(ws, req) {
+      const roomId = req.params.roomId;
+      const room = chatRooms.get(roomId) || {
+        messages: [],
+        connections: []
+      };
+
+      if (!chatRooms.has(roomId)) {
+        chatRooms.set(roomId, room);
+      }
+
+      // Ajout de la connection à la room
+      room.connections.push(ws);
+
+      // Envoi des messages existants au nouveau connecté
+      if (room.messages.length > 0) {
+        const messagesList = room.messages.map((message) => `<li>${message}</li>`).join('');
+        ws.send(`<ul id='chat_room'>${messagesList}</ul>`);
+      }
+
+      // Gestion des messages entrants
+      ws.on("message", function incoming(message) {
+        const parsedMessage = JSON.parse(message.toString());
+        room.messages.push(parsedMessage.chat_message);
+        
+        const messagesList = room.messages.map(msg => `<li>${msg}</li>`).join('');
+        room.connections.forEach(connection => {
+          connection.send(`<ul id='chat_room'>${messagesList}</ul>`);
+        });
+      });
+
+      // Gestion de la déconnexion
+      ws.on("close", () => {
+        room.connections.splice(room.connections.indexOf(ws), 1);
+      });
+    });
 
     // Route de vérification de l'état du serveur
     app.get("/health", (req, res) => {
