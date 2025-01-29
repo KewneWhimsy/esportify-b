@@ -45,7 +45,6 @@ module.exports.getEventRoom = async (req, res) => {
             <input id="messageInput" name="message" placeholder="Écrivez votre message...">
             <button ws-send='$JSON.stringify({"message": document.getElementById("messageInput").value})'>Envoyer</button>
             <button ws-send='${JSON.stringify({"message": document.getElementById("messageInput").value})}'>Envoyer2</button>
-
           </div>
         </div>
       `;
