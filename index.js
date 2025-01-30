@@ -4,6 +4,8 @@ const corsOptions = require("./config/corsOptions.js");
 const routes = require("./src/routes/routes.js"); // Import des routes
 const { connectToDB } = require("./config/dbConnection.js"); // Import fonction de connexion
 const { initializeDbPg } = require("./initData.js"); // Import fonction d'initialisation de la bdd postgres
+const ChatMessage = require("./models/chatmessage"); // Import du modèle des messages de chat
+
 const expressWs = require("express-ws");
 
 const app = express(); // Crée une instance d'application Express
@@ -36,9 +38,10 @@ async function startServer() {
     app.use("/", routes);
 
     // Route WebSocket pour la chatroom
-    app.ws("/api/room/chat/:roomId", function connection(ws, req) {
+    app.ws("/api/room/chat/:roomId", async function connection(ws, req) {
       const roomId = req.params.roomId;
       console.log(`[WS] Connexion ouverte pour la room ${roomId}`);
+      
       const room = chatRooms.get(roomId) || {
         messages: [],
         connections: [],
@@ -52,16 +55,25 @@ async function startServer() {
       // Ajout de la connection à la room
       room.connections.push(ws);
 
-      // Envoi des messages existants au nouveau connecté
-      if (room.messages.length > 0) {
-        const messagesList = room.messages
-          .map((message) => `<li>${message}</li>`)
-          .join("");
-        ws.send(`<ul id='chat_room'>${messagesList}</ul>`);
+      // Charger tous les anciens messages depuis MongoDB
+      try {
+        const messages = await ChatMessage.find({ roomId })
+          .sort({ timestamp: 1 })
+          .exec();
+
+        // Envoyer l'historique complet au client
+        if (messages.length > 0) {
+          const messagesList = messages
+            .map((msg) => `<li>${msg.chat_message}</li>`)
+            .join("");
+          ws.send(`<ul id='chat_room'>${messagesList}</ul>`);
+        }
+      } catch (err) {
+        console.error("Erreur lors de la récupération des messages:", err);
       }
 
       // Gestion des messages entrants
-      ws.on("message", function incoming(message) {
+      ws.on("message", async function incoming(message) {
         console.log(`[WS] Message reçu :`, message.toString());
 
         const parsedMessage = JSON.parse(message.toString());
@@ -74,25 +86,29 @@ async function startServer() {
 
         console.log(`[WS] Message parsé :`, parsedMessage);
 
-        // Ajout du message à l'historique
-        room.messages.push(chatMessage);
-        console.log(`[WS] Message ajouté à l'historique :`, chatMessage);
+        // Sauvegarde du message dans MongoDB
+        const newMessage = new ChatMessage({
+          roomId,
+          chat_message: chatMessage,
+        });
 
-        // Diffusion du message à toutes les connexions
-        const messagesList = room.messages
-          .map((message) => `<li>${message}</li>`)
-          .join("");
+        await newMessage.save();
+        console.log(`[WS] Message sauvegardé dans MongoDB :`, chatMessage);
+
+        // Ajouter le message à la mémoire de la room
+        room.messages.push(chatMessage);
+
+        // Diffuser uniquement le nouveau message
+        const newMessageHtml = `<li>${chatMessage}</li>`;
         room.connections.forEach((connection) => {
           console.log(`[WS] Envoi du message à la connexion`);
-          connection.send(`<ul id='chat_room'>${messagesList}</ul>`);
+          connection.send(newMessageHtml);
         });
-        // Gestion de la déconnexion
-        ws.on("close", () => {
-          room.connections.splice(room.connections.indexOf(ws), 1);
-          console.log(
-            `[WS] Connexion fermée. Restant : ${room.connections.length}`
-          );
-        });
+      });
+      // Gestion de la déconnexion
+      ws.on("close", () => {
+        room.connections = room.connections.filter((conn) => conn !== ws);
+        console.log(`[WS] Connexion fermée. Restant : ${room.connections.length}`);
       });
     });
 
