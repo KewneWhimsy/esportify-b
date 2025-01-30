@@ -49,7 +49,7 @@ async function initializeEvents() {
             ('Tournoi de League of Legend', 'Rejoignez-nous pour notre compétition hebdomadaire', 32, TRUE, '2024-12-03 09:00'::timestamp, '2024-12-03 11:00'::timestamp, 4, NOW(), NOW()),
             ('Tournoi de League of Legend mieux', 'Venez sur MON événement', 40, TRUE, '2024-12-03 09:00'::timestamp, '2024-12-03 11:00'::timestamp, 3, NOW(), NOW()),
             ('Kermesse du village', 'Chers amis, nous vous attendont nombreux le 10 Janvier.', 100, FALSE, '2025-01-10 09:00'::timestamp, '2025-01-11 05:00'::timestamp, 5, NOW(), NOW()),
-            ('Petite partie d''échec ?', 'alléééééé !!!! rejoignez moi pour une loooooogue partie...', 3, TRUE, '2025-01-15 09:00'::timestamp, '2025-01-30 12:00'::timestamp, 2, NOW(), NOW()),
+            ('Petite partie d''échec ?', 'alléééééé !!!! rejoignez moi pour une loooooogue partie...', 3, TRUE, '2025-01-15 09:00'::timestamp, '2025-02-30 12:00'::timestamp, 2, NOW(), NOW()),
             ('événement test', 'à accepter', 20, FALSE, '2024-11-17 00:00'::timestamp, '2024-12-17 23:59'::timestamp, 6, NOW(), NOW())
         ON CONFLICT DO NOTHING;
     `;

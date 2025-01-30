@@ -41,7 +41,7 @@ async function startServer() {
     app.ws("/api/room/chat/:roomId", async function connection(ws, req) {
       const roomId = req.params.roomId;
       console.log(`[WS] Connexion ouverte pour la room ${roomId}`);
-      
+
       const room = chatRooms.get(roomId) || {
         messages: [],
         connections: [],
@@ -97,18 +97,23 @@ async function startServer() {
 
         // Ajouter le message à la mémoire de la room
         room.messages.push(chatMessage);
+        console.log(`[WS] Message ajouté à l'historique :`, chatMessage);
 
-        // Diffuser uniquement le nouveau message
-        const newMessageHtml = `<li>${chatMessage}</li>`;
+        // Diffusion du message à toutes les connexions
+        const messagesList = room.messages
+          .map((message) => `<li>${message}</li>`)
+          .join("");
         room.connections.forEach((connection) => {
           console.log(`[WS] Envoi du message à la connexion`);
-          connection.send(newMessageHtml);
+          connection.send(`<ul id='chat_room'>${messagesList}</ul>`);
         });
       });
       // Gestion de la déconnexion
       ws.on("close", () => {
         room.connections = room.connections.filter((conn) => conn !== ws);
-        console.log(`[WS] Connexion fermée. Restant : ${room.connections.length}`);
+        console.log(
+          `[WS] Connexion fermée. Restant : ${room.connections.length}`
+        );
       });
     });
 
