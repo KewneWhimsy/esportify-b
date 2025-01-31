@@ -130,6 +130,7 @@ module.exports.getEventById = async (req, res) => {
       <!-- Boutons pour participer -->
       <div x-show="rolee === 'joueur' || rolee === 'admin' || rolee === 'orga'" 
       id="favorite-button"
+      class="flex"
       :class="{ 'hidden': rolee === 'visiteur' }"
       >
         <!-- Bouton pour ajouter aux favoris -->
