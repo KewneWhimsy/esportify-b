@@ -1,9 +1,13 @@
+// Importation de la configuration de la connexion à la base de données
 const { pgClient } = require("../../config/dbConnection.js");
 
+// CREATION ROOM EVENT
 module.exports.getEventRoom = async (req, res) => {
+    // Extraction de l'ID de l'événement via les paramètres de l'URL
     const { id } = req.params;
   
     try {
+      // Exécution de la requête pour récupérer les données d'un événement spécifique
       const result = await pgClient.query(
         `
         SELECT e.id, e.title, e.description, e.players_count, e.start_datetime, e.end_datetime, u.username AS organisateur
@@ -11,23 +15,24 @@ module.exports.getEventRoom = async (req, res) => {
         JOIN users u ON e.user_id = u.id
         WHERE e.id = $1
       `,
-        [id]
+        [id] // Le paramètre de la requête est l'ID de l'événement
       );
-  
+      
+      // Si aucun événement n'est trouvé : 404
       if (result.rows.length === 0) {
         return res.status(404).send("<p>Événement non trouvé</p>");
       }
-  
+      // Récupération de la première ligne du résultat (l'événement trouvé)
       const event = result.rows[0];
       const now = new Date();
 
       // Vérification si l'événement est en cours
       const isOngoing = new Date(event.start_datetime) <= now && now <= new Date(event.end_datetime);
-  
+      // Si l'événement n'est pas en cours : 403
       if (!isOngoing) {
         return res.status(403).send("<p>Accès refusé : L'événement n'est pas en cours</p>");
       }
-      // Générez le contenu HTML de la page spéciale
+      // Création du contenu HTML de la page spéciale pour l'événement
       const specialPageHtml = `
         <div class="p-6">
           <h1 class="text-3xl font-bold mb-4">${event.title} - Room</h1>
@@ -64,7 +69,7 @@ module.exports.getEventRoom = async (req, res) => {
           })
         </script>
       `;
-  
+      
       res.send(specialPageHtml);
     } catch (error) {
       console.error("Erreur lors de la récupération de la page spéciale :", error);

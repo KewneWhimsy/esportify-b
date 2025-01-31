@@ -44,15 +44,6 @@ CREATE TABLE IF NOT EXISTS favorites (
     UNIQUE(user_id, event_id) -- Un utilisateur ne peut pas ajouter le même événement plusieurs fois
 );
 
--- Table des messages
-CREATE TABLE IF NOT EXISTS messages (
-    id SERIAL PRIMARY KEY,
-    event_id INT REFERENCES events(id) ON DELETE CASCADE, -- L'événement auquel le message est lié
-    user_id INT REFERENCES users(id) ON DELETE CASCADE,   -- L'utilisateur ayant envoyé le message
-    content TEXT NOT NULL,                                -- Contenu du message
-    created_at TIMESTAMP DEFAULT NOW()                    -- Date de création
-);
-
 -- Index pour les performances
 DO $$
 BEGIN
