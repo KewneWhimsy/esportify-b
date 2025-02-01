@@ -362,6 +362,7 @@ module.exports.myEventById = async (req, res) => {
     <form
     class="inset-0 w-full rounded max-w-[900px] mx-auto items-center justify-center z-50 px-5 py-3 transition-opacity"
     hx-post="https://esportify-backend.onrender.com/api/events/update/${event.id}"
+    hx-on::after-request="htmx.trigger('body', 'refresh')"
     hx-target="#form-messageup"
     hx-swap="innerHTML"
     class="space-y-4"
