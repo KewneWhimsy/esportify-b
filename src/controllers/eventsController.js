@@ -446,6 +446,19 @@ module.exports.myEventById = async (req, res) => {
         Mettre à jour
       </button>
     </div>
+    <!-- Supprimer -->
+    <div>
+      <button
+        type="button"
+        class="w-full bg-red-600 hover:bg-red-700 text-white px-4 py-2 mt-4 rounded transition-colors"
+        hx-delete="https://esportify-backend.onrender.com/api/events/deleteMy/${event.id}"
+        hx-confirm="Êtes-vous sûr de vouloir supprimer cet événement ?"
+        hx-target="#form-messageup"
+        hx-swap="innerHTML"
+      >
+        Supprimer l'événement
+      </button>
+    </div>
     <!-- Message de retour -->
     <div id="form-messageup" class="text-sm text-center mt-4"></div>
     <style>
@@ -532,7 +545,7 @@ module.exports.updateEvent = async (req, res) => {
     // Gérer les erreurs spécifiques de la base de données
     if (err.code === 'P0001') {  // Custom PostgreSQL error code for overlap
       return res.send(`<div class="text-red-500">
-        Il existe déjà un événement qui se chevauche avec celui-ci.
+        Il existe déjà un événement qui se chevauche avec celui-ci.É
       </div>`);
     } else if (err.code === '23505') {
       return res.send('<p class="text-red-500">Un événement similaire existe déjà.</p>');
@@ -546,15 +559,19 @@ module.exports.updateEvent = async (req, res) => {
   }
 };
 
+module.exports.deleteMy = async (req, res) => {
+  console.log("DELETE deleteMy");
+  const eventId = req.params.eventId;
+  console.log(`Refus de l'événement ${eventId}`);
+  try {
+    await pgClient.query(`
+      DELETE FROM events 
+      WHERE id = $1
+    `, [eventId]);
 
-// Route pour les administrateurs - approuver un événement
-module.exports.approveEvent = async (req, res) => {
-  console.log("POST approveEvent");
-  const eventId = req.params.id;
-
-  // Logique pour approuver l'événement
-  await pgClient.query("UPDATE events SET is_approved = TRUE WHERE id = $1", [
-    eventId,
-  ]);
-  res.json({ message: "Événement approuvé" });
+    res.send('<p class="text-red-500">Événement supprimé.</p>');
+  } catch (err) {
+    console.error("Erreur dans rejectEvent :", err);
+    res.status(500).send("Erreur serveur lors du refus de l'événement");
+  }
 };
