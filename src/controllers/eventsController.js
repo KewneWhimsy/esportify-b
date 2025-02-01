@@ -132,7 +132,7 @@ module.exports.getEventById = async (req, res) => {
       id="favorite-button"
       :class="{ 'hidden': rolee === 'visiteur' }"
       >
-       <div class="flex">
+       <div class="flex gap-2">
         <!-- Bouton pour ajouter aux favoris -->
         <button
           x-show="!favorite"
