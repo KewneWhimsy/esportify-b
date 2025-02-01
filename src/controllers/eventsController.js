@@ -150,10 +150,9 @@ module.exports.getEventById = async (req, res) => {
         >
           Je participe
         </button>
-        <div x-show="favorite">
           <!-- Bouton pour retirer des favoris -->
           <button
-            x-show="!ongoing"
+            x-show="favorite"
             hx-post="https://esportify-backend.onrender.com/api/favorites"
             hx-target="#favorite-button"
             hx-vals='${JSON.stringify({
@@ -169,9 +168,10 @@ module.exports.getEventById = async (req, res) => {
             Plus intéressé
           </button>
           
-        </div>
         <!-- Bouton Rejoindre -->
-        <div x-show="ongoing">
+        
+      </div>
+      <div x-show="ongoing">
           <button
             
             id="boutonRejoindre"
@@ -182,8 +182,6 @@ module.exports.getEventById = async (req, res) => {
             Rejoindre
           </button>
         </div>
-      </div>
-      
       <button
         @click="isOpen = false"
         class="ml-auto bg-red-700 text-white px-4 py-2 rounded hover:bg-red-800"

@@ -53,7 +53,9 @@ module.exports.toggleFavorite = async (req, res) => {
            class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
          >
            Plus intéressé
-         </button>`
+        </button>
+        <div class="contents" hx-get="https://esportify-backend.onrender.com/api/favorites" hx-trigger="load" hx-target=#favoritesContainer></div>
+      `
     : `<button
            hx-post="https://esportify-backend.onrender.com/api/favorites"
            hx-target="#favorite-button"
@@ -68,7 +70,9 @@ module.exports.toggleFavorite = async (req, res) => {
            class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
          >
            Je participe
-         </button>`;
+         </button>
+         <div class="contents" hx-get="https://esportify-backend.onrender.com/api/favorites" hx-trigger="load" hx-target=#favoritesContainer></div>
+         `;
 
   console.log("HTML envoyé au client :", buttonHtml);
   res.send(buttonHtml);
