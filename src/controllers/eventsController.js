@@ -150,30 +150,28 @@ module.exports.getEventById = async (req, res) => {
         >
           Je participe
         </button>
-          <!-- Bouton pour retirer des favoris -->
-          <button
-            x-show="favorite"
-            hx-post="https://esportify-backend.onrender.com/api/favorites"
-            hx-target="#favorite-button"
-            hx-vals='${JSON.stringify({
-              event_id: id,
-              user_id: userId,
-              isFavorited: false,
-            })}'
-            hx-headers='{"Content-Type": "application/json"}'
-            hx-encoding="json"
-            hx-swap="innerHTML"
-            class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-          >
-            Plus intéressé
-          </button>
+
+        <!-- Bouton pour retirer des favoris -->
+        <button
+          x-show="favorite"
+          hx-post="https://esportify-backend.onrender.com/api/favorites"
+          hx-target="#favorite-button"
+          hx-vals='${JSON.stringify({
+            event_id: id,
+            user_id: userId,
+            isFavorited: false,
+          })}'
+          hx-headers='{"Content-Type": "application/json"}'
+          hx-encoding="json"
+          hx-swap="innerHTML"
+          class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+        >
+          Plus intéressé
+        </button>
           
         <!-- Bouton Rejoindre -->
-        
-      </div>
-      <div x-show="ongoing">
-          <button
-            
+        <div x-show="ongoing">
+          <button  
             id="boutonRejoindre"
             hx-get="https://esportify-backend.onrender.com/api/room/${id}"
             hx-target="#chatcontain"
@@ -182,6 +180,8 @@ module.exports.getEventById = async (req, res) => {
             Rejoindre
           </button>
         </div>
+      </div>
+      <!-- Bouton Fermer -->
       <button
         @click="isOpen = false"
         class="ml-auto bg-red-700 text-white px-4 py-2 rounded hover:bg-red-800"
@@ -359,6 +359,7 @@ module.exports.myEventById = async (req, res) => {
   <div
   class="border border-gray-300 p-6 rounded-lg shadow-lg w-full"
   >
+    <button class="ml-auto" @click="isOpen = false">X</button>
     <form
     class="inset-0 w-full rounded max-w-[900px] mx-auto items-center justify-center z-50 px-5 py-3 transition-opacity"
     hx-post="https://esportify-backend.onrender.com/api/events/update/${event.id}"
