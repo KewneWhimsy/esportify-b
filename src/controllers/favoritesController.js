@@ -113,7 +113,8 @@ module.exports.showFavorited = async (req, res) => {
         e.id, 
         e.title, 
         e.description, 
-        e.players_count, 
+        e.players_count,
+        e.is_approved, 
         e.start_datetime, 
         e.end_datetime, 
         u.username AS organisateur
@@ -122,6 +123,7 @@ module.exports.showFavorited = async (req, res) => {
       LEFT JOIN favorites f ON f.event_id = e.id AND f.user_id = $1
       WHERE (f.user_id = $1 OR e.user_id = $1)
       AND e.end_datetime >= NOW()
+      AND e.is_approved = TRUE
       ORDER BY ${sortColumn} ASC
       `,
       [userId]
