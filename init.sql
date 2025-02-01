@@ -1,5 +1,5 @@
 -- Réinitialisation
---DROP TABLE IF EXISTS favorites, events_images, messages, events, users CASCADE;
+DROP TABLE IF EXISTS favorites, events_images, messages, events, users CASCADE;
 
 -- Table des utilisateurs
 CREATE TABLE IF NOT EXISTS users (
@@ -98,26 +98,6 @@ CREATE OR REPLACE TRIGGER trg_check_event_overlap
 BEFORE INSERT OR UPDATE ON events
 FOR EACH ROW
 EXECUTE FUNCTION check_event_overlap();
-
--- Fonction pour vérifier l'approbation de l'événement dans favorites
-CREATE OR REPLACE FUNCTION check_event_approval()
-RETURNS TRIGGER AS $$
-BEGIN
-    IF NOT EXISTS (
-        SELECT 1
-        FROM events e
-        WHERE e.id = NEW.event_id AND e.is_approved = TRUE
-    ) THEN
-        RAISE EXCEPTION 'événement non approuvé.';
-    END IF;
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
--- Trigger pour vérifier l'approbation avant l'ajout dans favorites
-CREATE OR REPLACE TRIGGER trg_check_event_approval
-BEFORE INSERT ON favorites
-FOR EACH ROW
-EXECUTE FUNCTION check_event_approval();
 
 -- Fonction pour mettre à jour le champ updated_at automatiquement
 CREATE OR REPLACE FUNCTION update_updated_at()
