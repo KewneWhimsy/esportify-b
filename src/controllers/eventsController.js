@@ -453,6 +453,7 @@ module.exports.myEventById = async (req, res) => {
         class="w-full bg-red-600 hover:bg-red-700 text-white px-4 py-2 mt-4 rounded transition-colors"
         hx-delete="https://esportify-backend.onrender.com/api/events/deleteMy/${event.id}"
         hx-confirm="Êtes-vous sûr de vouloir supprimer cet événement ?"
+        hx-on::after-request="htmx.trigger('body', 'refresh')"
         hx-target="#form-messageup"
         hx-swap="innerHTML"
       >
