@@ -129,48 +129,49 @@ module.exports.getEventById = async (req, res) => {
     <div class="flex justify-between mt-10">
       <!-- Boutons pour participer -->
       <div x-show="rolee === 'joueur' || rolee === 'admin' || rolee === 'orga'" 
-      id="favorite-button"
+      
       :class="{ 'hidden': rolee === 'visiteur' }"
       >
-       <div class="flex gap-2">
-        <!-- Bouton pour ajouter aux favoris -->
-        <button
-          x-show="!favorite"
-          hx-post="https://esportify-backend.onrender.com/api/favorites"
-          hx-target="#favorite-button"
-          hx-vals='${JSON.stringify({
-            event_id: id,
-            user_id: userId,
-            isFavorited: true,
-          })}'
-          hx-headers='{"Content-Type": "application/json"}'
-          hx-encoding="json"
-          hx-swap="innerHTML"
-          class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-        >
-          Je participe
-        </button>
+        <div class="flex gap-2">
+          <!-- Bouton pour ajouter aux favoris -->
+          <div id="favorite-button" class="contents">
+          <button
+            x-show="!favorite"
+            hx-post="https://esportify-backend.onrender.com/api/favorites"
+            hx-target="#favorite-button"
+            hx-vals='${JSON.stringify({
+              event_id: id,
+              user_id: userId,
+              isFavorited: true,
+            })}'
+            hx-headers='{"Content-Type": "application/json"}'
+            hx-encoding="json"
+            hx-swap="innerHTML"
+            class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+          >
+            Je participe
+          </button>
 
-        <!-- Bouton pour retirer des favoris -->
-        <button
-          x-show="favorite"
-          hx-post="https://esportify-backend.onrender.com/api/favorites"
-          hx-target="#favorite-button"
-          hx-vals='${JSON.stringify({
-            event_id: id,
-            user_id: userId,
-            isFavorited: false,
-          })}'
-          hx-headers='{"Content-Type": "application/json"}'
-          hx-encoding="json"
-          hx-swap="innerHTML"
-          class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
-        >
-          Plus intéressé
-        </button>
-          
-        <!-- Bouton Rejoindre -->
-        <div x-show="ongoing">
+          <!-- Bouton pour retirer des favoris -->
+          <button
+            x-show="favorite"
+            hx-post="https://esportify-backend.onrender.com/api/favorites"
+            hx-target="#favorite-button"
+            hx-vals='${JSON.stringify({
+              event_id: id,
+              user_id: userId,
+              isFavorited: false,
+            })}'
+            hx-headers='{"Content-Type": "application/json"}'
+            hx-encoding="json"
+            hx-swap="innerHTML"
+            class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+          >
+            Plus intéressé
+          </button>
+          </div>
+          <!-- Bouton Rejoindre -->
+          <div x-show="ongoing">
           <button  
             id="boutonRejoindre"
             hx-get="https://esportify-backend.onrender.com/api/room/${id}"

@@ -39,26 +39,30 @@ module.exports.toggleFavorite = async (req, res) => {
   // Génération du bouton mis à jour
 
   const buttonHtml = isFavoritedBool
-    ? `<button
-           hx-post="https://esportify-backend.onrender.com/api/favorites"
-           hx-target="#favorite-button"
-           hx-vals='${JSON.stringify({
-             event_id: event_id,
-             user_id: user_id,
-             isFavorited: false,
-           })}'
+    ? 
+      `
+        <button
+          hx-post="https://esportify-backend.onrender.com/api/favorites"
+          hx-target="#favorite-button"
+          hx-vals='${JSON.stringify({
+            event_id: event_id,
+           user_id: user_id,
+           isFavorited: false,
+          })}'
           hx-headers='{"Content-Type": "application/json"}'
           hx-encoding="json"
-           hx-swap="innerHTML"
-           class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-         >
-           Plus intéressé
+          hx-swap="innerHTML"
+          class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+        >
+          Plus intéressé
         </button>
         <div class="contents" hx-get="https://esportify-backend.onrender.com/api/favorites" hx-trigger="load" hx-target=#favoritesContainer></div>
       `
-    : `<button
-           hx-post="https://esportify-backend.onrender.com/api/favorites"
-           hx-target="#favorite-button"
+    : 
+      ` 
+        <button
+          hx-post="https://esportify-backend.onrender.com/api/favorites"
+          hx-target="#favorite-button"
           hx-vals='${JSON.stringify({
             event_id: event_id,
             user_id: user_id,
@@ -66,13 +70,13 @@ module.exports.toggleFavorite = async (req, res) => {
           })}'
           hx-headers='{"Content-Type": "application/json"}'
           hx-encoding="json"
-           hx-swap="innerHTML"
-           class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-         >
-           Je participe
-         </button>
-         <div class="contents" hx-get="https://esportify-backend.onrender.com/api/favorites" hx-trigger="load" hx-target=#favoritesContainer></div>
-         `;
+          hx-swap="innerHTML"
+          class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
+          Je participe
+        </button>
+        <div class="contents" hx-get="https://esportify-backend.onrender.com/api/favorites" hx-trigger="load" hx-target=#favoritesContainer></div>
+      `;
 
   console.log("HTML envoyé au client :", buttonHtml);
   res.send(buttonHtml);
