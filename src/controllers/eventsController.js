@@ -130,8 +130,9 @@ module.exports.getEventById = async (req, res) => {
       <!-- Boutons pour participer -->
       <div x-show="rolee === 'joueur' || rolee === 'admin' || rolee === 'orga'" 
       id="favorite-button"
-      :class="{ 'hidden': rolee === 'visiteur' } flex gap-2"
+      :class="{ 'hidden': rolee === 'visiteur' }"
       >
+       <div class="flex">
         <!-- Bouton pour ajouter aux favoris -->
         <button
           x-show="!favorite"
@@ -179,6 +180,7 @@ module.exports.getEventById = async (req, res) => {
             Rejoindre
           </button>
         </div>
+       </div> 
       </div>
       <!-- Bouton Fermer -->
       <button
