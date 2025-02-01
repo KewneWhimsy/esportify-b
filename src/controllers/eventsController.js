@@ -130,7 +130,6 @@ module.exports.getEventById = async (req, res) => {
       <!-- Boutons pour participer -->
       <div x-show="rolee === 'joueur' || rolee === 'admin' || rolee === 'orga'" 
       id="favorite-button"
-      class="flex"
       :class="{ 'hidden': rolee === 'visiteur' }"
       >
         <!-- Bouton pour ajouter aux favoris -->
@@ -146,7 +145,7 @@ module.exports.getEventById = async (req, res) => {
           hx-headers='{"Content-Type": "application/json"}'
           hx-encoding="json"
           hx-swap="innerHTML"
-          class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
         >
           Je participe
         </button>
@@ -164,7 +163,7 @@ module.exports.getEventById = async (req, res) => {
           hx-headers='{"Content-Type": "application/json"}'
           hx-encoding="json"
           hx-swap="innerHTML"
-          class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+          class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
         >
           Plus intéressé
         </button>
@@ -175,7 +174,7 @@ module.exports.getEventById = async (req, res) => {
             id="boutonRejoindre"
             hx-get="https://esportify-backend.onrender.com/api/room/${id}"
             hx-target="#chatcontain"
-            class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+            class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
           >
             Rejoindre
           </button>
@@ -184,7 +183,7 @@ module.exports.getEventById = async (req, res) => {
       <!-- Bouton Fermer -->
       <button
         @click="isOpen = false"
-        class="ml-auto bg-red-700 text-white px-4 py-2 rounded hover:bg-red-800"
+        class="ml-auto bg-red-700 text-white px-4 py-2 rounded hover:bg-red-800 transition-colors"
       >
         Fermer
       </button>
@@ -359,7 +358,7 @@ module.exports.myEventById = async (req, res) => {
   <div
   class="border border-gray-300 p-6 rounded-lg shadow-lg w-full"
   >
-    <button class="ml-auto" @click="isOpen = false">X</button>
+    <button class="text-right" @click="isOpen = false">X</button>
     <form
     class="inset-0 w-full rounded max-w-[900px] mx-auto items-center justify-center z-50 px-5 py-3 transition-opacity"
     hx-post="https://esportify-backend.onrender.com/api/events/update/${event.id}"
@@ -450,7 +449,7 @@ module.exports.myEventById = async (req, res) => {
     <div>
       <button
         type="button"
-        class="w-full bg-red-600 hover:bg-red-700 text-white px-4 py-2 mt-4 rounded transition-colors"
+        class="ml-auto bg-red-700 text-white px-4 py-2 rounded hover:bg-red-800 transition-colors"
         hx-delete="https://esportify-backend.onrender.com/api/events/deleteMy/${event.id}"
         hx-confirm="Êtes-vous sûr de vouloir supprimer cet événement ?"
         hx-on::after-request="htmx.trigger('body', 'refresh')"
