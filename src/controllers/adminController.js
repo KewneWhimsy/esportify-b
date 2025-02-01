@@ -243,7 +243,7 @@ module.exports.suspendEvent = async (req, res) => {
             Valider
           </button>
           <button
-            hx-post="https://esportify-backend.onrender.com/admin/events/reject/${event.id}"
+            hx-delete="https://esportify-backend.onrender.com/admin/events/reject/${event.id}"
             hx-on::after-request="htmx.trigger('body', 'refresh')"
             hx-swap="delete"
             hx-target="#event-pend-${event.id}"
