@@ -31,7 +31,7 @@ router.post("/api/events", authenticateToken, checkRole(["orga", "admin"]), even
 router.get("/api/myevents", authenticateToken, checkRole(["orga", "admin"]), eventsController.getMyEvents);
 router.get("/api/myevent/:eventId", authenticateToken, checkRole(["orga", "admin"]), eventsController.myEventById);
 router.post("/api/events/update/:eventId", authenticateToken, checkRole(["orga", "admin"]), eventsController.updateEvent);
-router.delete("/api/events/update/:eventId", authenticateToken, checkRole(["orga", "admin"]), eventsController.deleteMy);
+router.delete("/api/events/deleteMy/:eventId", authenticateToken, checkRole(["orga", "admin"]), eventsController.deleteMy);
 
 // Routes admin
 /// Modération events
