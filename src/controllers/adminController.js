@@ -34,6 +34,8 @@ module.exports.getPendingEvents = async (req, res) => {
             <button
               hx-post="https://esportify-backend.onrender.com/admin/events/approve/${event.id}"
               hx-on::after-request="htmx.trigger('body', 'refresh')"
+              hx-swap="afterbegin"
+              hx-target="#approvedEvents"
               class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
             >
               Valider
@@ -41,6 +43,8 @@ module.exports.getPendingEvents = async (req, res) => {
             <button
               hx-post="https://esportify-backend.onrender.com/admin/events/reject/${event.id}"
               hx-on::after-request="htmx.trigger('body', 'refresh')"
+              hx-swap="delete"
+              hx-target="#event-pend-${event.id}"
               class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
             >
               Refuser
@@ -91,6 +95,8 @@ module.exports.getApprovedEvents = async (req, res) => {
             <button
               hx-post="https://esportify-backend.onrender.com/admin/events/suspend/${event.id}"
               hx-on::after-request="htmx.trigger('body', 'refresh')"
+              hx-swap="afterbegin"
+              hx-target="#pendingEvents"
               class="px-3 py-1 bg-orange-600 text-white rounded hover:bg-orange-700"
             >
               Suspendre
@@ -129,7 +135,41 @@ module.exports.approveEvent = async (req, res) => {
     `, [eventId]);
 
     const event = result.rows[0];
-    res.send(``);
+    res.send(`
+      <tr id="event-val-${event.id}" class="border-b">
+        <td class="px-4 py-3">
+          ${event.title}
+          <button @click="setTimeout(() => { isOpen = true }, 200)" 
+            class="ml-1 text-lg hover:text-yellow-600 transition-colors"
+            hx-get="https://esportify-backend.onrender.com/api/event/${event.id}"
+            hx-target="#popup-content"
+            hx-swap="innerHTML">
+              +
+          </button>
+        </td>
+        <td class="px-4 py-3 text-green-600">Validé</td>
+        <td class="px-4 py-3">
+          <button
+            hx-post="https://esportify-backend.onrender.com/admin/events/suspend/${event.id}"
+            hx-on::after-request="htmx.trigger('body', 'refresh')"
+            hx-swap="afterbegin"
+            hx-target="#pendingEvents"
+            class="px-3 py-1 bg-orange-600 text-white rounded hover:bg-orange-700"
+          >
+            Suspendre
+          </button>
+        </td>
+        <script>
+          try {
+            document.getElementById('event-pend-${event.id}').remove();
+          } catch (error) {
+          // Gérer l'erreur si l'élément n'existe pas
+          console.error('Élément non trouvé:', error);
+          }        
+        </script>
+      </tr>
+      
+    `);
   } catch (err) {
     console.error("Erreur dans approveEvent :", err);
     res.status(500).send("Erreur serveur lors de l'approbation de l'événement");
@@ -179,7 +219,50 @@ module.exports.suspendEvent = async (req, res) => {
     const event = result.rows[0];
     
     // Génère le HTML pour la ligne modifiée
-    res.send(``);
+    res.send(`
+      <tr id="event-pend-${event.id}" class="border-b">
+        <td class="px-4 py-3">
+          ${event.title}
+          <button @click="setTimeout(() => { isOpen = true }, 200)"
+            class="ml-1 text-lg hover:text-yellow-600 transition-colors"
+            hx-get="https://esportify-backend.onrender.com/api/event/${event.id}"
+            hx-target="#popup-content"
+            hx-swap="innerHTML">
+              +
+          </button>
+        </td>
+        <td class="px-4 py-3 text-yellow-600">En attente</td>
+        <td class="px-4 py-3 flex flex-wrap gap-2">
+          <button
+            hx-post="https://esportify-backend.onrender.com/admin/events/approve/${event.id}"
+            hx-on::after-request="htmx.trigger('body', 'refresh')"
+            hx-swap="afterbegin"
+            hx-target="#approvedEvents"
+            class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+          >
+            Valider
+          </button>
+          <button
+            hx-post="https://esportify-backend.onrender.com/admin/events/reject/${event.id}"
+            hx-on::after-request="htmx.trigger('body', 'refresh')"
+            hx-swap="delete"
+            hx-target="#event-pend-${event.id}"
+            class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+          >
+            Refuser
+          </button>
+        </td>
+        <script>
+          try {
+            document.getElementById('event-val-${event.id}').remove();
+          } catch (error) {
+          // Gérer l'erreur si l'élément n'existe pas
+          console.error('Élément non trouvé:', error);
+          }        
+        </script>
+      </tr> 
+      
+    `);
   } catch (err) {
     console.error("Erreur dans suspendEvent :", err);
     res.status(500).send("Erreur serveur lors de la suspension de l'événement");
