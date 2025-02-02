@@ -24,7 +24,7 @@ module.exports.getEventRoom = async (req, res) => {
       }
       // Récupération de la première ligne du résultat (l'événement trouvé)
       const event = result.rows[0];
-      const now = new Date();
+      const now = Date.now() + 3600000; // +1h en millisecondes
 
       // Vérification si l'événement est en cours
       const isOngoing = new Date(event.start_datetime) <= now && now <= new Date(event.end_datetime);
