@@ -113,36 +113,24 @@ module.exports.getEventById = async (req, res) => {
         ).rowCount > 0
       : false;
 
-    // Obtenir l'heure locale actuelle
-const nowLocal = new Date();
+  // Obtenir l'heure actuelle en UTC
+const nowUTC = new Date(); 
 
-// Ajuster `nowLocal` pour l'heure locale
-const localTime = new Date(nowLocal.getTime() - nowLocal.getTimezoneOffset() * 60000);
-
-// Vérifier si l'événement est en cours
+// Vérifier si l'événement est en cours (tout en UTC)
 const isOngoing =
-  new Date(event.start_datetime).getTime() <= localTime.getTime() &&
-  localTime.getTime() <= new Date(event.end_datetime).getTime();
+  new Date(event.start_datetime).getTime() <= nowUTC.getTime() &&
+  nowUTC.getTime() <= new Date(event.end_datetime).getTime();
 
-console.log("isOngoing (comparaison avec heure locale) :", isOngoing);
+console.log("isOngoing (comparaison UTC) :", isOngoing);
+console.log("start_datetime (DB):", event.start_datetime);
+console.log("end_datetime (DB):", event.end_datetime);
+console.log("start (JS Date):", new Date(event.start_datetime));
+console.log("end (JS Date):", new Date(event.end_datetime));
+console.log("nowUTC:", nowUTC);
+console.log("isOngoing condition 1:", new Date(event.start_datetime) <= nowUTC);
+console.log("isOngoing condition 2:", nowUTC <= new Date(event.end_datetime));
+console.log("Final isOngoing:", isOngoing);
 
-
-    console.log("start_datetime (DB):", event.start_datetime);
-    console.log("end_datetime (DB):", event.end_datetime);
-    console.log("start (JS Date):", new Date(event.start_datetime));
-    console.log("end (JS Date):", new Date(event.end_datetime));
-    console.log("nowLocal:", nowLocal);
-    console.log("localTime:", localTime);
-
-    console.log(
-      "isOngoing condition 1:",
-      new Date(event.start_datetime) <= localTime
-    );
-    console.log(
-      "isOngoing condition 2:",
-      localTime <= new Date(event.end_datetime)
-    );
-    console.log("Final isOngoing:", isOngoing);
 
     const eventHtml = `
   <div x-data="{ rolee: '${userRole}', favorite: ${isFavorited}, ongoing: ${isOngoing} }" 
