@@ -126,9 +126,9 @@ console.log("isOngoing avec UTC :", isOngoing);
 console.log("end_datetime (DB):", event.end_datetime);
 console.log("start (JS Date):", new Date(event.start_datetime));
 console.log("end (JS Date):", new Date(event.end_datetime));
-console.log("now:", now);
-console.log("isOngoing condition 1:", new Date(event.start_datetime) <= now);
-console.log("isOngoing condition 2:", now <= new Date(event.end_datetime));
+console.log("nowUTC:", nowUTC);
+console.log("isOngoing condition 1:", new Date(event.start_datetime) <= nowUTC);
+console.log("isOngoing condition 2:", nowUTC <= new Date(event.end_datetime));
 console.log("Final isOngoing:", isOngoing);
 
 
