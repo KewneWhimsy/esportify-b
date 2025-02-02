@@ -113,22 +113,21 @@ module.exports.getEventById = async (req, res) => {
         ).rowCount > 0
       : false;
 
-      const now = Date.now();
-      const startTime = new Date(event.start_datetime).getTime();
-      const endTime = new Date(event.end_datetime).getTime();
-      
-      const isOngoing = startTime <= now && now <= endTime;
+    const now = Date.now() + 3600000; // +1h en millisecondes
+    const startTime = new Date(event.start_datetime).getTime();
+    const endTime = new Date(event.end_datetime).getTime();
 
-console.log("isOngoing :", isOngoing);
-console.log("start_datetime (DB):", event.start_datetime);
-console.log("end_datetime (DB):", event.end_datetime);
-console.log("startTime:", new Date(event.start_datetime).getTime());
-console.log("endTime:", new Date(event.end_datetime).getTime());
-console.log("now:", now);
-console.log("isOngoing condition 1:", startTime <= now);
-console.log("isOngoing condition 2:", now <= endTime);
-console.log("Final isOngoing:", isOngoing);
+    const isOngoing = startTime <= now && now <= endTime;
 
+    console.log("isOngoing :", isOngoing);
+    console.log("start_datetime (DB):", event.start_datetime);
+    console.log("end_datetime (DB):", event.end_datetime);
+    console.log("start:", new Date(startTime).toISOString());
+    console.log("end:", new Date(endTime).toISOString());
+    console.log("now:", now);
+    console.log("isOngoing condition 1:", startTime <= now);
+    console.log("isOngoing condition 2:", now <= endTime);
+    console.log("Final isOngoing:", isOngoing);
 
     const eventHtml = `
   <div x-data="{ rolee: '${userRole}', favorite: ${isFavorited}, ongoing: ${isOngoing} }" 
