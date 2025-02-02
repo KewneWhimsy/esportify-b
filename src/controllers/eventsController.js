@@ -28,10 +28,12 @@ module.exports.getAllEvents = async (req, res) => {
     // Génére du HTML pour chaque événement
     events.forEach((event) => {
       eventsHtml += `
-        <div class="flex flex-col justify-between bg-[#26232A] border 
+        <div
+        x-data="{localDate: new Date()}; const localDateStr = this.localDate.toISOString();"
+         class="flex flex-col justify-between bg-[#26232A] border 
         border-[#E5E7EB] p-4 rounded-lg w-64 shadow-md hover:shadow-lg transition-transform hover:scale-105 cursor-pointer flex-shrink-0 gap-0.5" 
         @click="setTimeout(() => { isOpen = true }, 200)"
-        hx-get="https://esportify-backend.onrender.com/api/event/${event.id}"
+        hx-get="https://esportify-backend.onrender.com/api/event/${event.id}?date=${encodeURIComponent(localDateStr)}"
         hx-vals='js:{"now": Date.now(), "timezoneOffset": new Date().getTimezoneOffset()}'
         hx-target="#popup-content"
         hx-swap="innerHTML"
@@ -70,7 +72,7 @@ module.exports.getAllEvents = async (req, res) => {
 //Renvoie la vue détaillée d'un événement + bouton toggle favoris pour l'utilisateur connecté
 module.exports.getEventById = async (req, res) => {
   console.log("GET EventById");
-  const { id } = req.params;
+  const { id, localDateStr } = req.params;
 
   try {
     const result = await pgClient.query(
@@ -114,7 +116,7 @@ module.exports.getEventById = async (req, res) => {
         ).rowCount > 0
       : false;
 
-    const now = req.body.now;
+    const now = localDateStr;
     const startTime = new Date(event.start_datetime).getTime();
     const endTime = new Date(event.end_datetime).getTime();
 
