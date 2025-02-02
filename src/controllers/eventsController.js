@@ -113,22 +113,23 @@ module.exports.getEventById = async (req, res) => {
         ).rowCount > 0
       : false;
 
-  // Obtenir l'heure actuelle en UTC
-const nowUTC = new Date(); 
+      const now = new Date();
+      const nowLocal = new Date(now.getTime() + (now.getTimezoneOffset() * 60000));
 
 // Vérifier si l'événement est en cours (tout en UTC)
 const isOngoing = 
-  new Date(event.start_datetime).getTime() <= nowUTC.getTime() && 
-  nowUTC.getTime() <= new Date(event.end_datetime).getTime();
+  new Date(event.start_datetime).getTime() <= nowLocal.getTime() && 
+  nowLocal.getTime() <= new Date(event.end_datetime).getTime();
 
-console.log("isOngoing (comparaison UTC) :", isOngoing);
+console.log("isOngoing :", isOngoing);
 console.log("start_datetime (DB):", event.start_datetime);
 console.log("end_datetime (DB):", event.end_datetime);
 console.log("start (JS Date):", new Date(event.start_datetime).getTime());
 console.log("end (JS Date):", new Date(event.end_datetime).getTime());
-console.log("nowUTC:", nowUTC);
-console.log("isOngoing condition 1:", new Date(event.end_datetime).getTime() <= nowUTC);
-console.log("isOngoing condition 2:", nowUTC <= new Date(event.end_datetime).getTime());
+console.log("now:", now);
+console.log("nowLocal:", nowLocal);
+console.log("isOngoing condition 1:", new Date(event.end_datetime).getTime() <= nowLocal);
+console.log("isOngoing condition 2:", nowLocal <= new Date(event.end_datetime).getTime());
 console.log("Final isOngoing:", isOngoing);
 
 
