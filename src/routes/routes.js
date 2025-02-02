@@ -14,7 +14,7 @@ const roomController = require('../controllers/roomController.js');
 
 // === Routes publiques ===
 router.get("/api/events", eventsController.getAllEvents);
-router.get("/api/event/:id/:localDateStr", eventsController.getEventById);
+router.get("/api/event/:id", eventsController.getEventById);
 
 // === Routes d'authentification ===
 router.post("/api/register", authController.register);
