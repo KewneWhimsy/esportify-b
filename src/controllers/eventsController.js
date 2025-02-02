@@ -112,27 +112,40 @@ module.exports.getEventById = async (req, res) => {
           )
         ).rowCount > 0
       : false;
-// Obtenir l'heure actuelle en heure locale (en tenant compte du fuseau horaire)
-const nowLocal = new Date(); // L'heure locale actuelle
 
-// Vérifier si l'événement est en cours localement
-const isOngoing =
-  new Date(event.start_datetime).getTime() <= nowLocal.getTime() &&
-  nowLocal.getTime() <= new Date(event.end_datetime).getTime();
+    // Obtenir l'heure locale actuelle en UTC
+    const nowLocal = new Date(); // Heure locale
 
-console.log("isOngoing (heure locale) :", isOngoing);
+    // Convertir l'heure locale en UTC
+    const nowLocalUTC = new Date(
+      nowLocal.getTime() - nowLocal.getTimezoneOffset() * 60000
+    );
 
+    // Vérifier si l'événement est en cours localement
+    const isOngoing =
+      new Date(event.start_datetime).getTime() <= nowLocalUTC.getTime() &&
+      nowLocalUTC.getTime() <= new Date(event.end_datetime).getTime();
 
-   
+    console.log(
+      "isOngoingLocal (heure locale comparée à UTC) :",
+      isOngoing
+    );
+
     console.log("start_datetime (DB):", event.start_datetime);
-console.log("end_datetime (DB):", event.end_datetime);
-console.log("start (JS Date):", new Date(event.start_datetime));
-console.log("end (JS Date):", new Date(event.end_datetime));
-console.log("nowLocal:", nowLocal);
-console.log("isOngoing condition 1:", new Date(event.start_datetime) <= nowLocal);
-console.log("isOngoing condition 2:", nowLocal <= new Date(event.end_datetime));
-console.log("Final isOngoing:", isOngoing);
-
+    console.log("end_datetime (DB):", event.end_datetime);
+    console.log("start (JS Date):", new Date(event.start_datetime));
+    console.log("end (JS Date):", new Date(event.end_datetime));
+    console.log("nowLocal:", nowLocal);
+    console.log("nowLocalUTC:", nowLocalUTC);
+    console.log(
+      "isOngoing condition 1:",
+      new Date(event.start_datetime) <= nowLocalUTC
+    );
+    console.log(
+      "isOngoing condition 2:",
+      nowLocalUTC <= new Date(event.end_datetime)
+    );
+    console.log("Final isOngoing:", isOngoing);
 
     const eventHtml = `
   <div x-data="{ rolee: '${userRole}', favorite: ${isFavorited}, ongoing: ${isOngoing} }" 
@@ -395,11 +408,9 @@ module.exports.getMyEvents = async (req, res) => {
     res.send(eventsHtml);
   } catch (err) {
     console.error("Erreur dans getMyEvents :", err);
-    res
-      .status(500)
-      .json({
-        error: "Erreur serveur lors de la récupération de vos événements",
-      });
+    res.status(500).json({
+      error: "Erreur serveur lors de la récupération de vos événements",
+    });
   }
 };
 
