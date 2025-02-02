@@ -53,6 +53,7 @@ module.exports.getEventRoom = async (req, res) => {
             <form id="chatForm" ws-send class="flex items-center mx-4 gap-2">
               <input class="bg-[#161215] ml-auto max-w-2xl border p-2 rounded w-full self-end" 
                 id="messageInput" 
+                autocomplete="off"
                 name="chat_message" 
                 placeholder="Écrivez votre message..." 
                 required
