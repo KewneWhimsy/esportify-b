@@ -113,21 +113,16 @@ module.exports.getEventById = async (req, res) => {
         ).rowCount > 0
       : false;
 
-    // Obtenir l'heure locale actuelle en UTC
-    const nowLocal = new Date(); // Heure locale
+    // Obtenir l'heure actuelle en heure locale
+    const nowLocal = new Date(); // L'heure locale actuelle
 
-    // Convertir l'heure locale en UTC
-    const nowLocalUTC = new Date(
-      nowLocal.getTime() - nowLocal.getTimezoneOffset() * 60000
-    );
-
-    // Vérifier si l'événement est en cours localement
+    // Utiliser cette heure locale pour la comparaison avec l'événement
     const isOngoing =
-      new Date(event.start_datetime).getTime() <= nowLocalUTC.getTime() &&
-      nowLocalUTC.getTime() <= new Date(event.end_datetime).getTime();
+      new Date(event.start_datetime).getTime() <= nowLocal.getTime() &&
+      nowLocal.getTime() <= new Date(event.end_datetime).getTime();
 
     console.log(
-      "isOngoingLocal (heure locale comparée à UTC) :",
+      "isOngoing (comparaison avec heure locale) :",
       isOngoing
     );
 
@@ -136,14 +131,13 @@ module.exports.getEventById = async (req, res) => {
     console.log("start (JS Date):", new Date(event.start_datetime));
     console.log("end (JS Date):", new Date(event.end_datetime));
     console.log("nowLocal:", nowLocal);
-    console.log("nowLocalUTC:", nowLocalUTC);
     console.log(
       "isOngoing condition 1:",
-      new Date(event.start_datetime) <= nowLocalUTC
+      new Date(event.start_datetime) <= nowLocal
     );
     console.log(
       "isOngoing condition 2:",
-      nowLocalUTC <= new Date(event.end_datetime)
+      nowLocal <= new Date(event.end_datetime)
     );
     console.log("Final isOngoing:", isOngoing);
 
