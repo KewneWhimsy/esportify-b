@@ -112,13 +112,16 @@ module.exports.getEventById = async (req, res) => {
           )
         ).rowCount > 0
       : false;
+// Utiliser le format UTC pour les comparaisons
+const nowUTC = new Date().toISOString(); // Convertion de `now` en UTC
 
-    // Vérifier si l'événement est en cours
-    const now = new Date();
-    const isOngoing =
-      new Date(event.start_datetime) <= now &&
-      now <= new Date(event.end_datetime);
-    console.log("en cours :", isOngoing);
+// Vérifier si l'événement est en cours (tout en UTC)
+const isOngoing =
+  new Date(event.start_datetime).toISOString() <= nowUTC &&
+  nowUTC <= new Date(event.end_datetime).toISOString();
+
+console.log("isOngoing avec UTC :", isOngoing);
+   
     console.log("start_datetime (DB):", event.start_datetime);
 console.log("end_datetime (DB):", event.end_datetime);
 console.log("start (JS Date):", new Date(event.start_datetime));
