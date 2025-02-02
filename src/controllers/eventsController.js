@@ -117,18 +117,18 @@ module.exports.getEventById = async (req, res) => {
 const nowUTC = new Date(); 
 
 // Vérifier si l'événement est en cours (tout en UTC)
-const isOngoing =
-  new Date(event.start_datetime).getTime() <= nowUTC.getTime() &&
+const isOngoing = 
+  new Date(event.start_datetime).getTime() <= nowUTC.getTime() && 
   nowUTC.getTime() <= new Date(event.end_datetime).getTime();
 
 console.log("isOngoing (comparaison UTC) :", isOngoing);
 console.log("start_datetime (DB):", event.start_datetime);
 console.log("end_datetime (DB):", event.end_datetime);
-console.log("start (JS Date):", new Date(event.start_datetime));
-console.log("end (JS Date):", new Date(event.end_datetime));
+console.log("start (JS Date):", new Date(event.start_datetime).getTime());
+console.log("end (JS Date):", new Date(event.end_datetime).getTime());
 console.log("nowUTC:", nowUTC);
-console.log("isOngoing condition 1:", new Date(event.start_datetime) <= nowUTC);
-console.log("isOngoing condition 2:", nowUTC <= new Date(event.end_datetime));
+console.log("isOngoing condition 1:", new Date(event.end_datetime).getTime() <= nowUTC);
+console.log("isOngoing condition 2:", nowUTC <= new Date(event.end_datetime).getTime());
 console.log("Final isOngoing:", isOngoing);
 
 
