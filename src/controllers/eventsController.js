@@ -32,6 +32,7 @@ module.exports.getAllEvents = async (req, res) => {
         border-[#E5E7EB] p-4 rounded-lg w-64 shadow-md hover:shadow-lg transition-transform hover:scale-105 cursor-pointer flex-shrink-0 gap-0.5" 
         @click="setTimeout(() => { isOpen = true }, 200)"
         hx-get="https://esportify-backend.onrender.com/api/event/${event.id}"
+        hx-vals='js:{"now": Date.now(), "timezoneOffset": new Date().getTimezoneOffset()}'
         hx-target="#popup-content"
         hx-swap="innerHTML"
         >
@@ -113,7 +114,7 @@ module.exports.getEventById = async (req, res) => {
         ).rowCount > 0
       : false;
 
-    const now = Date.now() + 3600000; // +1h en millisecondes
+    const now = req.body.now;
     const startTime = new Date(event.start_datetime).getTime();
     const endTime = new Date(event.end_datetime).getTime();
 
