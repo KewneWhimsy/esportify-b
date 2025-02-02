@@ -116,11 +116,11 @@ module.exports.getEventById = async (req, res) => {
 const nowLocal = new Date(); // L'heure locale actuelle
 
 // Vérifier si l'événement est en cours localement
-const isOngoingLocal =
+const isOngoing =
   new Date(event.start_datetime).getTime() <= nowLocal.getTime() &&
   nowLocal.getTime() <= new Date(event.end_datetime).getTime();
 
-console.log("isOngoingLocal (heure locale) :", isOngoingLocal);
+console.log("isOngoing (heure locale) :", isOngoing);
 
 
    
@@ -131,7 +131,7 @@ console.log("end (JS Date):", new Date(event.end_datetime));
 console.log("nowLocal:", nowLocal);
 console.log("isOngoing condition 1:", new Date(event.start_datetime) <= nowLocal);
 console.log("isOngoing condition 2:", nowLocal <= new Date(event.end_datetime));
-console.log("Final isOngoing:", isOngoingLocal);
+console.log("Final isOngoing:", isOngoing);
 
 
     const eventHtml = `
