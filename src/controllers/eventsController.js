@@ -186,7 +186,7 @@ module.exports.getEventById = async (req, res) => {
             hx-headers='{"Content-Type": "application/json"}'
             hx-encoding="json"
             hx-swap="innerHTML"
-            class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+            class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors select-none"
           >
             Plus intéressé
           </button>
@@ -197,7 +197,7 @@ module.exports.getEventById = async (req, res) => {
             id="boutonRejoindre"
             hx-get="https://esportify-backend.onrender.com/api/room/${id}"
             hx-target="#chatcontain"
-            class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
+            class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors select-none"
           >
             Rejoindre
           </button>
@@ -207,7 +207,7 @@ module.exports.getEventById = async (req, res) => {
       <!-- Bouton Fermer -->
       <button
         @click="isOpen = false"
-        class="ml-auto bg-red-700 text-white px-4 py-2 rounded hover:bg-red-800 transition-colors"
+        class="ml-auto bg-red-700 text-white px-4 py-2 rounded hover:bg-red-800 transition-colors select-none"
       >
         Fermer
       </button>
@@ -421,7 +421,7 @@ module.exports.myEventById = async (req, res) => {
   <div
   class="border border-gray-300 p-6 rounded-lg shadow-lg w-full"
   >
-    <button class="text-right" @click="isOpen = false">X</button>
+    <button class="text-right select-none" @click="isOpen = false">X</button>
     <form
     class="inset-0 w-full rounded max-w-[900px] mx-auto items-center justify-center z-50 px-5 py-3 transition-opacity"
     hx-post="https://esportify-backend.onrender.com/api/events/update/${
@@ -505,7 +505,7 @@ module.exports.myEventById = async (req, res) => {
     <div>
       <button
         type="submit"
-        class="w-full bg-[#5e3554] hover:bg-yellow-600 hover:text-shadow text-white px-4 py-2 mt-10 rounded transition-colors"
+        class="w-full bg-[#5e3554] hover:bg-yellow-600 hover:text-shadow text-white px-4 py-2 mt-10 rounded transition-colors select-none"
       >
         Mettre à jour
       </button>
@@ -514,7 +514,7 @@ module.exports.myEventById = async (req, res) => {
     <div>
       <button
         type="button"
-        class="ml-auto bg-red-700 text-white px-4 py-2 rounded hover:bg-red-800 transition-colors"
+        class="ml-auto bg-red-700 text-white px-4 py-2 rounded hover:bg-red-800 transition-colors select-none"
         hx-delete="https://esportify-backend.onrender.com/api/events/deleteMy/${
           event.id
         }"

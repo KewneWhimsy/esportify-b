@@ -22,7 +22,7 @@ module.exports.getPendingEvents = async (req, res) => {
           <td class="px-4 py-3">
             ${event.title}
             <button @click="setTimeout(() => { isOpen = true }, 200)"
-            class="ml-1 text-lg hover:text-yellow-600 transition-colors"
+            class="ml-1 text-lg hover:text-yellow-600 transition-colors select-none"
             hx-get="https://esportify-backend.onrender.com/api/event/${event.id}"
             hx-target="#popup-content"
             hx-swap="innerHTML">
@@ -36,7 +36,7 @@ module.exports.getPendingEvents = async (req, res) => {
               hx-on::after-request="htmx.trigger('body', 'refresh')"
               hx-swap="afterbegin"
               hx-target="#approvedEvents"
-              class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+              class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition-colors select-none"
             >
               Valider
             </button>
@@ -45,7 +45,7 @@ module.exports.getPendingEvents = async (req, res) => {
               hx-on::after-request="htmx.trigger('body', 'refresh')"
               hx-swap="delete"
               hx-target="#event-pend-${event.id}"
-              class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+              class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition-colors select-none"
             >
               Refuser
             </button>
@@ -83,7 +83,7 @@ module.exports.getApprovedEvents = async (req, res) => {
           <td class="px-4 py-3">
             ${event.title}
             <button @click="setTimeout(() => { isOpen = true }, 200)"
-            class="ml-1 text-lg hover:text-yellow-600 transition-colors"
+            class="ml-1 text-lg hover:text-yellow-600 transition-colors select-none"
             hx-get="https://esportify-backend.onrender.com/api/event/${event.id}"
             hx-target="#popup-content"
             hx-swap="innerHTML">
@@ -97,7 +97,7 @@ module.exports.getApprovedEvents = async (req, res) => {
               hx-on::after-request="htmx.trigger('body', 'refresh')"
               hx-swap="afterbegin"
               hx-target="#pendingEvents"
-              class="px-3 py-1 bg-orange-600 text-white rounded hover:bg-orange-700"
+              class="px-3 py-1 bg-orange-600 text-white rounded hover:bg-orange-700 transition-colors select-none"
             >
               Suspendre
             </button>
@@ -140,7 +140,7 @@ module.exports.approveEvent = async (req, res) => {
         <td class="px-4 py-3">
           ${event.title}
           <button @click="setTimeout(() => { isOpen = true }, 200)" 
-            class="ml-1 text-lg hover:text-yellow-600 transition-colors"
+            class="ml-1 text-lg hover:text-yellow-600 transition-colors select-none"
             hx-get="https://esportify-backend.onrender.com/api/event/${event.id}"
             hx-target="#popup-content"
             hx-swap="innerHTML">
@@ -154,7 +154,7 @@ module.exports.approveEvent = async (req, res) => {
             hx-on::after-request="htmx.trigger('body', 'refresh')"
             hx-swap="afterbegin"
             hx-target="#pendingEvents"
-            class="px-3 py-1 bg-orange-600 text-white rounded hover:bg-orange-700"
+            class="px-3 py-1 bg-orange-600 text-white rounded hover:bg-orange-700 transition-colors select-none"
           >
             Suspendre
           </button>
@@ -224,7 +224,7 @@ module.exports.suspendEvent = async (req, res) => {
         <td class="px-4 py-3">
           ${event.title}
           <button @click="setTimeout(() => { isOpen = true }, 200)"
-            class="ml-1 text-lg hover:text-yellow-600 transition-colors"
+            class="ml-1 text-lg hover:text-yellow-600 transition-colors select-none"
             hx-get="https://esportify-backend.onrender.com/api/event/${event.id}"
             hx-target="#popup-content"
             hx-swap="innerHTML">
@@ -238,7 +238,7 @@ module.exports.suspendEvent = async (req, res) => {
             hx-on::after-request="htmx.trigger('body', 'refresh')"
             hx-swap="afterbegin"
             hx-target="#approvedEvents"
-            class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+            class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition-colors select-none"
           >
             Valider
           </button>
@@ -247,7 +247,7 @@ module.exports.suspendEvent = async (req, res) => {
             hx-on::after-request="htmx.trigger('body', 'refresh')"
             hx-swap="delete"
             hx-target="#event-pend-${event.id}"
-            class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+            class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition-colors select-none"
           >
             Refuser
           </button>
@@ -284,7 +284,7 @@ function getRoleButtons(currentRole, userId) {
         hx-post="https://esportify-backend.onrender.com/admin/users/demote/${userId}/orga"
         hx-swap="outerHTML"
         hx-target="#user-${userId}"
-        class="px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-700 transition-colors"
+        class="px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-700 transition-colors select-none"
       >
         Rétrograder
       </button>
@@ -295,7 +295,7 @@ function getRoleButtons(currentRole, userId) {
         hx-post="https://esportify-backend.onrender.com/admin/users/promote/${userId}/admin"
         hx-swap="outerHTML"
         hx-target="#user-${userId}"
-        class="px-3 py-1 bg-blue-900 text-white rounded hover:bg-yellow-600 transition-colors"
+        class="px-3 py-1 bg-blue-900 text-white rounded hover:bg-yellow-600 transition-colors select-none"
       >
         Promouvoir
       </button>
@@ -303,7 +303,7 @@ function getRoleButtons(currentRole, userId) {
         hx-post="https://esportify-backend.onrender.com/admin/users/demote/${userId}/joueur"
         hx-swap="outerHTML"
         hx-target="#user-${userId}"
-        class="px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-700 transition-colors"
+        class="px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-700 transition-colors select-none"
       >
         Rétrograder
       </button>
@@ -314,7 +314,7 @@ function getRoleButtons(currentRole, userId) {
         hx-post="https://esportify-backend.onrender.com/admin/users/promote/${userId}/orga"
         hx-swap="outerHTML"
         hx-target="#user-${userId}"
-        class="px-3 py-1 bg-blue-900 text-white rounded hover:bg-yellow-600 transition-colors"
+        class="px-3 py-1 bg-blue-900 text-white rounded hover:bg-yellow-600 transition-colors select-none"
       >
         Promouvoir
       </button>
@@ -322,7 +322,7 @@ function getRoleButtons(currentRole, userId) {
         hx-post="https://esportify-backend.onrender.com/admin/users/demote/${userId}/visiteur"
         hx-swap="outerHTML"
         hx-target="#user-${userId}"
-        class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+        class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 tranistion-colors select-none"
       >
         Bannir
       </button>
@@ -333,7 +333,7 @@ function getRoleButtons(currentRole, userId) {
         hx-post="https://esportify-backend.onrender.com/admin/users/promote/${userId}/joueur"
         hx-swap="outerHTML"
         hx-target="#user-${userId}"
-        class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+        class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition colors select-none"
       >
         Débannir
       </button>
