@@ -455,7 +455,7 @@ module.exports.myEventById = async (req, res) => {
       <textarea
         id="description"
         name="description"
-        class="bg-[#161215] text-text mt-1 border rounded px-3 py-2 min-h-60 min-w-72"
+        class="bg-[#161215] text-text mt-1 border rounded px-3 py-2 w-full min-h-60 min-w-72"
       >${event.description}</textarea>
     </div>
 
