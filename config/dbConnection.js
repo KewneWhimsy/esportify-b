@@ -4,10 +4,7 @@ const mongoose = require("mongoose");
 // Se connecter à la base de données PostgreSQL
 const pgClient = new Client({
   connectionString: process.env.PG_URI,
-  // Pour une db sur Neon, il est recommandé d'ajouter cette option pour SSL
-  ssl: {
-    rejectUnauthorized: false,
-  },
+  keepAlive: true,
 });
 
 
