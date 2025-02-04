@@ -1,5 +1,5 @@
 module.exports = {
-    origin: ["http://localhost:4321", "https://kewnewhimsy.github.io"],
+    origin: ["http://localhost:4321", "https://kewnewhimsy.github.io", "http://localhost:3000"],
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     allowedHeaders: [
       "Content-Type",

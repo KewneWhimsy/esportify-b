@@ -1,4 +1,5 @@
 const { pgClient } = require("../../config/dbConnection.js");
+const { backendUrl } = require("../../config/backendUrl.js");
 const jwt = require("jsonwebtoken");
 
 // Route pour ajouter ou retirer un favori
@@ -42,7 +43,7 @@ module.exports.toggleFavorite = async (req, res) => {
     ? 
       `
         <button
-          hx-post="https://esportify-backend.onrender.com/api/favorites"
+          hx-post="${backendUrl}/api/favorites"
           hx-target="#favorite-button"
           hx-vals='${JSON.stringify({
             event_id: event_id,
@@ -56,12 +57,12 @@ module.exports.toggleFavorite = async (req, res) => {
         >
           Plus intéressé
         </button>
-        <div class="contents" hx-get="https://esportify-backend.onrender.com/api/favorites" hx-trigger="load" hx-target=#favoritesContainer></div>
+        <div class="contents" hx-get="${backendUrl}/api/favorites" hx-trigger="load" hx-target=#favoritesContainer></div>
       `
     : 
       ` 
         <button
-          hx-post="https://esportify-backend.onrender.com/api/favorites"
+          hx-post="${backendUrl}/api/favorites"
           hx-target="#favorite-button"
           hx-vals='${JSON.stringify({
             event_id: event_id,
@@ -75,7 +76,7 @@ module.exports.toggleFavorite = async (req, res) => {
         >
           Je participe
         </button>
-        <div class="contents" hx-get="https://esportify-backend.onrender.com/api/favorites" hx-trigger="load" hx-target=#favoritesContainer></div>
+        <div class="contents" hx-get="${backendUrl}/api/favorites" hx-trigger="load" hx-target=#favoritesContainer></div>
       `;
 
   console.log("HTML envoyé au client :", buttonHtml);
@@ -150,7 +151,7 @@ module.exports.showFavorited = async (req, res) => {
           <div id="event-${event.id}" class="flex flex-col justify-between bg-[#26232A] border 
           border-[#E5E7EB] p-4 rounded-lg w-64 shadow-md hover:shadow-lg transition-transform hover:scale-105 cursor-pointer flex-shrink-0 gap-0.5" 
           @click="setTimeout(() => { isOpen = true }, 200)"
-          hx-get="https://esportify-backend.onrender.com/api/event/${event.id}"
+          hx-get="${backendUrl}/api/event/${event.id}"
           hx-target="#popup-content"
           hx-swap="innerHTML"
           >

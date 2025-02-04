@@ -1,5 +1,6 @@
 const { pgClient } = require("../../config/dbConnection.js");
 const jwt = require("jsonwebtoken");
+const { backendUrl } = require("../../config/backendUrl.js");
 
 //Renvoi un tableau contenant tout les événements
 module.exports.getAllEvents = async (req, res) => {
@@ -31,7 +32,7 @@ module.exports.getAllEvents = async (req, res) => {
         <div class="flex flex-col justify-between bg-[#26232A] border 
         border-[#E5E7EB] p-4 rounded-lg w-64 shadow-md hover:shadow-lg transition-transform hover:scale-105 cursor-pointer flex-shrink-0 gap-0.5" 
         @click="setTimeout(() => { isOpen = true }, 200)"
-        hx-get="https://esportify-backend.onrender.com/api/event/${event.id}"
+        hx-get="${backendUrl}/api/event/${event.id}"
         hx-target="#popup-content"
         hx-swap="innerHTML"
         >
@@ -158,7 +159,7 @@ module.exports.getEventById = async (req, res) => {
           <div id="favorite-button" class="contents">
           <button
             x-show="!favorite"
-            hx-post="https://esportify-backend.onrender.com/api/favorites"
+            hx-post="${backendUrl}/api/favorites"
             hx-target="#favorite-button"
             hx-vals='${JSON.stringify({
               event_id: id,
@@ -176,7 +177,7 @@ module.exports.getEventById = async (req, res) => {
           <!-- Bouton pour retirer des favoris -->
           <button
             x-show="favorite"
-            hx-post="https://esportify-backend.onrender.com/api/favorites"
+            hx-post="${backendUrl}/api/favorites"
             hx-target="#favorite-button"
             hx-vals='${JSON.stringify({
               event_id: id,
@@ -195,7 +196,7 @@ module.exports.getEventById = async (req, res) => {
           <div x-show="ongoing">
           <button  
             id="boutonRejoindre"
-            hx-get="https://esportify-backend.onrender.com/api/room/${id}"
+            hx-get="${backendUrl}/api/room/${id}"
             hx-target="#chatcontain"
             class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors select-none"
           >
@@ -359,7 +360,7 @@ module.exports.getMyEvents = async (req, res) => {
         <div class="flex flex-col justify-between bg-[#26232A] border 
         border-[#E5E7EB] p-4 rounded-lg w-64 shadow-md hover:shadow-lg transition-transform hover:scale-105 cursor-pointer flex-shrink-0 gap-0.5" 
         @click="setTimeout(() => { isOpen = true }, 200)"
-        hx-get="https://esportify-backend.onrender.com/api/myevent/${event.id}"
+        hx-get="${backendUrl}/api/myevent/${event.id}"
         hx-target="#popup-content"
         hx-swap="innerHTML"
         >
@@ -419,12 +420,12 @@ module.exports.myEventById = async (req, res) => {
 
     const eventHtml = `
   <div
-  class="border border-gray-300 p-6 rounded-lg shadow-lg w-full"
+  class="relative border border-gray-300 rounded-lg shadow-lg overflow-y-auto"
   >
-    <button class="text-right select-none" @click="isOpen = false">X</button>
+    <button class="absolute p-1 right-1 text-xl select-none" @click="isOpen = false">X</button>
     <form
-    class="inset-0 w-full rounded max-w-[900px] mx-auto items-center justify-center z-50 px-5 py-3 transition-opacity"
-    hx-post="https://esportify-backend.onrender.com/api/events/update/${
+    class="inset-0 w-full rounded max-w-[900px] max-h-[90vh] mx-auto items-center justify-center z-50 px-5 pt-3 transition-opacity"
+    hx-post="${backendUrl}/api/events/update/${
       event.id
     }"
     hx-on::after-request="htmx.trigger('body', 'refresh')"
@@ -454,7 +455,7 @@ module.exports.myEventById = async (req, res) => {
       <textarea
         id="description"
         name="description"
-        class="bg-[#161215] text-text w-full mt-1 border rounded px-3 py-2 min-h-72 min-w-72"
+        class="bg-[#161215] text-text mt-1 border rounded px-3 py-2 min-h-60 min-w-72"
       >${event.description}</textarea>
     </div>
 
@@ -500,22 +501,22 @@ module.exports.myEventById = async (req, res) => {
         value="${new Date(event.end_datetime).toISOString().slice(0, -1)}"
       />
     </div>
-
+    <div class="flex flex-col gap-4 justify-center">
     <!-- Soumettre -->
     <div>
       <button
         type="submit"
-        class="w-full bg-[#5e3554] hover:bg-yellow-600 hover:text-shadow text-white px-4 py-2 mt-10 rounded transition-colors select-none"
+        class="w-full bg-[#5e3554] hover:bg-yellow-600 hover:text-shadow px-4 py-2 mt-5 rounded transition-colors select-none"
       >
         Mettre à jour
       </button>
     </div>
     <!-- Supprimer -->
-    <div>
+    
       <button
         type="button"
-        class="ml-auto bg-red-700 text-white px-4 py-2 rounded hover:bg-red-800 transition-colors select-none"
-        hx-delete="https://esportify-backend.onrender.com/api/events/deleteMy/${
+        class="ml-auto bg-red-900 gap-1 px-1 py-1 rounded hover:bg-red-800 transition-colors select-none"
+        hx-delete="${backendUrl}/api/events/deleteMy/${
           event.id
         }"
         hx-confirm="Êtes-vous sûr de vouloir supprimer cet événement ?"
@@ -523,8 +524,10 @@ module.exports.myEventById = async (req, res) => {
         hx-target="#form-messageup"
         hx-swap="innerHTML"
       >
-        Supprimer l'événement
+        🔥
       </button>
+      
+    
     </div>
     <!-- Message de retour -->
     <div id="form-messageup" class="text-sm text-center mt-4"></div>

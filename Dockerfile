@@ -12,7 +12,7 @@ RUN npm install
 COPY . .
 
 # Expose le port (par défaut pour Express et WebSocket)
-EXPOSE 3000
+EXPOSE 5000
 
 # Commande pour démarrer l'application
 CMD ["node", "index.js"]

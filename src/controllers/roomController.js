@@ -1,4 +1,4 @@
-// Importation de la configuration de la connexion à la base de données
+// Importation des variables de configuration.
 const { pgClient } = require("../../config/dbConnection.js");
 
 // CREATION ROOM EVENT
