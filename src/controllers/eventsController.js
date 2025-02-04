@@ -515,7 +515,7 @@ module.exports.myEventById = async (req, res) => {
     
       <button
         type="button"
-        class="ml-auto bg-red-900 gap-1 px-1 py-1 rounded hover:bg-red-800 transition-colors select-none"
+        class="ml-auto bg-red-900 gap-1 px-1 py-1 mb-1 rounded hover:bg-red-800 transition-colors select-none"
         hx-delete="${backendUrl}/api/events/deleteMy/${
           event.id
         }"
