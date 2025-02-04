@@ -42,7 +42,7 @@ module.exports.getPendingEvents = async (req, res) => {
               Valider
             </button>
             <button
-              hx-post="${backendUrl}/admin/events/reject/${event.id}"
+              hx-delete="${backendUrl}/admin/events/reject/${event.id}"
               hx-on::after-request="htmx.trigger('body', 'refresh')"
               hx-swap="delete"
               hx-target="#event-pend-${event.id}"
