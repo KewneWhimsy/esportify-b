@@ -420,9 +420,9 @@ module.exports.myEventById = async (req, res) => {
 
     const eventHtml = `
   <div
-  class="relative border border-gray-300 rounded-lg shadow-lg overflow-y-auto sm:p-2"
+  class="relative border border-gray-300 rounded-lg shadow-lg overflow-y-auto p-2"
   >
-    <button class="absolute p-1 right-1 text-xl select-none" @click="isOpen = false">X</button>
+    <button class="absolute px-1 right-2 text-xl select-none" @click="isOpen = false">X</button>
     <form
     class="inset-0 w-full rounded max-w-[900px] max-h-[90vh] mx-auto items-center justify-center z-50 px-5 pt-3 transition-opacity"
     hx-post="${backendUrl}/api/events/update/${
@@ -435,33 +435,33 @@ module.exports.myEventById = async (req, res) => {
   >
     <!-- Titre -->
     <div>
-      <label for="title" class="block text-sm font-medium"
+      <label for="title" class="block text-sm mb-1 font-medium"
         >Titre</label
       >
       <input
         type="text"
         id="title"
         name="title"
-        class="bg-[#161215] text-text w-full mt-1 border rounded px-3 py-2"
+        class="bg-[#161215] text-text w-full border rounded px-3 py-2"
         value="${event.title}"
       />
     </div>
 
     <!-- Description -->
     <div>
-      <label for="description" class="block text-sm font-medium"
+      <label for="description" class="block mb-1 mt-2 text-sm font-medium"
         >Description</label
       >
       <textarea
         id="description"
         name="description"
-        class="bg-[#161215] text-text mt-1 border rounded px-3 py-2 w-full min-h-60 min-w-72"
+        class="bg-[#161215] text-text border rounded px-3 py-2 w-full min-h-60 min-w-72"
       >${event.description}</textarea>
     </div>
 
     <!-- Nombre de joueurs -->
     <div>
-      <label for="players_count" class="block text-sm font-medium"
+      <label for="players_count" class="block my-1 text-sm font-medium"
         >Nombre de joueurs</label
       >
       <input
@@ -469,35 +469,35 @@ module.exports.myEventById = async (req, res) => {
         id="players_count"
         name="players_count"
         min="2"
-        class="bg-[#161215] text-text w-full mt-1 border rounded px-3 py-2"
+        class="bg-[#161215] text-text w-full border rounded px-3 py-2"
         value="${event.players_count}"
       />
     </div>
 
     <!-- Date et heure de début -->
     <div>
-      <label for="start_datetime" class="block text-sm font-medium"
+      <label for="start_datetime" class="block mb-1 mt-2 text-sm font-medium"
         >Date et heure de début</label
       >
       <input
         type="datetime-local"
         id="start_datetime"
         name="start_datetime"
-        class="bg-[#161215] text-text w-full mt-1 border rounded px-3 py-2"
+        class="bg-[#161215] text-text w-full border rounded px-3 py-2"
         value="${new Date(event.start_datetime).toISOString().slice(0, -1)}"
       />
     </div>
 
     <!-- Date et heure de fin -->
     <div>
-      <label for="end_datetime" class="block text-sm font-medium"
+      <label for="end_datetime" class="block mb-1 mt-2 text-sm font-medium"
         >Date et heure de fin</label
       >
       <input
         type="datetime-local"
         id="end_datetime"
         name="end_datetime"
-        class="bg-[#161215] text-text w-full mt-1 border rounded px-3 py-2"
+        class="bg-[#161215] text-text w-full border rounded px-3 py-2"
         value="${new Date(event.end_datetime).toISOString().slice(0, -1)}"
       />
     </div>
@@ -515,8 +515,7 @@ module.exports.myEventById = async (req, res) => {
     
       <button
         type="button"
-        title="Supprimer"
-        class="ml-auto bg-red-900 gap-1 px-1 py-1 mb-1 rounded hover:bg-red-800 transition-colors select-none"
+        class="ml-auto bg-red-800 px-2 py-1 mb-1 mr-1 rounded hover:bg-red-900 transition-colors select-none"
         hx-delete="${backendUrl}/api/events/deleteMy/${
           event.id
         }"
@@ -525,13 +524,13 @@ module.exports.myEventById = async (req, res) => {
         hx-target="#form-messageup"
         hx-swap="innerHTML"
       >
-        🔥
+        Supprimer
       </button>
       
     
     </div>
     <!-- Message de retour -->
-    <div id="form-messageup" class="text-sm text-center mt-4"></div>
+    <div id="form-messageup" class="text-sm text-center my-1"></div>
     <style>
     input[type="datetime-local"]::-webkit-calendar-picker-indicator {
       filter: invert(1); /* Icone blanche */
