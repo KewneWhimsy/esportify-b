@@ -5,6 +5,9 @@ const mongoose = require("mongoose");
 const pgClient = new Client({
   connectionString: process.env.PG_URI,
   keepAlive: true,
+  ssl: {
+    rejectUnauthorized: false,
+  },
 });
 
 
