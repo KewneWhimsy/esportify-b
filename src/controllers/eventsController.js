@@ -420,7 +420,7 @@ module.exports.myEventById = async (req, res) => {
 
     const eventHtml = `
   <div
-  class="relative border border-gray-300 rounded-lg shadow-lg overflow-y-auto"
+  class="relative border border-gray-300 rounded-lg shadow-lg overflow-y-auto sm:p-2"
   >
     <button class="absolute p-1 right-1 text-xl select-none" @click="isOpen = false">X</button>
     <form
