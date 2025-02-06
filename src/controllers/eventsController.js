@@ -169,7 +169,7 @@ module.exports.getEventById = async (req, res) => {
             hx-headers='{"Content-Type": "application/json"}'
             hx-encoding="json"
             hx-swap="innerHTML"
-            class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+            class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors select-none"
           >
             Je participe
           </button>
