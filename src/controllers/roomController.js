@@ -123,7 +123,7 @@ module.exports.setupChatWebSocket = (app) => {
     // Gestion de la déconnexion
     ws.on("close", () => {
       room.connections = room.connections.filter((conn) => conn !== ws);
-      console.log(`[WS] Connexion fermée. Restant : ${room.connections.length}`);
+      console.log(`[WS] Connexion room ${roomId} fermée. Restant : ${room.connections.length}`);
     });
   });
 };

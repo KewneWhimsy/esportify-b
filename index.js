@@ -38,7 +38,7 @@ async function startServer() {
     app.use("/", routes);
 
     // Configuration WebSocket pour la chatroom
-roomController.setupChatWebSocket(app);
+    roomController.setupChatWebSocket(app);
 
     // Route de vérification de l'état du serveur
     app.get("/health", (req, res) => {
