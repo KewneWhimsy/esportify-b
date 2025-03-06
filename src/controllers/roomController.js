@@ -73,6 +73,28 @@ module.exports.setupChatWebSocket = (app) => {
     const roomId = req.params.roomId;
     console.log(`[WS] Connexion ouverte pour la room ${roomId}`);
 
+    // Récupérer l'ID utilisateur du JWT
+  const userId = req.session.userId || req.user?.id; // Adapte ceci selon ta méthode d'authentification
+  
+  // Récupérer le nom d'utilisateur depuis PostgreSQL
+  let username = "Anonyme"; // Valeur par défaut
+  try {
+    if (userId) {
+      const userResult = await pgClient.query(
+        'SELECT username FROM users WHERE id = $1',
+        [userId]
+      );
+      if (userResult.rows.length > 0) {
+        username = userResult.rows[0].username;
+      }
+    }
+  } catch (error) {
+    console.error("Erreur lors de la récupération du nom d'utilisateur:", error);
+  }
+  
+  // Associer le nom d'utilisateur à cette connexion WebSocket
+  ws.username = username;
+
     const room = chatRooms.get(roomId) || { messages: [], connections: [] };
 
     if (!chatRooms.has(roomId)) {
@@ -86,7 +108,9 @@ module.exports.setupChatWebSocket = (app) => {
     try {
       const messages = await ChatMessage.find({ roomId }).sort({ timestamp: 1 }).exec();
       if (messages.length > 0) {
-        const messagesList = messages.map((msg) => `<li>${msg.chat_message}</li>`).join("");
+        const messagesList = messages.map((msg) => 
+          `<li><strong>${msg.username || 'Anonyme'}</strong>: ${msg.chat_message}</li>`
+        ).join("");
         ws.send(`<ul id='chat_room'>${messagesList}</ul>`);
       }
     } catch (err) {
@@ -105,11 +129,18 @@ module.exports.setupChatWebSocket = (app) => {
         }
 
         // Sauvegarde en base de données
-        const newMessage = new ChatMessage({ roomId, chat_message: chatMessage });
+        const newMessage = new ChatMessage({ 
+          roomId, 
+          chat_message: chatMessage,
+          username: ws.username, // Ajouter le nom d'utilisateur
+        });
         await newMessage.save();
 
+        // Format du message avec le nom d'utilisateur
+      const formattedMessage = `<strong>${ws.username}</strong>: ${chatMessage}`;
+
         // Ajouter et envoyer le message à toutes les connexions
-        room.messages.push(chatMessage);
+        room.messages.push(formattedMessage);
         if (room.messages.length > 50) {
           room.messages.shift(); // Supprime le plus ancien message
         }        

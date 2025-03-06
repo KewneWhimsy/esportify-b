@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const ChatMessageSchema = new mongoose.Schema({
   roomId: { type: String, required: true }, // Identifiant de la room
   chat_message: { type: String, required: true }, // Contenu du message
+  username: ws.username, // nom d'utilisateur
   timestamp: { type: Date, default: Date.now }, // Date d'envoi du message
 });
 
