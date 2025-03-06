@@ -92,7 +92,7 @@ module.exports.setupChatWebSocket = (app) => {
         ws.send(`<ul id='chat_room'>${messagesList}</ul>`);
       }
     } catch (err) {
-      console.error("Erreur lors de la récupération des messages:", err);
+      console.log("Erreur lors de la récupération des messages:", err);
     }
 
     // Gestion des messages entrants
@@ -119,9 +119,10 @@ module.exports.setupChatWebSocket = (app) => {
         );
         if (userResult.rows.length > 0) {
           username = userResult.rows[0].username;
+          console.log("Récupération du nom d'utilisateur:", username);
         }
       } catch (err) {
-        console.error("Erreur lors de la récupération du nom d'utilisateur:", err);
+        console.log("Erreur lors de la récupération du nom d'utilisateur:", err);
       }
     }
 
@@ -144,7 +145,7 @@ module.exports.setupChatWebSocket = (app) => {
         const messagesList = room.messages.map((msg) => `<li>${msg}</li>`).join("");
         room.connections.forEach((connection) => connection.send(`<ul id='chat_room'>${messagesList}</ul>`));
       } catch (error) {
-        console.error("Erreur lors de la réception du message:", error);
+        console.log("Erreur lors de la réception du message:", error);
       }
     });
 
