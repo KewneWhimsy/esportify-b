@@ -73,28 +73,6 @@ module.exports.setupChatWebSocket = (app) => {
     const roomId = req.params.roomId;
     console.log(`[WS] Connexion ouverte pour la room ${roomId}`);
 
-    // Récupérer l'ID utilisateur du JWT
-  const userId = req.session.userId || req.user?.id; // Adapte ceci selon ta méthode d'authentification
-  
-  // Récupérer le nom d'utilisateur depuis PostgreSQL
-  let username = "Anonyme"; // Valeur par défaut
-  try {
-    if (userId) {
-      const userResult = await pgClient.query(
-        'SELECT username FROM users WHERE id = $1',
-        [userId]
-      );
-      if (userResult.rows.length > 0) {
-        username = userResult.rows[0].username;
-      }
-    }
-  } catch (error) {
-    console.error("Erreur lors de la récupération du nom d'utilisateur:", error);
-  }
-  
-  // Associer le nom d'utilisateur à cette connexion WebSocket
-  ws.username = username;
-
     const room = chatRooms.get(roomId) || { messages: [], connections: [] };
 
     if (!chatRooms.has(roomId)) {
@@ -128,16 +106,35 @@ module.exports.setupChatWebSocket = (app) => {
           return;
         }
 
+        // Récupérer l'ID utilisateur du JWT ou de la session
+    const userId = req.session?.userId || req.user?.id; // Adapte selon ta méthode d'authentification
+    
+    // Récupérer le nom d'utilisateur
+    let username = "Anonyme";
+    if (userId) {
+      try {
+        const userResult = await pgClient.query(
+          'SELECT username FROM users WHERE id = $1',
+          [userId]
+        );
+        if (userResult.rows.length > 0) {
+          username = userResult.rows[0].username;
+        }
+      } catch (err) {
+        console.error("Erreur lors de la récupération du nom d'utilisateur:", err);
+      }
+    }
+
         // Sauvegarde en base de données
         const newMessage = new ChatMessage({ 
           roomId, 
           chat_message: chatMessage,
-          username: ws.username, // Ajouter le nom d'utilisateur
+          username: username, // Ajouter le nom d'utilisateur
         });
         await newMessage.save();
 
         // Format du message avec le nom d'utilisateur
-      const formattedMessage = `<strong>${ws.username}</strong>: ${chatMessage}`;
+      const formattedMessage = `<strong>${username}</strong>: ${chatMessage}`;
 
         // Ajouter et envoyer le message à toutes les connexions
         room.messages.push(formattedMessage);
