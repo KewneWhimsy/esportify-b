@@ -10,6 +10,31 @@ const pgClient = new Client({
   },
 });
 
+// Gérez les erreurs de connexion
+pgClient.on('error', (err) => {
+  console.error('Erreur de connexion à la base de données PostgreSQL:', err);
+  // Rétablir la connexion ou effectuer une autre action
+  pgClient.connect((err) => {
+    if (err) {
+      console.error('Erreur de rétablissement de la connexion:', err);
+    } else {
+      console.log('Connexion rétablie');
+    }
+  });
+});
+
+// Gérez les déconnexions
+pgClient.on('end', () => {
+  console.log('Déconnexion de la base de données PostgreSQL');
+  // Rétablir la connexion ou effectuer une autre action
+  pgClient.connect((err) => {
+    if (err) {
+      console.error('Erreur de rétablissement de la connexion:', err);
+    } else {
+      console.log('Connexion rétablie');
+    }
+  });
+});
 
 // Fonction de connexion aux bases de données
 async function connectToDB() {
