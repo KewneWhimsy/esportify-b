@@ -30,7 +30,7 @@ module.exports.getAllEvents = async (req, res) => {
     events.forEach((event) => {
       eventsHtml += `
         <div class="flex flex-col justify-between bg-[#26232A] border 
-        border-[#E5E7EB] p-4 rounded-lg w-64 shadow-md hover:shadow-lg transition-transform hover:scale-105 cursor-pointer flex-shrink-0 gap-0.5" 
+        border-[#E5E7EB] p-4 rounded-lg w-64 shadow-md hover:shadow-lg motion-safe:transition-transform motion-safe:hover:scale-105 cursor-pointer flex-shrink-0 gap-0.5" 
         @click="setTimeout(() => { isOpen = true }, 200)"
         hx-get="${backendUrl}/api/event/${event.id}"
         hx-target="#popup-content"
@@ -358,7 +358,7 @@ module.exports.getMyEvents = async (req, res) => {
         const approvalStatus = event.is_approved ? "Accepté" : "En attente"; // Affiche le statut d'acceptation
         eventsHtml += `
         <div class="flex flex-col justify-between bg-[#26232A] border 
-        border-[#E5E7EB] p-4 rounded-lg w-64 shadow-md hover:shadow-lg transition-transform hover:scale-105 cursor-pointer flex-shrink-0 gap-0.5" 
+        border-[#E5E7EB] p-4 rounded-lg w-64 shadow-md hover:shadow-lg motion-safe:transition-transform motion-safe:hover:scale-105 cursor-pointer flex-shrink-0 gap-0.5" 
         @click="setTimeout(() => { isOpen = true }, 200)"
         hx-get="${backendUrl}/api/myevent/${event.id}"
         hx-target="#popup-content"

@@ -149,7 +149,7 @@ module.exports.showFavorited = async (req, res) => {
       events.forEach((event) => {
         eventsHtml += `
           <div id="event-${event.id}" class="flex flex-col justify-between bg-[#26232A] border 
-          border-[#E5E7EB] p-4 rounded-lg w-64 shadow-md hover:shadow-lg transition-transform hover:scale-105 cursor-pointer flex-shrink-0 gap-0.5" 
+          border-[#E5E7EB] p-4 rounded-lg w-64 shadow-md hover:shadow-lg motion-safe:transition-transform motion-safe:hover:scale-105 cursor-pointer flex-shrink-0 gap-0.5" 
           @click="setTimeout(() => { isOpen = true }, 200)"
           hx-get="${backendUrl}/api/event/${event.id}"
           hx-target="#popup-content"
