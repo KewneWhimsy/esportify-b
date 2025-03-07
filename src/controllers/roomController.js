@@ -5,6 +5,9 @@ const chatRooms = new Map(); // Stocker les rooms en mémoire
 // --- Route HTTP : Affichage de la chatroom ---
 module.exports.getEventRoom = async (req, res) => {
   const { id } = req.params;
+  const { userId } = req.user;
+  console.log(`user : ${userId}`);
+
 
   try {
     // Récupération des infos de l'événement
@@ -39,7 +42,7 @@ module.exports.getEventRoom = async (req, res) => {
         <p><strong>Fin :</strong> ${new Date(event.end_datetime).toLocaleString()}</p>
         <p><strong>Organisateur :</strong> ${event.organisateur}</p>
       </div>
-      <div hx-ext="ws" ws-connect="wss://esportify-backend.onrender.com/api/room/chat/${id}" hx-swap="beforeend">
+      <div hx-ext="ws" ws-connect="wss://esportify-backend.onrender.com/api/room/chat/${id}/${userId}" hx-swap="beforeend">
         <div id="notifications" class="mb-4"></div>
         <div id="chat_room" class="flex-grow overflow-y-auto"></div>
         <div class="mt-auto">
@@ -69,9 +72,11 @@ module.exports.getEventRoom = async (req, res) => {
 
 // --- Gestion de WebSocket pour la chatroom ---
 module.exports.setupChatWebSocket = (app) => {
-  app.ws("/api/room/chat/:roomId", async function connection(ws, req) {
+  app.ws("/api/room/chat/:roomId/:userId", async function connection(ws, req) {
     const roomId = req.params.roomId;
     console.log(`[WS] Connexion ouverte pour la room ${roomId}`);
+    const userId = req.params.userId;
+    console.log(`[WS] utilisateur : ${userId}`);
 
     const room = chatRooms.get(roomId) || { messages: [], connections: [] };
 
@@ -106,8 +111,7 @@ module.exports.setupChatWebSocket = (app) => {
           return;
         }
 
-        // Récupérer l'ID utilisateur du JWT ou de la session
-    const userId = req.session?.userId || req.user?.id; // Adapte selon ta méthode d'authentification
+        
     
     // Récupérer le nom d'utilisateur
     let username = "Anonyme";
