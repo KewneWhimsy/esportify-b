@@ -1,4 +1,4 @@
-const { pgClient } = require("./config/dbConnection.js");
+const { queryDB } = require("./config/dbConnection.js");
 const bcrypt = require("bcrypt");
 const fs = require("fs");
 
@@ -29,7 +29,7 @@ async function initializeUsers() {
             `;
             const values = [user.username, user.email, hashedPassword, user.role, user.score];
 
-            await pgClient.query(query, values);
+            await (query, values);
             console.log(`Utilisateur ${user.username} inséré avec succès.`);
         }
         console.log("Tous les utilisateurs ont été initialisés.");
@@ -55,7 +55,7 @@ async function initializeEvents() {
     `;
     try {
         console.log("Insertion des événements...");
-        await pgClient.query(eventsQuery);
+        await queryDB(eventsQuery);
         console.log("Les événements ont été insérés.");
     } catch (error) {
         console.error("Erreur lors de l'insertion des événements :", error);
@@ -84,7 +84,7 @@ async function initializeDbPg() {
     const initSql = fs.readFileSync('./init.sql').toString();
 
     // Exécuter le script SQL pour initialiser la base
-    await pgClient.query(initSql);
+    await queryDB(initSql);
     console.log('Database postgres initialisée avec init.sql');
     
     // Insérer les données après l'initialisation SQL
