@@ -1,7 +1,8 @@
 const { Client } = require("pg");
 const mongoose = require("mongoose");
 
-let pgClient = new Client({
+// Se connecter à la base de données PostgreSQL
+const pgClient = new Client({
   connectionString: process.env.PG_URI,
   keepAlive: true,
   ssl: {
@@ -12,30 +13,7 @@ let pgClient = new Client({
 // Variable pour stocker l'état de la connexion
 let isConnected = false;
 
-// Fonction de réinitialisation du client PostgreSQL
-function createPgClient() {
-  pgClient = new Client({
-    connectionString: process.env.PG_URI,
-    keepAlive: true,
-    ssl: {
-      rejectUnauthorized: false,
-    },
-  });
-
-  pgClient.on('error', (err) => {
-    console.error('Erreur de connexion à la base de données PostgreSQL:', err);
-    isConnected = false;
-    reconnect();
-  });
-
-  pgClient.on('end', () => {
-    console.log('Déconnexion de la base de données PostgreSQL');
-    isConnected = false;
-    reconnect();
-  });
-}
-
-// Fonction pour rétablir la connexion
+// Fonction pour rétablir la connexion si nécessaire
 async function reconnect() {
   try {
     if (!isConnected) {
@@ -49,11 +27,23 @@ async function reconnect() {
   }
 }
 
+// Gestion des erreurs de connexion
+pgClient.on('error', (err) => {
+  console.error('Erreur de connexion à la base de données PostgreSQL:', err);
+  // Si une déconnexion se produit, tenter une reconnexion
+  if (err.code === 'ECONNRESET' || err.code === '08006') {
+    // Ces codes indiquent une connexion interrompue, donc on tente une reconnexion
+    isConnected = false;
+    reconnect();
+  }
+});
+
+
+
 // Fonction de connexion aux bases de données
 async function connectToDB() {
   try {
-    // Créer et connecter un nouveau client PostgreSQL
-    createPgClient();
+    // Connexion à la bdd postgres
     await pgClient.connect();
     isConnected = true;
     console.log("Connected to PostgreSQL database");
