@@ -2,16 +2,18 @@ const { Client } = require("pg");
 const mongoose = require("mongoose");
 
 // Se connecter à la base de données PostgreSQL
-let pgClient = null; // Déclarer pgClient globalement, mais sans initialiser immédiatement
+let pgClient = null; // Déclarer pgClient globalement mais sans initialisation immédiate
 
 // Fonction pour rétablir la connexion si nécessaire
 async function reconnect() {
   try {
+    // Vérifier si le client PostgreSQL est déjà connecté
     if (pgClient && pgClient._connected) {
       console.log("Le client PostgreSQL est déjà connecté.");
-      return; // Si le client est déjà connecté, ne pas tenter de nouvelle connexion
+      return; // Si le client est déjà connecté, on ne tente pas de se reconnecter
     }
 
+    // Si le client n'est pas encore initialisé, on le crée
     if (!pgClient) {
       pgClient = new Client({
         connectionString: process.env.PG_URI,
@@ -22,15 +24,19 @@ async function reconnect() {
       });
     }
 
-    await pgClient.connect();
-    console.log('Connexion PostgreSQL rétablie');
+    // Si le client n'est pas encore connecté, on essaie de se connecter
+    if (!pgClient._connected) {
+      await pgClient.connect();
+      console.log('Connexion PostgreSQL rétablie');
+    }
+
   } catch (err) {
     console.error('Erreur de rétablissement de la connexion PostgreSQL:', err);
     setTimeout(reconnect, 5000); // Réessayer dans 5 secondes
   }
 }
 
-// Gestion des erreurs de connexion
+// Fonction de gestion des erreurs de connexion
 pgClient?.on('error', (err) => {
   console.error('Erreur de connexion à la base de données PostgreSQL:', err);
   // Si une déconnexion se produit, tenter une reconnexion
@@ -44,41 +50,17 @@ pgClient?.on('error', (err) => {
 async function connectToDB() {
   try {
     // Connexion à PostgreSQL
-    await reconnect();
+    await reconnect(); // Tentative de connexion ou reconnexion
     console.log("Connected to PostgreSQL database");
 
     // Connexion à MongoDB Atlas
     await mongoose.connect(process.env.MONGODB_URI);
     console.log("Connected to MongoDB Atlas");
+
   } catch (err) {
     console.error("Database connection error", err);
     throw err;  // Propager l'erreur pour qu'elle soit gérée ailleurs
   }
 }
 
-// Fonction pour démarrer le serveur
-async function startServer() {
-  try {
-    // Connexion aux bases de données
-    await connectToDB();
-
-    // Démarrer ton serveur Express ici (routes, WebSocket, etc.)
-    const express = require("express");
-    const app = express();
-    
-    // Ajouter des routes, middlewares, etc. 
-    app.get("/", (req, res) => {
-      res.send("Hello World!");
-    });
-
-    const PORT = process.env.PORT || 5000;
-    app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
-    });
-  } catch (err) {
-    console.error("Erreur lors du démarrage du serveur:", err);
-  }
-}
-
-// Démarrer l'application
-startServer();
+module.exports = { pgClient, mongoose, connectToDB };
