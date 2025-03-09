@@ -56,7 +56,7 @@ async function startServer() {
       console.log(`Server is running on port ${PORT}`);
     });
   } catch (err) {
-    console.error("Erreur lors du démarrage du serveur:", err);
+    console.error("Erreur lors du démarrage du serveur:", err.message, err.stack);
   }
 }
 

@@ -14,7 +14,11 @@ let isConnected = false; // État de la connexion PostgreSQL
 
 // Fonction pour établir la connexion PostgreSQL
 async function connectPostgres() {
-  if (isConnected) return; // Évite une double connexion
+  if (isConnected) {
+    console.log("✅ PostgreSQL already connected.");
+    return; // Si déjà connecté, on ne fait rien
+  }
+
   try {
     await pgClient.connect();
     isConnected = true;
@@ -41,11 +45,12 @@ async function connectPostgres() {
 // Fonction pour rétablir la connexion PostgreSQL
 async function reconnectPostgres() {
   console.log("🔄 Attempting to reconnect to PostgreSQL...");
-  if (isConnected) return; // Empêche les tentatives multiples
+  if (isConnected) return; // Si déjà connecté, ne rien faire
 
   try {
+    // Réinitialise le client uniquement si la connexion a échoué
     pgClient = new Client(pgConfig); // Création d'un nouveau client
-    await connectPostgres();
+    await connectPostgres(); // Essayer de se reconnecter
   } catch (err) {
     console.error("❌ Reconnection failed:", err);
     setTimeout(reconnectPostgres, 5000); // Réessaye dans 5s
