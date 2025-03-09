@@ -1,4 +1,4 @@
-const { pgClient } = require("../../config/dbConnection.js");
+const { queryDB } = require("../../config/dbConnection.js");
 const jwt = require("jsonwebtoken");
 const { backendUrl } = require("../../config/backendUrl.js");
 
@@ -15,7 +15,7 @@ module.exports.getAllEvents = async (req, res) => {
       orderBy === "organisateur" ? "u.username" : `e.${orderBy}`;
 
     // Récupére les événements depuis PostgreSQL
-    const result = await pgClient.query(`
+    const result = await queryDB(`
       SELECT e.id, e.title, e.description, e.players_count, e.start_datetime, e.end_datetime, u.username AS organisateur
       FROM events e
       JOIN users u ON e.user_id = u.id
@@ -73,7 +73,7 @@ module.exports.getEventById = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const result = await pgClient.query(
+    const result = await queryDB(
       `
       SELECT e.id, e.title, e.description, e.players_count, e.start_datetime, e.end_datetime, u.username AS organisateur
       FROM events e
@@ -107,7 +107,7 @@ module.exports.getEventById = async (req, res) => {
     // Vérifier si l'utilisateur a déjà favorisé cet événement
     const isFavorited = userId
       ? (
-          await pgClient.query(
+          await queryDB(
             "SELECT 1 FROM favorites WHERE user_id = $1 AND event_id = $2",
             [userId, id]
           )
@@ -254,7 +254,7 @@ module.exports.createEvent = async (req, res) => {
     const is_approved = role === "admin" ? true : false;
 
     // Insérer dans la base de données
-    const result = await pgClient.query(
+    const result = await queryDB(
       `INSERT INTO events (title, description, players_count, is_approved, start_datetime, end_datetime, user_id) 
        VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
       [
@@ -330,7 +330,7 @@ module.exports.getMyEvents = async (req, res) => {
 
     // Récupère les événements créés par l'utilisateur connecté
     console.log("Sort Column :", sortColumn);
-    const result = await pgClient.query(
+    const result = await queryDB(
       `
       SELECT e.id, e.title, e.description, e.players_count, e.start_datetime, e.end_datetime, e.is_approved, u.username AS organisateur
       FROM events e
@@ -404,7 +404,7 @@ module.exports.myEventById = async (req, res) => {
   console.log(eventId);
 
   try {
-    const result = await pgClient.query(
+    const result = await queryDB(
       `
       SELECT e.id, e.title, e.description, e.players_count, e.start_datetime, e.end_datetime, u.username AS organisateur
       FROM events e
@@ -574,7 +574,7 @@ module.exports.updateEvent = async (req, res) => {
 
   try {
     // Vérifier si l'événement existe
-    const eventResult = await pgClient.query(
+    const eventResult = await queryDB(
       "SELECT * FROM events WHERE id = $1 AND user_id = $2",
       [eventId, userId]
     );
@@ -584,7 +584,7 @@ module.exports.updateEvent = async (req, res) => {
       );
     }
 
-    const overlappingEvents = await pgClient.query(
+    const overlappingEvents = await queryDB(
       `SELECT * FROM events 
        WHERE user_id = $4 AND id != $1 AND (
          (start_datetime < $2 AND end_datetime > $2) OR
@@ -605,7 +605,7 @@ module.exports.updateEvent = async (req, res) => {
     const is_approved = role === "admin" ? true : false;
 
     // Mettre à jour l'événement
-    const updateResult = await pgClient.query(
+    const updateResult = await queryDB(
       `UPDATE events 
        SET title = $1, description = $2, players_count = $3, is_approved = $4, start_datetime = $5, end_datetime = $6
        WHERE id = $7 AND user_id = $8 RETURNING id`,
@@ -667,7 +667,7 @@ module.exports.deleteMy = async (req, res) => {
   const eventId = req.params.eventId;
   console.log(`Refus de l'événement ${eventId}`);
   try {
-    await pgClient.query(
+    await queryDB(
       `
       DELETE FROM events 
       WHERE id = $1

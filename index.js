@@ -57,8 +57,32 @@ async function startServer() {
     });
   } catch (err) {
     console.error("Erreur lors du démarrage du serveur:", err.message, err.stack);
+    // Ajouté: Sortie propre en cas d'erreur fatale
+    process.exit(1);
   }
 }
+
+// Gestion des arrêts propres du serveur
+process.on('SIGINT', async () => {
+  // Fermer les connexions à la base de données avant de quitter
+  try {
+    const { pgPool, mongoose } = require("./config/dbConnection.js");
+    
+    console.log('Fermeture des connexions de base de données...');
+    
+    // Fermer le pool PostgreSQL
+    await pgPool.end();
+    console.log('Connexion PostgreSQL fermée');
+    
+    // Fermer mongoose
+    await mongoose.connection.close();
+    console.log('Connexion MongoDB fermée');
+  } catch (err) {
+    console.error('Erreur lors de la fermeture des connexions:', err);
+  }
+  
+  process.exit(0);
+});
 
 // Démarrer l'application
 startServer();

@@ -1,66 +1,57 @@
-const { Client } = require("pg");
+const { Pool } = require("pg");
 const mongoose = require("mongoose");
 
-// Se connecter à la base de données PostgreSQL
-let pgClient = null; // Déclarer pgClient globalement mais sans initialisation immédiate
+// Utiliser Pool au lieu de Client pour une meilleure gestion des connexions
+const pgPool = new Pool({
+  connectionString: process.env.PG_URI,
+  ssl: {
+    rejectUnauthorized: false,
+  },
+  // Configuration pour la gestion des connexions
+  idleTimeoutMillis: 30000, // Temps d'inactivité avant fermeture (30 secondes)
+  connectionTimeoutMillis: 5000, // Délai d'attente pour une connexion (5 secondes)
+  max: 10, // Nombre maximum de clients dans le pool
+});
 
-// Fonction pour rétablir la connexion si nécessaire
-async function reconnect() {
-  try {
-    // Vérifier si le client PostgreSQL est déjà connecté
-    if (pgClient && pgClient._connected) {
-      console.log("Le client PostgreSQL est déjà connecté.");
-      return; // Si le client est déjà connecté, on ne tente pas de se reconnecter
-    }
-
-    // Si le client n'est pas encore initialisé, on le crée
-    if (!pgClient) {
-      pgClient = new Client({
-        connectionString: process.env.PG_URI,
-        keepAlive: true,
-        ssl: {
-          rejectUnauthorized: false,
-        },
-      });
-    }
-
-    // Si le client n'est pas encore connecté, on essaie de se connecter
-    if (!pgClient._connected) {
-      await pgClient.connect();
-      console.log('Connexion PostgreSQL rétablie');
-    }
-
-  } catch (err) {
-    console.error('Erreur de rétablissement de la connexion PostgreSQL:', err);
-    setTimeout(reconnect, 5000); // Réessayer dans 5 secondes
-  }
-}
-
-// Fonction de gestion des erreurs de connexion
-pgClient?.on('error', (err) => {
-  console.error('Erreur de connexion à la base de données PostgreSQL:', err);
-  // Si une déconnexion se produit, tenter une reconnexion
-  if (err.code === 'ECONNRESET' || err.code === '08006') {
-    console.log("Tentative de reconnexion...");
-    reconnect();
-  }
+// Écouter les erreurs au niveau du pool
+pgPool.on('error', (err) => {
+  console.error('Erreur inattendue du pool PostgreSQL:', err);
+  // Ne pas tenter de reconnexion ici - le pool le fera automatiquement
 });
 
 // Fonction de connexion aux bases de données
 async function connectToDB() {
   try {
-    // Connexion à PostgreSQL
-    await reconnect(); // Tentative de connexion ou reconnexion
+    // Tester la connexion PostgreSQL (sans bloquer une connexion)
+    const client = await pgPool.connect();
+    client.release(); // Important: libérer le client immédiatement
     console.log("Connected to PostgreSQL database");
 
     // Connexion à MongoDB Atlas
-    await mongoose.connect(process.env.MONGODB_URI);
+    await mongoose.connect(process.env.MONGODB_URI, {
+      // Options de connexion pour une meilleure résilience
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+    });
     console.log("Connected to MongoDB Atlas");
-
   } catch (err) {
     console.error("Database connection error", err);
-    throw err;  // Propager l'erreur pour qu'elle soit gérée ailleurs
+    throw err;
   }
 }
 
-module.exports = { pgClient, mongoose, connectToDB };
+// Fonction pour exécuter une requête PostgreSQL de façon sécurisée
+async function queryDB(text, params) {
+  const client = await pgPool.connect();
+  try {
+    const result = await client.query(text, params);
+    return result;
+  } catch (err) {
+    console.error('Erreur lors de l\'exécution de la requête:', err);
+    throw err;
+  } finally {
+    client.release(); // Toujours libérer le client, même en cas d'erreur
+  }
+}
+
+module.exports = { pgPool, mongoose, connectToDB, queryDB };
