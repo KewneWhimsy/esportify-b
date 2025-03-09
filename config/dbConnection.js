@@ -1,62 +1,69 @@
 const { Client } = require("pg");
 const mongoose = require("mongoose");
 
-// Se connecter à la base de données PostgreSQL
-const pgClient = new Client({
+// Configuration PostgreSQL
+const pgConfig = {
   connectionString: process.env.PG_URI,
   keepAlive: true,
-  ssl: {
-    rejectUnauthorized: false,
-  },
-});
+  ssl: { rejectUnauthorized: false },
+};
 
-// Variable pour stocker l'état de la connexion
-let isConnected = false;
+// Variable de connexion PostgreSQL
+let pgClient = new Client(pgConfig);
+let isConnected = false; // État de la connexion PostgreSQL
 
-// Gérez les erreurs de connexion
-pgClient.on('error', (err) => {
-  console.error('Erreur de connexion à la base de données PostgreSQL:', err);
-  isConnected = false;
-  // Rétablir la connexion ou effectuer une autre action
-  reconnect();
-});
-
-// Gérez les déconnexions
-pgClient.on('end', () => {
-  console.log('Déconnexion de la base de données PostgreSQL');
-  isConnected = false;
-  // Rétablir la connexion ou effectuer une autre action
-  reconnect();
-});
-
-// Fonction pour rétablir la connexion
-async function reconnect() {
+// Fonction pour établir la connexion PostgreSQL
+async function connectPostgres() {
+  if (isConnected) return; // Évite une double connexion
   try {
-    if (!isConnected) {
-      await pgClient.connect();
-      isConnected = true;
-      console.log('Connexion rétablie');
-    }
+    await pgClient.connect();
+    isConnected = true;
+    console.log("✅ Connected to PostgreSQL database");
+
+    // Gestion des erreurs et reconnexion automatique
+    pgClient.on("error", async (err) => {
+      console.error("❌ PostgreSQL error:", err);
+      isConnected = false;
+      await reconnectPostgres();
+    });
+
+    pgClient.on("end", async () => {
+      console.log("🔌 PostgreSQL connection ended.");
+      isConnected = false;
+      await reconnectPostgres();
+    });
   } catch (err) {
-    console.error('Erreur de rétablissement de la connexion:', err);
-    setTimeout(reconnect, 5000); // Réessayer de se connecter dans 5 secondes
+    console.error("🚨 PostgreSQL connection error:", err);
+    setTimeout(reconnectPostgres, 5000); // Réessaye dans 5s
   }
 }
 
-// Fonction de connexion aux bases de données
+// Fonction pour rétablir la connexion PostgreSQL
+async function reconnectPostgres() {
+  console.log("🔄 Attempting to reconnect to PostgreSQL...");
+  if (isConnected) return; // Empêche les tentatives multiples
+
+  try {
+    pgClient = new Client(pgConfig); // Création d'un nouveau client
+    await connectPostgres();
+  } catch (err) {
+    console.error("❌ Reconnection failed:", err);
+    setTimeout(reconnectPostgres, 5000); // Réessaye dans 5s
+  }
+}
+
+// Fonction pour connecter les bases de données (PostgreSQL + MongoDB)
 async function connectToDB() {
   try {
-    // Connexion à la bdd postgres
-    await pgClient.connect();
-    isConnected = true;
-    console.log("Connected to PostgreSQL database");
+    // Connexion à PostgreSQL
+    await connectPostgres();
 
     // Connexion à MongoDB Atlas
     await mongoose.connect(process.env.MONGODB_URI);
-    console.log("Connected to MongoDB Atlas");
+    console.log("✅ Connected to MongoDB Atlas");
   } catch (err) {
-    console.error("Database connection error", err);
-    throw err;  // Propager l'erreur pour qu'elle soit gérée ailleurs
+    console.error("🚨 Database connection error:", err);
+    throw err; // Propager l'erreur
   }
 }
 
