@@ -1,7 +1,8 @@
 const { queryDB } = require("../../config/dbConnection.js");
 const ChatMessage = require("../../models/chatmessage.js");
-const chatRooms = new Map();
+const chatRooms = new Map(); // Stocker les rooms en mémoire
 
+// --- Route obtention de chatroom ---
 module.exports.getEventRoom = async (req, res) => {
   const { id } = req.params;
   const { userId } = req.user;
@@ -89,6 +90,7 @@ module.exports.getEventRoom = async (req, res) => {
   }
 };
 
+// --- Gestion de WebSocket pour la chatroom ---
 module.exports.setupChatWebSocket = (app) => {
   app.ws("/api/room/chat/:roomId/:userId", async function connection(ws, req) {
     const { roomId, userId } = req.params;
@@ -170,7 +172,7 @@ module.exports.setupChatWebSocket = (app) => {
         // Format du message avec le nom d'utilisateur
         const formattedMessage = `<strong>${username}</strong>: ${chatMessage}`;
 
-        // Ajouter le message à la liste en mémoire
+        // Ajouter le message à la liste en mémoire RAM
         room.messages.push(formattedMessage);
 
         // Créer un élément HTML pour le nouveau message uniquement
