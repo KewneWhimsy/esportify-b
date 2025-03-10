@@ -1,6 +1,5 @@
 const { queryDB } = require("../../config/dbConnection.js");
 const ChatMessage = require("../../models/chatmessage.js"); // Assure-toi d'avoir ton modèle Mongoose
-const chatRooms = new Map(); // Stocker les rooms en mémoire
 
 // --- Route HTTP : Affichage de la chatroom ---
 module.exports.getEventRoom = async (req, res) => {
@@ -42,9 +41,9 @@ module.exports.getEventRoom = async (req, res) => {
         <p><strong>Fin :</strong> ${new Date(event.end_datetime).toLocaleString()}</p>
         <p><strong>Organisateur :</strong> ${event.organisateur}</p>
       </div>
-      <div hx-ext="ws" ws-connect="wss://esportify-backend.onrender.com/api/room/chat/${id}/${userId}" hx-swap="beforeend">
+      <div hx-ext="ws" ws-connect="wss://esportify-backend.onrender.com/api/room/chat/${id}/${userId}">
         <div id="notifications" class="mb-4"></div>
-        <div id="chat_room" class="flex-grow overflow-y-auto"></div>
+        <ul id="chat_room"></ul>
         <div class="mt-auto">
           <form id="chatForm" ws-send class="flex items-center mx-4 gap-2">
             <input class="bg-[#161215] ml-auto max-w-2xl border p-2 rounded w-full self-end" 
@@ -59,6 +58,14 @@ module.exports.getEventRoom = async (req, res) => {
       <script>
         document.getElementById('chatForm').addEventListener('submit', function(event) {
           event.preventDefault();
+          // Utiliser setTimeout pour réinitialiser le champ après que le formulaire ait été traité
+           setTimeout(() => {
+             const messageInput = document.getElementById("messageInput");
+             if (messageInput) {
+               messageInput.value = "";
+             }
+           }, 0);
+         });
         })
       </script>
     `;
@@ -73,10 +80,8 @@ module.exports.getEventRoom = async (req, res) => {
 // --- Gestion de WebSocket pour la chatroom ---
 module.exports.setupChatWebSocket = (app) => {
   app.ws("/api/room/chat/:roomId/:userId", async function connection(ws, req) {
-    const roomId = req.params.roomId;
-    console.log(`[WS] Connexion ouverte pour la room ${roomId}`);
-    const userId = req.params.userId;
-    console.log(`[WS] utilisateur : ${userId}`);
+    const { roomId, userId } = req.params;
+    console.log(`[WS] Connexion ouverte pour la room ${roomId} | Utilisateur : ${userId}`);
 
     const room = chatRooms.get(roomId) || { messages: [], connections: [] };
 
@@ -94,7 +99,7 @@ module.exports.setupChatWebSocket = (app) => {
         const messagesList = messages.map((msg) => 
           `<li><strong>${msg.username || 'Anonyme'}</strong>: ${msg.chat_message}</li>`
         ).join("");
-        ws.send(`<ul id='chat_room'>${messagesList}</ul>`);
+        ws.send(messagesList);
       }
     } catch (err) {
       console.log("Erreur lors de la récupération des messages:", err);
@@ -143,11 +148,10 @@ module.exports.setupChatWebSocket = (app) => {
 
         // Ajouter et envoyer le message à toutes les connexions
         room.messages.push(formattedMessage);
-        if (room.messages.length > 50) {
-          room.messages.shift(); // Supprime le plus ancien message
-        }        
-        const messagesList = room.messages.map((msg) => `<li>${msg}</li>`).join("");
-        room.connections.forEach((connection) => connection.send(`<ul id='chat_room'>${messagesList}</ul>`));
+        //if (room.messages.length > 50) {
+        //  room.messages.shift(); // Supprime le plus ancien message
+        //}        
+        room.connections.forEach((connection) => connection.send(formattedMessage));
       } catch (error) {
         console.log("Erreur lors de la réception du message:", error);
       }
