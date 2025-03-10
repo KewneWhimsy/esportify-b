@@ -1,11 +1,11 @@
-const { pgClient } = require("../../config/dbConnection.js");
+const { queryDB } = require("../../config/dbConnection.js");
 const { backendUrl } = require("../../config/backendUrl.js");
 
 // Renvoi un tableau contenant les événements en attente de modération
 module.exports.getPendingEvents = async (req, res) => {
   console.log("Requête reçue pour récupérer les événements en attente");
   try {
-    const result = await pgClient.query(`
+    const result = await queryDB(`
       SELECT e.id, e.title, e.description, e.players_count, 
              e.start_datetime, e.end_datetime, u.username AS organisateur
       FROM events e
@@ -66,7 +66,7 @@ module.exports.getPendingEvents = async (req, res) => {
 module.exports.getApprovedEvents = async (req, res) => {
   console.log("GET ApprovedEvents");
   try {
-    const result = await pgClient.query(`
+    const result = await queryDB(`
       SELECT e.id, e.title, e.description, e.players_count, 
              e.start_datetime, e.end_datetime, u.username AS organisateur
       FROM events e
@@ -120,14 +120,14 @@ module.exports.approveEvent = async (req, res) => {
   const eventId = req.params.eventId;
   console.log(`Approbation de l'événement ${eventId}`);
   try {
-    await pgClient.query(`
+    await queryDB(`
       UPDATE events 
       SET is_approved = TRUE
       WHERE id = $1
     `, [eventId]);
 
     // Renvoi le nouvel état de la ligne
-    const result = await pgClient.query(`
+    const result = await queryDB(`
       SELECT e.id, e.title, e.description, e.players_count, 
              e.start_datetime, e.end_datetime, u.username AS organisateur
       FROM events e
@@ -183,7 +183,7 @@ module.exports.rejectEvent = async (req, res) => {
   const eventId = req.params.eventId;
   console.log(`Refus de l'événement ${eventId}`);
   try {
-    await pgClient.query(`
+    await queryDB(`
       DELETE FROM events 
       WHERE id = $1
     `, [eventId]);
@@ -202,14 +202,14 @@ module.exports.suspendEvent = async (req, res) => {
   console.log(`Suspension de l'événement ${eventId}`);
   try {
     // Met à jour l'état de l'événement à "non apprové"
-    await pgClient.query(`
+    await queryDB(`
       UPDATE events 
       SET is_approved = FALSE
       WHERE id = $1
     `, [eventId]);
 
     // Renvoi le nouvel état de la ligne
-    const result = await pgClient.query(`
+    const result = await queryDB(`
       SELECT e.id, e.title, e.description, e.players_count, 
              e.start_datetime, e.end_datetime, u.username AS organisateur
       FROM events e
@@ -348,7 +348,7 @@ module.exports.getUsersWithRoles = async (req, res) => {
   console.log("GET UsersWithRoles");
   try {
     //récupére tout les utilisateurs sauf le compte admin id=1
-    const result = await pgClient.query(`
+    const result = await queryDB(`
       SELECT id, username, role
       FROM users
       WHERE id != 1
@@ -385,13 +385,13 @@ module.exports.promoteUser = async (req, res) => {
   console.log(`Promotion de l'utilisateur ${userId} vers le rôle ${newRole}`);
   try {
     // Met à jour le rôle
-    await pgClient.query(
+    await queryDB(
       'UPDATE users SET role = $1 WHERE id = $2',
       [newRole, userId]
     );
 
     // Récupère les informations mises à jour de l'utilisateur
-    const result = await pgClient.query(
+    const result = await queryDB(
       'SELECT id, username, role FROM users WHERE id = $1',
       [userId]
     );
@@ -429,13 +429,13 @@ module.exports.demoteUser = async (req, res) => {
   }
   try {
     // Met à jour le rôle
-    await pgClient.query(
+    await queryDB(
       'UPDATE users SET role = $1 WHERE id = $2',
       [newRole, userId]
     );
 
     // Récupère les informations mises à jour de l'utilisateur
-    const result = await pgClient.query(
+    const result = await queryDB(
       'SELECT id, username, role FROM users WHERE id = $1',
       [userId]
     );

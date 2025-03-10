@@ -1,4 +1,4 @@
-const { pgClient } = require("../../config/dbConnection.js");
+const { queryDB } = require("../../config/dbConnection.js");
 const { backendUrl } = require("../../config/backendUrl.js");
 const jwt = require("jsonwebtoken");
 
@@ -14,7 +14,7 @@ module.exports.toggleFavorite = async (req, res) => {
     // Fonction pour mettre à jour les favoris
     if (isFavoritedBool) {
       // Ajouter un favori
-      await pgClient.query(
+      await queryDB(
         `INSERT INTO favorites (user_id, event_id) VALUES ($1, $2)
          ON CONFLICT (user_id, event_id) DO NOTHING`, // Empêche les doublons
         [user_id, event_id]
@@ -22,7 +22,7 @@ module.exports.toggleFavorite = async (req, res) => {
       console.log(`Favori ajouté : user_id=${user_id}, event_id=${event_id}`);
     } else {
       // Supprimer un favori
-      await pgClient.query(
+      await queryDB(
         `DELETE FROM favorites WHERE user_id = $1 AND event_id = $2`,
         [user_id, event_id]
       );
@@ -112,7 +112,7 @@ module.exports.showFavorited = async (req, res) => {
       : "start_datetime";
     const sortColumn = orderBy === "organisateur" ? "u.username" : `e.${orderBy}`;
 
-    const result = await pgClient.query(
+    const result = await queryDB(
       `
       SELECT 
         e.id, 

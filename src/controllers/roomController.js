@@ -1,4 +1,4 @@
-const { pgClient } = require("../../config/dbConnection.js");
+const { queryDB } = require("../../config/dbConnection.js");
 const ChatMessage = require("../../models/chatmessage.js"); // Assure-toi d'avoir ton modèle Mongoose
 const chatRooms = new Map(); // Stocker les rooms en mémoire
 
@@ -11,7 +11,7 @@ module.exports.getEventRoom = async (req, res) => {
 
   try {
     // Récupération des infos de l'événement
-    const result = await pgClient.query(
+    const result = await queryDB(
       `
       SELECT e.id, e.title, e.description, e.players_count, e.start_datetime, e.end_datetime, u.username AS organisateur
       FROM events e
@@ -117,7 +117,7 @@ module.exports.setupChatWebSocket = (app) => {
     let username = "Anonyme";
     if (userId) {
       try {
-        const userResult = await pgClient.query(
+        const userResult = await queryDB(
           'SELECT username FROM users WHERE id = $1',
           [userId]
         );
