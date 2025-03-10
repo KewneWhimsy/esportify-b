@@ -1,11 +1,13 @@
 const { queryDB } = require("../../config/dbConnection.js");
 const ChatMessage = require("../../models/chatmessage.js"); // Assure-toi d'avoir ton modèle Mongoose
+const chatRooms = new Map(); // Stocker les rooms en mémoire
 
 // --- Route HTTP : Affichage de la chatroom ---
 module.exports.getEventRoom = async (req, res) => {
   const { id } = req.params;
   const { userId } = req.user;
   console.log(`user : ${userId}`);
+
 
   try {
     // Récupération des infos de l'événement
@@ -26,30 +28,23 @@ module.exports.getEventRoom = async (req, res) => {
     const event = result.rows[0];
     const now = Date.now() + 3600000; // +1h en millisecondes
     const isOngoing =
-      new Date(event.start_datetime) <= now &&
-      now <= new Date(event.end_datetime);
+      new Date(event.start_datetime) <= now && now <= new Date(event.end_datetime);
 
     if (!isOngoing) {
-      return res
-        .status(403)
-        .send("<p>Accès refusé : L'événement n'est pas en cours</p>");
+      return res.status(403).send("<p>Accès refusé : L'événement n'est pas en cours</p>");
     }
 
     const specialPageHtml = `
       <div class="p-6">
         <h1 class="text-3xl font-bold mb-4">${event.title} - Room</h1>
         <p>${event.description}</p>
-        <p><strong>Début :</strong> ${new Date(
-          event.start_datetime
-        ).toLocaleString()}</p>
-        <p><strong>Fin :</strong> ${new Date(
-          event.end_datetime
-        ).toLocaleString()}</p>
+        <p><strong>Début :</strong> ${new Date(event.start_datetime).toLocaleString()}</p>
+        <p><strong>Fin :</strong> ${new Date(event.end_datetime).toLocaleString()}</p>
         <p><strong>Organisateur :</strong> ${event.organisateur}</p>
       </div>
-      <div hx-ext="ws" ws-connect="wss://esportify-backend.onrender.com/api/room/chat/${id}/${userId}">
+      <div hx-ext="ws" ws-connect="wss://esportify-backend.onrender.com/api/room/chat/${id}/${userId}" hx-swap="beforeend">
         <div id="notifications" class="mb-4"></div>
-        <ul id="chat_room"></ul>
+        <div id="chat_room" class="flex-grow overflow-y-auto"></div>
         <div class="mt-auto">
           <form id="chatForm" ws-send class="flex items-center mx-4 gap-2">
             <input class="bg-[#161215] ml-auto max-w-2xl border p-2 rounded w-full self-end" 
@@ -64,7 +59,8 @@ module.exports.getEventRoom = async (req, res) => {
       <script>
         document.getElementById('chatForm').addEventListener('submit', function(event) {
           event.preventDefault();
-          // Utiliser setTimeout pour réinitialiser le champ après que le formulaire ait été traité
+        })
+        // Utiliser setTimeout pour réinitialiser le champ après que le formulaire ait été traité
            setTimeout(() => {
              const messageInput = document.getElementById("messageInput");
              if (messageInput) {
@@ -72,16 +68,12 @@ module.exports.getEventRoom = async (req, res) => {
              }
            }, 0);
          });
-        });
       </script>
     `;
 
     res.send(specialPageHtml);
   } catch (error) {
-    console.error(
-      "Erreur lors de la récupération de la page spéciale :",
-      error
-    );
+    console.error("Erreur lors de la récupération de la page spéciale :", error);
     res.status(500).send("<p>Erreur interne du serveur</p>");
   }
 };
@@ -89,26 +81,28 @@ module.exports.getEventRoom = async (req, res) => {
 // --- Gestion de WebSocket pour la chatroom ---
 module.exports.setupChatWebSocket = (app) => {
   app.ws("/api/room/chat/:roomId/:userId", async function connection(ws, req) {
-    const { roomId, userId } = req.params;
-    console.log(
-      `[WS] Connexion ouverte pour la room ${roomId} | Utilisateur : ${userId}`
-    );
+    const roomId = req.params.roomId;
+    console.log(`[WS] Connexion ouverte pour la room ${roomId}`);
+    const userId = req.params.userId;
+    console.log(`[WS] utilisateur : ${userId}`);
+
+    const room = chatRooms.get(roomId) || { messages: [], connections: [] };
+
+    if (!chatRooms.has(roomId)) {
+      console.log(`[WS] Création de la room ${roomId}`);
+      chatRooms.set(roomId, room);
+    }
+
+    room.connections.push(ws);
 
     // Charger l'historique des messages
     try {
-      const messages = await ChatMessage.find({ roomId })
-        .sort({ timestamp: 1 })
-        .exec();
+      const messages = await ChatMessage.find({ roomId }).sort({ timestamp: 1 }).exec();
       if (messages.length > 0) {
-        const messagesList = messages
-          .map(
-            (msg) =>
-              `<li><strong>${msg.username || "Anonyme"}</strong>: ${
-                msg.chat_message
-              }</li>`
-          )
-          .join("");
-        ws.send(messagesList);
+        const messagesList = messages.map((msg) => 
+          `<li><strong>${msg.username || 'Anonyme'}</strong>: ${msg.chat_message}</li>`
+        ).join("");
+        ws.send(`<ul id='chat_room'>${messagesList}</ul>`);
       }
     } catch (err) {
       console.log("Erreur lors de la récupération des messages:", err);
@@ -120,46 +114,48 @@ module.exports.setupChatWebSocket = (app) => {
         const parsedMessage = JSON.parse(message.toString());
         const chatMessage = parsedMessage.chat_message;
 
-        if (
-          !chatMessage ||
-          typeof chatMessage !== "string" ||
-          !chatMessage.trim()
-        ) {
+        if (!chatMessage || typeof chatMessage !== "string" || !chatMessage.trim()) {
           console.warn(`[WS] Message ignoré : contenu invalide.`);
           return;
         }
 
-        // Récupérer le nom d'utilisateur
-        let username = "Anonyme";
-        if (userId) {
-          try {
-            const userResult = await queryDB(
-              "SELECT username FROM users WHERE id = $1",
-              [userId]
-            );
-            if (userResult.rows.length > 0) {
-              username = userResult.rows[0].username;
-              console.log("Récupération du nom d'utilisateur:", username);
-            }
-          } catch (err) {
-            console.log(
-              "Erreur lors de la récupération du nom d'utilisateur:",
-              err
-            );
-          }
+        
+    
+    // Récupérer le nom d'utilisateur
+    let username = "Anonyme";
+    if (userId) {
+      try {
+        const userResult = await queryDB(
+          'SELECT username FROM users WHERE id = $1',
+          [userId]
+        );
+        if (userResult.rows.length > 0) {
+          username = userResult.rows[0].username;
+          console.log("Récupération du nom d'utilisateur:", username);
         }
+      } catch (err) {
+        console.log("Erreur lors de la récupération du nom d'utilisateur:", err);
+      }
+    }
 
         // Sauvegarde en base de données
-        const newMessage = new ChatMessage({
-          roomId,
+        const newMessage = new ChatMessage({ 
+          roomId, 
           chat_message: chatMessage,
           username: username, // Ajouter le nom d'utilisateur
         });
         await newMessage.save();
 
-        // Envoyer le message à toutes les connexions
-        const formattedMessage = `<strong>${username}</strong>: ${chatMessage}`;
-        ws.send(formattedMessage);
+        // Format du message avec le nom d'utilisateur
+      const formattedMessage = `<strong>${username}</strong>: ${chatMessage}`;
+
+        // Ajouter et envoyer le message à toutes les connexions
+        room.messages.push(formattedMessage);
+        if (room.messages.length > 50) {
+          room.messages.shift(); // Supprime le plus ancien message
+        }        
+        const messagesList = room.messages.map((msg) => `<li>${msg}</li>`).join("");
+        room.connections.forEach((connection) => connection.send(`<ul id='chat_room'>${messagesList}</ul>`));
       } catch (error) {
         console.log("Erreur lors de la réception du message:", error);
       }
@@ -167,7 +163,8 @@ module.exports.setupChatWebSocket = (app) => {
 
     // Gestion de la déconnexion
     ws.on("close", () => {
-      console.log(`[WS] Connexion room ${roomId} fermée.`);
+      room.connections = room.connections.filter((conn) => conn !== ws);
+      console.log(`[WS] Connexion room ${roomId} fermée. Restant : ${room.connections.length}`);
     });
   });
 };
