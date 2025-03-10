@@ -66,7 +66,7 @@ module.exports.getEventRoom = async (req, res) => {
              }
            }, 0);
          });
-        })
+        });
       </script>
     `;
 
