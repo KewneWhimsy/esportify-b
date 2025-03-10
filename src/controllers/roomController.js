@@ -48,36 +48,64 @@ module.exports.getEventRoom = async (req, res) => {
         ).toLocaleString()}</p>
         <p><strong>Organisateur :</strong> ${event.organisateur}</p>
       </div>
-      <div hx-ext="ws" ws-connect="wss://esportify-backend.onrender.com/api/room/chat/${id}/${userId}">
-        <div id="notifications" class="mb-4"></div>
-        <div id="chat_room" class="flex-grow overflow-y-auto">
-          <!-- Les messages seront ajoutés ici -->
-          <ul id="chat_messages"></ul>
-        </div>
-        <div class="mt-auto">
-          <form id="chatForm" ws-send class="flex items-center mx-4 gap-2">
-            <input class="bg-[#161215] ml-auto max-w-2xl border p-2 rounded w-full self-end" 
-              id="messageInput" autocomplete="off" name="chat_message" 
-              placeholder="Écrivez votre message..." required>
-            <button class="bg-[#4d2d45] mr-auto rounded p-3 transition-colors hover:bg-[#532447]" type="submit">
-              Envoyer
-            </button>
-          </form>
-        </div>
-      </div>
-      <script>
-        document.getElementById('chatForm').addEventListener('submit', function(event) {
-          event.preventDefault();
-          
-          // Utiliser setTimeout pour réinitialiser le champ après que le formulaire ait été traité
-          setTimeout(() => {
-            const messageInput = document.getElementById("messageInput");
-            if (messageInput) {
-              messageInput.value = "";
-            }
-          }, 0);
-        });
-      </script>
+       <!-- Corps du chat -->
+  <div class="flex-1 flex flex-col relative p-4 overflow-hidden" hx-ext="ws" ws-connect="wss://esportify-backend.onrender.com/api/room/chat/${id}/${userId}">
+    <div id="notifications" class="mb-2 text-yellow-400"></div>
+    
+    <!-- Conteneur de messages avec défilement -->
+    <div id="chat_room" class="flex-1 overflow-y-auto p-2 mb-20 bg-gray-800 rounded">
+      <ul id="chat_messages" class="space-y-2">
+        <!-- Les messages seront ajoutés ici dynamiquement -->
+      </ul>
+    </div>
+    
+    <!-- Barre d'input fixe en bas -->
+    <div class="absolute bottom-4 left-4 right-4 bg-gray-800 p-3 rounded shadow-lg">
+      <form id="chatForm" ws-send class="flex gap-2">
+        <input class="flex-1 px-3 py-2 bg-gray-900 border border-gray-700 rounded text-gray-100 focus:outline-none focus:ring-2 focus:ring-red-500" 
+          id="messageInput" 
+          autocomplete="off" 
+          name="chat_message" 
+          placeholder="Écrivez votre message..." 
+          required>
+        <button class="px-4 py-2 bg-red-700 hover:bg-red-600 rounded font-medium transition-colors" type="submit">
+          Envoyer
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.getElementById('chatForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    
+    // Réinitialiser le champ après envoi
+    setTimeout(() => {
+      const messageInput = document.getElementById("messageInput");
+      if (messageInput) {
+        messageInput.value = "";
+        messageInput.focus();
+      }
+    }, 0);
+  });
+  
+  // Auto-scroll vers le bas quand de nouveaux messages arrivent
+  const chatObserver = new MutationObserver(function() {
+    const messagesContainer = document.getElementById('chat_room');
+    if (messagesContainer) {
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+  });
+  
+  // Observer les changements dans la liste de messages
+  window.addEventListener('load', function() {
+    const target = document.getElementById('chat_messages');
+    if (target) {
+      chatObserver.observe(target, { childList: true });
+    }
+  });
+</script>
     `;
 
     res.send(specialPageHtml);
