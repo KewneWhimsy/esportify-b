@@ -29,7 +29,7 @@ async function initializeUsers() {
             `;
             const values = [user.username, user.email, hashedPassword, user.role, user.score];
 
-            await (query, values);
+            await queryDB(query, values);
             console.log(`Utilisateur ${user.username} inséré avec succès.`);
         }
         console.log("Tous les utilisateurs ont été initialisés.");
