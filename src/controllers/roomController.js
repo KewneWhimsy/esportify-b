@@ -1,8 +1,7 @@
 const { queryDB } = require("../../config/dbConnection.js");
-const ChatMessage = require("../../models/chatmessage.js"); // Assure-toi d'avoir ton modèle Mongoose
-const chatRooms = new Map(); // Stocker les rooms en mémoire
+const ChatMessage = require("../../models/chatmessage.js");
+const chatRooms = new Map();
 
-// --- Route HTTP : Affichage de la chatroom ---
 module.exports.getEventRoom = async (req, res) => {
   const { id } = req.params;
   const { userId } = req.user;
@@ -50,7 +49,10 @@ module.exports.getEventRoom = async (req, res) => {
       </div>
       <div hx-ext="ws" ws-connect="wss://esportify-backend.onrender.com/api/room/chat/${id}/${userId}">
         <div id="notifications" class="mb-4"></div>
-        <div id="chat_room" class="flex-grow overflow-y-auto"></div>
+        <div id="chat_room" class="flex-grow overflow-y-auto">
+          <!-- Les messages seront ajoutés ici -->
+          <ul id="chat_messages"></ul>
+        </div>
         <div class="mt-auto">
           <form id="chatForm" ws-send class="flex items-center mx-4 gap-2">
             <input class="bg-[#161215] ml-auto max-w-2xl border p-2 rounded w-full self-end" 
@@ -65,15 +67,15 @@ module.exports.getEventRoom = async (req, res) => {
       <script>
         document.getElementById('chatForm').addEventListener('submit', function(event) {
           event.preventDefault();
-        })
-        // Utiliser setTimeout pour réinitialiser le champ après que le formulaire ait été traité
-           setTimeout(() => {
-             const messageInput = document.getElementById("messageInput");
-             if (messageInput) {
-               messageInput.value = "";
-             }
-           }, 0);
-         });
+          
+          // Utiliser setTimeout pour réinitialiser le champ après que le formulaire ait été traité
+          setTimeout(() => {
+            const messageInput = document.getElementById("messageInput");
+            if (messageInput) {
+              messageInput.value = "";
+            }
+          }, 0);
+        });
       </script>
     `;
 
@@ -87,7 +89,6 @@ module.exports.getEventRoom = async (req, res) => {
   }
 };
 
-// --- Gestion de WebSocket pour la chatroom ---
 module.exports.setupChatWebSocket = (app) => {
   app.ws("/api/room/chat/:roomId/:userId", async function connection(ws, req) {
     const { roomId, userId } = req.params;
@@ -109,16 +110,15 @@ module.exports.setupChatWebSocket = (app) => {
       const messages = await ChatMessage.find({ roomId })
         .sort({ timestamp: 1 })
         .exec();
+      
       if (messages.length > 0) {
-        const messagesList = messages
-          .map(
-            (msg) =>
-              `<li><strong>${msg.username || "Anonyme"}</strong>: ${
-                msg.chat_message
-              }</li>`
-          )
-          .join("");
-        ws.send(`<ul id='chat_room'>${messagesList}</ul>`);
+        // Envoyer tous les messages d'historique en une seule fois
+        const messagesList = messages.map(
+          (msg) => `<li><strong>${msg.username || "Anonyme"}</strong>: ${msg.chat_message}</li>`
+        ).join("");
+        
+        // Initialiser la liste de messages
+        ws.send(`<div hx-swap-oob="innerHTML:#chat_messages">${messagesList}</div>`);
       }
     } catch (err) {
       console.log("Erreur lors de la récupération des messages:", err);
@@ -163,21 +163,22 @@ module.exports.setupChatWebSocket = (app) => {
         const newMessage = new ChatMessage({
           roomId,
           chat_message: chatMessage,
-          username: username, // Ajouter le nom d'utilisateur
+          username: username,
         });
         await newMessage.save();
 
         // Format du message avec le nom d'utilisateur
         const formattedMessage = `<strong>${username}</strong>: ${chatMessage}`;
 
-        // Ajouter et envoyer le message à toutes les connexions
+        // Ajouter le message à la liste en mémoire
         room.messages.push(formattedMessage);
 
-        const messagesList = room.messages.map((msg) => {
-          return `<li>${msg}</li>`;
-        });
+        // Créer un élément HTML pour le nouveau message uniquement
+        const messageHTML = `<li>${formattedMessage}</li>`;
+        
+        // Envoyer uniquement le nouveau message à ajouter à la liste existante
         room.connections.forEach((connection) => {
-          connection.send(`<ul id='chat_room'>${messagesList.join("")}</ul>`);
+          connection.send(`<div hx-swap-oob="beforeend:#chat_messages">${messageHTML}</div>`);
         });
 
       } catch (error) {
