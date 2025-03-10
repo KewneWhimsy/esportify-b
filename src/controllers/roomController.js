@@ -37,42 +37,34 @@ module.exports.getEventRoom = async (req, res) => {
     }
 
     const specialPageHtml = `
-      <div class="p-6">
-        <h1 class="text-3xl font-bold mb-4">${event.title} - Room</h1>
-        <p>${event.description}</p>
-        <p><strong>Début :</strong> ${new Date(
-          event.start_datetime
-        ).toLocaleString()}</p>
-        <p><strong>Fin :</strong> ${new Date(
-          event.end_datetime
-        ).toLocaleString()}</p>
-        <p><strong>Organisateur :</strong> ${event.organisateur}</p>
-      </div>
-       <!-- Corps du chat -->
-  <div class="flex-1 flex flex-col relative p-4 overflow-hidden" hx-ext="ws" ws-connect="wss://esportify-backend.onrender.com/api/room/chat/${id}/${userId}">
-    <div id="notifications" class="mb-2 text-yellow-400"></div>
-    
-    <!-- Conteneur de messages avec défilement -->
-    <div id="chat_room" class="flex-1 overflow-y-auto p-2 mb-20 bg-gray-800 rounded">
-      <ul id="chat_messages" class="space-y-2">
-        <!-- Les messages seront ajoutés ici dynamiquement -->
-      </ul>
+      <div class="p-6 max-w-3xl mx-auto">
+  <!-- Carte pour l'événement -->
+  <div class="bg-[#1e1b1f] p-6 rounded-lg shadow-lg mb-6">
+    <h1 class="text-3xl font-bold mb-2 text-[#e4e4e4]">${event.title} - Room</h1>
+    <p class="text-gray-400 mb-4">${event.description}</p>
+    <p><strong class="text-[#e4e4e4]">Début :</strong> ${new Date(event.start_datetime).toLocaleString()}</p>
+    <p><strong class="text-[#e4e4e4]">Fin :</strong> ${new Date(event.end_datetime).toLocaleString()}</p>
+    <p><strong class="text-[#e4e4e4]">Organisateur :</strong> ${event.organisateur}</p>
+  </div>
+
+  <!-- Zone du Chat -->
+  <div hx-ext="ws" ws-connect="wss://esportify-backend.onrender.com/api/room/chat/${id}/${userId}" class="bg-[#161215] p-4 rounded-lg shadow-lg flex flex-col h-[500px]">
+    <div id="notifications" class="mb-4 text-red-400"></div>
+
+    <!-- Fenêtre des messages -->
+    <div id="chat_room" class="flex-grow overflow-y-auto bg-[#222] p-4 rounded-lg">
+      <ul id="chat_messages" class="space-y-2 text-gray-300"></ul>
     </div>
-    
-    <!-- Barre d'input fixe en bas -->
-    <div class="absolute bottom-4 left-4 right-4 bg-gray-800 p-3 rounded shadow-lg">
-      <form id="chatForm" ws-send class="flex gap-2">
-        <input class="flex-1 px-3 py-2 bg-gray-900 border border-gray-700 rounded text-gray-100 focus:outline-none focus:ring-2 focus:ring-red-500" 
-          id="messageInput" 
-          autocomplete="off" 
-          name="chat_message" 
-          placeholder="Écrivez votre message..." 
-          required>
-        <button class="px-4 py-2 bg-red-700 hover:bg-red-600 rounded font-medium transition-colors" type="submit">
-          Envoyer
-        </button>
-      </form>
-    </div>
+
+    <!-- Formulaire d'envoi -->
+    <form id="chatForm" ws-send class="flex items-center mt-4 gap-3">
+      <input class="bg-[#1e1b1f] border border-gray-600 text-white p-3 rounded w-full focus:outline-none" 
+             id="messageInput" autocomplete="off" name="chat_message" 
+             placeholder="Écrivez votre message..." required>
+      <button class="bg-[#4d2d45] text-white font-bold rounded p-3 transition-colors hover:bg-[#532447]" type="submit">
+        Envoyer
+      </button>
+    </form>
   </div>
 </div>
 
@@ -80,32 +72,16 @@ module.exports.getEventRoom = async (req, res) => {
   document.getElementById('chatForm').addEventListener('submit', function(event) {
     event.preventDefault();
     
-    // Réinitialiser le champ après envoi
+    // Réinitialise le champ après soumission
     setTimeout(() => {
       const messageInput = document.getElementById("messageInput");
       if (messageInput) {
         messageInput.value = "";
-        messageInput.focus();
       }
     }, 0);
   });
-  
-  // Auto-scroll vers le bas quand de nouveaux messages arrivent
-  const chatObserver = new MutationObserver(function() {
-    const messagesContainer = document.getElementById('chat_room');
-    if (messagesContainer) {
-      messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    }
-  });
-  
-  // Observer les changements dans la liste de messages
-  window.addEventListener('load', function() {
-    const target = document.getElementById('chat_messages');
-    if (target) {
-      chatObserver.observe(target, { childList: true });
-    }
-  });
 </script>
+
     `;
 
     res.send(specialPageHtml);
