@@ -37,50 +37,52 @@ module.exports.getEventRoom = async (req, res) => {
     }
 
     const specialPageHtml = `
-      <div class="p-6 max-w-3xl mx-auto">
-  <!-- Carte pour l'événement -->
-  <div class="bg-[#1e1b1f] p-6 rounded-lg shadow-lg mb-6">
-    <h1 class="text-3xl font-bold mb-2 text-[#e4e4e4]">${event.title} - Room</h1>
-    <p class="text-gray-400 mb-4">${event.description}</p>
-    <p><strong class="text-[#e4e4e4]">Début :</strong> ${new Date(event.start_datetime).toLocaleString()}</p>
-    <p><strong class="text-[#e4e4e4]">Fin :</strong> ${new Date(event.end_datetime).toLocaleString()}</p>
-    <p><strong class="text-[#e4e4e4]">Organisateur :</strong> ${event.organisateur}</p>
-  </div>
+      <div class="p-4 flex flex-col">
+        <!-- Carte pour l'événement -->
+        <div class="bg-[#1e1b1f] p-3 rounded-lg shadow-lg mb-2 max-w-md">
+          <div class="flex justify-between">
+            <h1 class="text-xl font-bold mb-2 text-[#e4e4e4]">${event.title} - Room</h1>
+            <p><strong class="text-[#e4e4e4]">Organisateur :</strong> ${event.organisateur}</p>
+          </div>
+          <p><strong class="text-[#e4e4e4]">Début :</strong> ${new Date(event.start_datetime).toLocaleString()}</p>
+          <p><strong class="text-[#e4e4e4]">Fin :</strong> ${new Date(event.end_datetime).toLocaleString()}</p>
+        </div>
 
-  <!-- Zone du Chat -->
-  <div hx-ext="ws" ws-connect="wss://esportify-backend.onrender.com/api/room/chat/${id}/${userId}" class="bg-[#161215] p-4 rounded-lg shadow-lg flex flex-col h-[500px]">
-    <div id="notifications" class="mb-4 text-red-400"></div>
+        <!-- Zone du Chat -->
+        <div hx-ext="ws" ws-connect="wss://esportify-backend.onrender.com/api/room/chat/${id}/${userId}" class="flex flex-col h-[600px]">
+          <div id="notifications" class="mb-4 text-red-400"></div>
 
-    <!-- Fenêtre des messages -->
-    <div id="chat_room" class="flex-grow overflow-y-auto bg-[#222] p-4 rounded-lg">
-      <ul id="chat_messages" class="space-y-2 text-gray-300"></ul>
-    </div>
+          <!-- Fenêtre des messages -->
+          <div id="chat_room" class="flex-grow overflow-y-auto bg-[#222] p-4 rounded-lg max-h-screen">
+            <ul id="chat_messages" class="space-y-2 text-gray-300"></ul>
+          </div>
 
-    <!-- Formulaire d'envoi -->
-    <form id="chatForm" ws-send class="flex items-center mt-4 gap-3">
-      <input class="bg-[#1e1b1f] border border-gray-600 text-white p-3 rounded w-full focus:outline-none" 
-             id="messageInput" autocomplete="off" name="chat_message" 
-             placeholder="Écrivez votre message..." required>
-      <button class="bg-[#4d2d45] text-white font-bold rounded p-3 transition-colors hover:bg-[#532447]" type="submit">
-        Envoyer
-      </button>
-    </form>
-  </div>
-</div>
+          <!-- Formulaire d'envoi -->
+          <form id="chatForm" ws-send class="flex items-center mt-4 gap-3">
+            <input class="bg-[#161215] border p-3 rounded w-full focus:outline-none" 
+            id="messageInput" autocomplete="off" name="chat_message" 
+            placeholder="Écrivez votre message..." required
+            >
+            <button class="bg-[#4d2d45] font-bold rounded p-3 transition-colors hover:bg-[#532447]" type="submit">
+              Envoyer
+            </button>
+          </form>
+        </div>
+      </div>
 
-<script>
-  document.getElementById('chatForm').addEventListener('submit', function(event) {
-    event.preventDefault();
+      <script>
+        document.getElementById('chatForm').addEventListener('submit', function(event) {
+          event.preventDefault();
     
-    // Réinitialise le champ après soumission
-    setTimeout(() => {
-      const messageInput = document.getElementById("messageInput");
-      if (messageInput) {
-        messageInput.value = "";
-      }
-    }, 0);
-  });
-</script>
+        // Réinitialise le champ après soumission
+        setTimeout(() => {
+          const messageInput = document.getElementById("messageInput");
+          if (messageInput) {
+            messageInput.value = "";
+          }
+          }, 0);
+        });
+      </script>
 
     `;
 
