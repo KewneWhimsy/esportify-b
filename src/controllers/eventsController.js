@@ -114,7 +114,7 @@ module.exports.getEventById = async (req, res) => {
         ).rowCount > 0
       : false;
 
-    const now = Date.now() + 3600000; // +1h en millisecondes
+    const now = Date.now() + 7200000; // +2h en millisecondes (CEST UTC+2)
     const startTime = new Date(event.start_datetime).getTime();
     const endTime = new Date(event.end_datetime).getTime();
 
