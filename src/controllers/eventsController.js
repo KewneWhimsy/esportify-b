@@ -20,8 +20,7 @@ module.exports.getAllEvents = async (req, res) => {
       FROM events e
       JOIN users u ON e.user_id = u.id
       WHERE e.is_approved = TRUE
-      ORDER BY ${sortColumn} DESC
-      LIMIT 10
+      ORDER BY ${sortColumn} ASC
     `);
 
     const events = result.rows; // Récupére les événements sous forme d'un tableau d'objets JavaScript
