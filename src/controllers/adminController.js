@@ -30,7 +30,7 @@ module.exports.getPendingEvents = async (req, res) => {
               +
             </button>
           </td>
-          <td class="px-4 py-3 text-yellow-600">En attente</td>
+          <td class="px-4 py-3 text-yellow-600">Pending</td>
           <td class="px-4 py-3 flex flex-wrap gap-2">
             <button
               hx-post="${backendUrl}/admin/events/approve/${event.id}"
@@ -39,7 +39,7 @@ module.exports.getPendingEvents = async (req, res) => {
               hx-target="#approvedEvents"
               class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition-colors select-none"
             >
-              Valider
+              Approve
             </button>
             <button
               hx-delete="${backendUrl}/admin/events/reject/${event.id}"
@@ -48,7 +48,7 @@ module.exports.getPendingEvents = async (req, res) => {
               hx-target="#event-pend-${event.id}"
               class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition-colors select-none"
             >
-              Refuser
+              Reject
             </button>
           </td>
         </tr>
@@ -91,7 +91,7 @@ module.exports.getApprovedEvents = async (req, res) => {
               +
             </button>
           </td>
-          <td class="px-4 py-3 text-green-600">Validé</td>
+          <td class="px-4 py-3 text-green-600">Approved</td>
           <td class="px-4 py-3">
             <button
               hx-post="${backendUrl}/admin/events/suspend/${event.id}"
@@ -100,7 +100,7 @@ module.exports.getApprovedEvents = async (req, res) => {
               hx-target="#pendingEvents"
               class="px-3 py-1 bg-orange-600 text-white rounded hover:bg-orange-700 transition-colors select-none"
             >
-              Suspendre
+              Suspend
             </button>
           </td>
         </tr>
@@ -148,7 +148,7 @@ module.exports.approveEvent = async (req, res) => {
               +
           </button>
         </td>
-        <td class="px-4 py-3 text-green-600">Validé</td>
+        <td class="px-4 py-3 text-green-600">Approved</td>
         <td class="px-4 py-3">
           <button
             hx-post="${backendUrl}/admin/events/suspend/${event.id}"
@@ -157,7 +157,7 @@ module.exports.approveEvent = async (req, res) => {
             hx-target="#pendingEvents"
             class="px-3 py-1 bg-orange-600 text-white rounded hover:bg-orange-700 transition-colors select-none"
           >
-            Suspendre
+            Suspend
           </button>
         </td>
         <script>
@@ -232,7 +232,7 @@ module.exports.suspendEvent = async (req, res) => {
               +
           </button>
         </td>
-        <td class="px-4 py-3 text-yellow-600">En attente</td>
+        <td class="px-4 py-3 text-yellow-600">Pending</td>
         <td class="px-4 py-3 flex flex-wrap gap-2">
           <button
             hx-post="${backendUrl}/admin/events/approve/${event.id}"
@@ -241,7 +241,7 @@ module.exports.suspendEvent = async (req, res) => {
             hx-target="#approvedEvents"
             class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition-colors select-none"
           >
-            Valider
+            Approve
           </button>
           <button
             hx-delete="${backendUrl}/admin/events/reject/${event.id}"
@@ -250,7 +250,7 @@ module.exports.suspendEvent = async (req, res) => {
             hx-target="#event-pend-${event.id}"
             class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition-colors select-none"
           >
-            Refuser
+            Reject
           </button>
         </td>
         <script>
@@ -287,7 +287,7 @@ function getRoleButtons(currentRole, userId) {
         hx-target="#user-${userId}"
         class="px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-700 transition-colors select-none"
       >
-        Rétrograder
+        Demote
       </button>
     `;
   } else if (currentRole === 'orga') {
@@ -298,7 +298,7 @@ function getRoleButtons(currentRole, userId) {
         hx-target="#user-${userId}"
         class="px-3 py-1 bg-blue-900 text-white rounded hover:bg-yellow-600 transition-colors select-none"
       >
-        Promouvoir
+        Promote
       </button>
       <button
         hx-post="${backendUrl}/admin/users/demote/${userId}/joueur"
@@ -306,7 +306,7 @@ function getRoleButtons(currentRole, userId) {
         hx-target="#user-${userId}"
         class="px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-700 transition-colors select-none"
       >
-        Rétrograder
+        Demote
       </button>
     `;
   } else if (currentRole === 'joueur') {
@@ -317,7 +317,7 @@ function getRoleButtons(currentRole, userId) {
         hx-target="#user-${userId}"
         class="px-3 py-1 bg-blue-900 text-white rounded hover:bg-yellow-600 transition-colors select-none"
       >
-        Promouvoir
+        Promote
       </button>
       <button
         hx-post="${backendUrl}/admin/users/demote/${userId}/visiteur"
@@ -325,7 +325,7 @@ function getRoleButtons(currentRole, userId) {
         hx-target="#user-${userId}"
         class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 tranistion-colors select-none"
       >
-        Bannir
+        Ban
       </button>
     `;
   } else if (currentRole === 'visiteur') {
@@ -336,7 +336,7 @@ function getRoleButtons(currentRole, userId) {
         hx-target="#user-${userId}"
         class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition colors select-none"
       >
-        Débannir
+        Unban
       </button>
     `;
   }

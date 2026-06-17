@@ -140,7 +140,7 @@ module.exports.getEventById = async (req, res) => {
     }</h2>
     <p class="mb-4">${event.description}</p>
     <p><strong>Capacity:</strong> ${event.players_count ?? "Unlimited"}</p>
-    <p><strong>Organiser:</strong> ${event.organisateur}</p>
+    <p><strong>Organizer:</strong> ${event.organisateur}</p>
     <p><strong>Start:</strong> ${new Date(
       event.start_datetime
     ).toLocaleString()}</p>
@@ -171,7 +171,7 @@ module.exports.getEventById = async (req, res) => {
             hx-swap="innerHTML"
             class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors select-none"
           >
-            Je participe
+            I'm in
           </button>
 
           <!-- Bouton pour retirer des favoris -->
@@ -189,7 +189,7 @@ module.exports.getEventById = async (req, res) => {
             hx-swap="innerHTML"
             class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors select-none"
           >
-            Plus intéressé
+            Forget it
           </button>
           </div>
           <!-- Bouton Rejoindre -->
@@ -200,7 +200,7 @@ module.exports.getEventById = async (req, res) => {
             hx-target="#chatcontain"
             class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors select-none"
           >
-            Rejoindre
+            Join
           </button>
         </div>
        </div> 
@@ -210,7 +210,7 @@ module.exports.getEventById = async (req, res) => {
         @click="isOpen = false"
         class="ml-auto bg-red-700 text-white px-4 py-2 rounded hover:bg-red-800 transition-colors select-none"
       >
-        Fermer
+        Close
       </button>
       
     </div>
