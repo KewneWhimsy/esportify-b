@@ -233,7 +233,7 @@ module.exports.createEvent = async (req, res) => {
   console.log("POST createEvent");
   const { title, description, start_datetime, end_datetime } = req.body;
   const players_count = req.body.players_count ? req.body.players_count : null;
-  const { userId, role } = req.user;
+  const { userId } = req.user;
 
   // Validation des données
 
@@ -250,8 +250,8 @@ module.exports.createEvent = async (req, res) => {
   }
 
   try {
-    // Déterminer la valeur de is_approved
-    const is_approved = role === "admin" ? true : false;
+    // Auto-approbation pour le contexte w3_summit : audience fermée et événement éphémère
+    const is_approved = true;
 
     // Insérer dans la base de données
     const result = await queryDB(
@@ -271,7 +271,7 @@ module.exports.createEvent = async (req, res) => {
     res
       .status(200)
       .send(
-        `<p class="text-green-500">Event created successfully!<br>(pending moderation)</p>`
+        `<p class="text-green-500">Event created successfully!</p>`
       );
   } catch (err) {
     console.error(err);

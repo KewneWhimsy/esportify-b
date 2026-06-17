@@ -76,6 +76,19 @@ ALTER TABLE events ADD CONSTRAINT check_dates CHECK (start_datetime < end_dateti
 -- players_count est désormais optionnel et indicatif (NULL = capacité non limitée), aucune contrainte de minimum
 ALTER TABLE events DROP CONSTRAINT IF EXISTS check_players_count;
 
+-- Dédoublonne les events déjà insérés en double par les anciens redémarrages du seed
+-- (garde la ligne la plus ancienne) avant de poser la contrainte unique ci-dessous.
+DELETE FROM events e
+USING (
+    SELECT id, ROW_NUMBER() OVER (PARTITION BY title, start_datetime ORDER BY id) AS rn
+    FROM events
+) dup
+WHERE e.id = dup.id AND dup.rn > 1;
+
+-- Empêche les doublons lors des réinsertions de données de seed (ON CONFLICT DO NOTHING)
+ALTER TABLE events DROP CONSTRAINT IF EXISTS unique_title_start_datetime;
+ALTER TABLE events ADD CONSTRAINT unique_title_start_datetime UNIQUE (title, start_datetime);
+
 -- Fonction pour vérifier les chevauchements d'événements
 CREATE OR REPLACE FUNCTION check_event_overlap()
 RETURNS TRIGGER AS $$
