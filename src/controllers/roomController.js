@@ -104,6 +104,20 @@ module.exports.setupChatWebSocket = (app) => {
       `[WS] Connexion ouverte pour la room ${roomId} | Utilisateur : ${userId}`
     );
 
+    // Date de fin de l'événement, pour purger automatiquement l'historique du chat une fois l'événement terminé
+    let eventEndDatetime = null;
+    try {
+      const eventResult = await queryDB(
+        "SELECT end_datetime FROM events WHERE id = $1",
+        [roomId]
+      );
+      if (eventResult.rows.length > 0) {
+        eventEndDatetime = eventResult.rows[0].end_datetime;
+      }
+    } catch (err) {
+      console.log("Erreur lors de la récupération de la fin de l'événement:", err);
+    }
+
     const room = chatRooms.get(roomId) || { messages: [], connections: [] };
 
     if (!chatRooms.has(roomId)) {
@@ -172,6 +186,7 @@ module.exports.setupChatWebSocket = (app) => {
           roomId,
           chat_message: chatMessage,
           username: username,
+          expiresAt: eventEndDatetime,
         });
         await newMessage.save();
 

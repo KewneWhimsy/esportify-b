@@ -4,11 +4,14 @@ const {queryDB} = require("../../config/dbConnection"); // bdd Postgresql
 
 // ENREGISTREMENT
 module.exports.register = async (req, res) => {
-  // Données du formulaire front
+  // Données du formulaire front (email facultatif : pas besoin d'adresse mail pour s'inscrire)
   const { username, email, password } = req.body;
 
+  // Email factice et unique généré quand l'utilisateur n'en fournit pas, pour respecter la contrainte UNIQUE/NOT NULL en base sans migration de schéma
+  const finalEmail = email || `${username}.${Date.now()}@web3summit.local`;
+
   // Vérification de l'existence de l'utilisateur
-  const result = await queryDB("SELECT * FROM users WHERE email = $1", [email]);
+  const result = await queryDB("SELECT * FROM users WHERE email = $1", [finalEmail]);
   /// Si l'email existe déjà : return
   if (result.rows.length > 0) {
     return res.status(400).json({ error: "Email déjà utilisé" });
@@ -22,10 +25,10 @@ module.exports.register = async (req, res) => {
   // Hashage du mot de passe
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  // Insertion de l'utilisateur dans la base de données
+  // Insertion de l'utilisateur dans la base de données : rôle 'orga' direct pour créer/éditer ses propres événements
   await queryDB(
-    "INSERT INTO users (username, email, password, role) VALUES ($1, $2, $3, 'joueur')", 
-    [username, email, hashedPassword]
+    "INSERT INTO users (username, email, password, role) VALUES ($1, $2, $3, 'orga')",
+    [username, finalEmail, hashedPassword]
   );
 
   res.status(201).json({ message: "Utilisateur créé avec succès" });

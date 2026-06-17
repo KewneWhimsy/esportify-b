@@ -159,7 +159,7 @@ module.exports.showFavorited = async (req, res) => {
               <h2 class="text-lg font-heading text-heading leading-tight mb-2">${event.title}</h2>
             </div>
             <div>
-              <p class="text-sm text-gray-400">Joueurs : ${event.players_count}</p>
+              <p class="text-sm text-gray-400">Participants : ${event.players_count}</p>
               <p class="text-sm">Début : ${new Date(event.start_datetime).toLocaleString()}</p>
               <p class="text-sm">Fin : ${new Date(event.end_datetime).toLocaleString()}</p>
             </div>

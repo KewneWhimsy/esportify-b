@@ -42,7 +42,7 @@ module.exports.getAllEvents = async (req, res) => {
             }</h2>
           </div>
           <div>
-            <p class="text-sm text-gray-400">Joueurs : ${
+            <p class="text-sm text-gray-400">Participants : ${
               event.players_count
             }</p>
             <p class="text-sm">Début : ${new Date(
@@ -139,7 +139,7 @@ module.exports.getEventById = async (req, res) => {
       event.title
     }</h2>
     <p class="mb-4">${event.description}</p>
-    <p><strong>Joueurs :</strong> ${event.players_count}</p>
+    <p><strong>Participants :</strong> ${event.players_count}</p>
     <p><strong>Organisateur :</strong> ${event.organisateur}</p>
     <p><strong>Début :</strong> ${new Date(
       event.start_datetime
@@ -370,7 +370,7 @@ module.exports.getMyEvents = async (req, res) => {
             </h2>
           </div>
           <div>
-            <p class="text-sm text-gray-400">Joueurs : ${
+            <p class="text-sm text-gray-400">Participants : ${
               event.players_count
             }</p>
             <p class="text-sm">Début : ${new Date(
@@ -459,10 +459,10 @@ module.exports.myEventById = async (req, res) => {
       >${event.description}</textarea>
     </div>
 
-    <!-- Nombre de joueurs -->
+    <!-- Nombre de participants -->
     <div>
       <label for="players_count" class="block my-1 text-sm font-medium"
-        >Nombre de joueurs</label
+        >Nombre de participants</label
       >
       <input
         type="number"

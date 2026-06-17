@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(100) NOT NULL UNIQUE CHECK (email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,63}$'), -- adresse email unique et valide
     password VARCHAR(255) NOT NULL,
     role VARCHAR(20) DEFAULT 'visiteur',
-    score INT DEFAULT 0, -- Score du joueur, initialisé à 0
+    score INT DEFAULT 0, -- Score du participant, initialisé à 0
     created_at TIMESTAMP DEFAULT NOW(), -- Date de création du compte
     updated_at TIMESTAMP DEFAULT NOW() -- Date de dernière mise à jour du compte
 );
@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS events (
     id SERIAL PRIMARY KEY,            -- Identifiant unique de l'événement
     title VARCHAR(100) NOT NULL,       -- Titre de l'événement
     description VARCHAR (500) NOT NULL,                  -- Description de l'événement
-    players_count INT CHECK (players_count > 1), -- Nombre de joueurs
+    players_count INT CHECK (players_count > 1), -- Nombre de participants
     is_approved BOOLEAN DEFAULT FALSE, -- Statut de l'événement par défaut (non approuvé)
     start_datetime TIMESTAMP NOT NULL, -- Date et heure de début
     end_datetime TIMESTAMP NOT NULL,   -- Date et heure de fin
@@ -73,7 +73,7 @@ END $$;
 ALTER TABLE events DROP CONSTRAINT IF EXISTS check_dates;
 ALTER TABLE events ADD CONSTRAINT check_dates CHECK (start_datetime < end_datetime);
 
--- Contrainte pour s'assurer que le nombre de joueurs est supérieur à 1
+-- Contrainte pour s'assurer que le nombre de participants est supérieur à 1
 ALTER TABLE events DROP CONSTRAINT IF EXISTS check_players_count;
 ALTER TABLE events ADD CONSTRAINT check_players_count CHECK (players_count > 1);
 

@@ -4,13 +4,13 @@ const fs = require("fs");
 
 // Données des utilisateurs à insérer
 const users = [
-    { username: "admin", email: "admin@esport.com", password: "admin", role: "admin", score: 0 },
+    { username: "admin", email: "admin@web3summit.local", password: "admin", role: "admin", score: 0 },
     { username: "GoMAN", email: "gogogo@gomail.gom", password: "123456", role: "orga", score: 100 },
-    { username: "Gigi", email: "gigilafleche@sportific.com", password: "123456", role: "orga", score: 77 },
-    { username: "league_fan", email: "lol@esportify.com", password: "123456", role: "orga", score: 46 },
+    { username: "Gigi", email: "gigilafleche@web3summit.local", password: "123456", role: "orga", score: 77 },
+    { username: "privacy_fan", email: "privacy@web3summit.local", password: "123456", role: "orga", score: 46 },
     { username: "Mclaire", email: "mclaire@edu.fr", password: "123456", role: "orga", score: 0 },
-    { username: "testuser", email: "esportifymailtest@yopmail.com", password: "123456", role: "orga", score: 0 },
-    { username: "PlayerMan", email: "player@yopmail.com", password: "123456", role: "joueur", score: 0 },
+    { username: "testuser", email: "web3summittest@yopmail.com", password: "123456", role: "orga", score: 0 },
+    { username: "Attendee", email: "attendee@yopmail.com", password: "123456", role: "orga", score: 0 },
 ];
 
 // Fonction pour hacher les mots de passe et insérer les utilisateurs test de manière idempotente
@@ -43,13 +43,13 @@ async function initializeEvents() {
     const eventsQuery = `
         INSERT INTO events (title, description, players_count, is_approved, start_datetime, end_datetime, user_id, created_at, updated_at)
         VALUES
-            ('Playtest exclusif esportify', 'Accéder au lien dans vos mail pour tester gratuitement LE nouveau jeu', 16, TRUE, '2025-01-01 15:00'::timestamp, '2025-01-01 18:00'::timestamp, 1, NOW(), NOW()),
-            ('Tournoi CSS GO', 'Go go go go comme ils disent', 12, TRUE, '2024-12-01 10:00'::timestamp, '2024-12-01 12:00'::timestamp, 2, NOW(), NOW()),
-            ('Tournoi de pétanque', 'Marcel sera de la partie ! Venez nombreux, venez joyeux !', 8, FALSE, '2024-12-02 15:00'::timestamp, '2024-12-02 18:00'::timestamp, 3, NOW(), NOW()),
-            ('Tournoi de League of Legend', 'Rejoignez-nous pour notre compétition hebdomadaire', 32, TRUE, '2024-12-03 09:00'::timestamp, '2024-12-03 11:00'::timestamp, 4, NOW(), NOW()),
-            ('Tournoi de League of Legend mieux', 'Venez sur MON événement', 40, TRUE, '2024-12-03 09:00'::timestamp, '2024-12-03 11:00'::timestamp, 3, NOW(), NOW()),
-            ('Kermesse du village', 'Chers amis, nous vous attendont nombreux le 10 Janvier.', 100, FALSE, '2025-01-10 09:00'::timestamp, '2025-01-11 05:00'::timestamp, 5, NOW(), NOW()),
-            ('Petite partie d''échec ?', 'alléééééé !!!! rejoignez moi pour une loooooogue partie...', 3, TRUE, '2025-01-15 09:00'::timestamp, '2025-01-30 12:00'::timestamp, 2, NOW(), NOW()),
+            ('Privacy is Dignity: keynote', 'Talk d''ouverture sur la confidentialité comme condition de base de la vie numérique', 80, TRUE, '2026-06-18 10:00'::timestamp, '2026-06-18 11:00'::timestamp, 1, NOW(), NOW()),
+            ('Workshop : auto-héberger son identité décentralisée', 'Atelier pratique pour mettre en place son propre système d''identité souveraine', 20, TRUE, '2026-06-18 11:30'::timestamp, '2026-06-18 13:00'::timestamp, 2, NOW(), NOW()),
+            ('Unconference : résistance à la censure', 'Session improvisée ouverte à toutes et tous, proposez vos sujets sur place', 30, FALSE, '2026-06-18 14:00'::timestamp, '2026-06-18 15:00'::timestamp, 3, NOW(), NOW()),
+            ('Pop-up talk : usabilité des wallets', 'Discussion courte et spontanée sur les frictions UX du Web3', 25, TRUE, '2026-06-18 15:30'::timestamp, '2026-06-18 16:00'::timestamp, 4, NOW(), NOW()),
+            ('Atelier gouvernance communautaire', 'Modèles alternatifs de prise de décision collective', 35, TRUE, '2026-06-19 09:00'::timestamp, '2026-06-19 11:00'::timestamp, 3, NOW(), NOW()),
+            ('Installation artistique interactive', 'Performance et création collaborative autour de la souveraineté numérique', 100, FALSE, '2026-06-19 12:00'::timestamp, '2026-06-19 18:00'::timestamp, 5, NOW(), NOW()),
+            ('Pop-up talk : pétanque entre deux sessions', 'Pause détente pour celles et ceux qui veulent souffler entre deux talks', 8, TRUE, '2026-06-19 13:00'::timestamp, '2026-06-19 14:00'::timestamp, 2, NOW(), NOW()),
             ('événement test', 'à accepter', 20, FALSE, '2024-11-17 00:00'::timestamp, '2024-12-17 23:59'::timestamp, 6, NOW(), NOW())
         ON CONFLICT DO NOTHING;
     `;
