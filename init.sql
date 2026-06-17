@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS events (
     id SERIAL PRIMARY KEY,            -- Identifiant unique de l'événement
     title VARCHAR(100) NOT NULL,       -- Titre de l'événement
     description VARCHAR (500) NOT NULL,                  -- Description de l'événement
-    players_count INT CHECK (players_count > 1), -- Nombre de participants
+    players_count INT, -- Capacité indicative de l'événement (NULL = non limité)
     is_approved BOOLEAN DEFAULT FALSE, -- Statut de l'événement par défaut (non approuvé)
     start_datetime TIMESTAMP NOT NULL, -- Date et heure de début
     end_datetime TIMESTAMP NOT NULL,   -- Date et heure de fin
@@ -73,9 +73,8 @@ END $$;
 ALTER TABLE events DROP CONSTRAINT IF EXISTS check_dates;
 ALTER TABLE events ADD CONSTRAINT check_dates CHECK (start_datetime < end_datetime);
 
--- Contrainte pour s'assurer que le nombre de participants est supérieur à 1
+-- players_count est désormais optionnel et indicatif (NULL = capacité non limitée), aucune contrainte de minimum
 ALTER TABLE events DROP CONSTRAINT IF EXISTS check_players_count;
-ALTER TABLE events ADD CONSTRAINT check_players_count CHECK (players_count > 1);
 
 -- Fonction pour vérifier les chevauchements d'événements
 CREATE OR REPLACE FUNCTION check_event_overlap()

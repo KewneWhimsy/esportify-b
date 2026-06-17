@@ -7,7 +7,7 @@ module.exports.getAllEvents = async (req, res) => {
   console.log("GET AllEvents");
   try {
     const sortField = req.query.sort || "start_datetime"; // Tri par défaut : date
-    const validSortFields = ["players_count", "start_datetime", "organisateur"];
+    const validSortFields = ["start_datetime", "organisateur"];
     const orderBy = validSortFields.includes(sortField)
       ? sortField
       : "start_datetime";
@@ -42,13 +42,13 @@ module.exports.getAllEvents = async (req, res) => {
             }</h2>
           </div>
           <div>
-            <p class="text-sm text-gray-400">Participants : ${
-              event.players_count
+            <p class="text-sm text-gray-400">Capacity: ${
+              event.players_count ?? "unlimited"
             }</p>
-            <p class="text-sm">Début : ${new Date(
+            <p class="text-sm">Start: ${new Date(
               event.start_datetime
             ).toLocaleString()}</p>
-            <p class="text-sm">Fin : ${new Date(
+            <p class="text-sm">End: ${new Date(
               event.end_datetime
             ).toLocaleString()}</p>
           </div>
@@ -83,7 +83,7 @@ module.exports.getEventById = async (req, res) => {
       [id]
     );
     if (result.rows.length === 0) {
-      return res.status(404).send("<p>Événement non trouvé</p>");
+      return res.status(404).send("<p>Event not found</p>");
     }
     const event = result.rows[0];
 
@@ -139,12 +139,12 @@ module.exports.getEventById = async (req, res) => {
       event.title
     }</h2>
     <p class="mb-4">${event.description}</p>
-    <p><strong>Participants :</strong> ${event.players_count}</p>
-    <p><strong>Organisateur :</strong> ${event.organisateur}</p>
-    <p><strong>Début :</strong> ${new Date(
+    <p><strong>Capacity:</strong> ${event.players_count ?? "Unlimited"}</p>
+    <p><strong>Organiser:</strong> ${event.organisateur}</p>
+    <p><strong>Start:</strong> ${new Date(
       event.start_datetime
     ).toLocaleString()}</p>
-    <p><strong>Fin :</strong> ${new Date(
+    <p><strong>End:</strong> ${new Date(
       event.end_datetime
     ).toLocaleString()}</p>
 
@@ -231,21 +231,21 @@ module.exports.getEventById = async (req, res) => {
 
 module.exports.createEvent = async (req, res) => {
   console.log("POST createEvent");
-  const { title, description, players_count, start_datetime, end_datetime } =
-    req.body;
+  const { title, description, start_datetime, end_datetime } = req.body;
+  const players_count = req.body.players_count ? req.body.players_count : null;
   const { userId, role } = req.user;
 
   // Validation des données
 
   if (new Date(start_datetime) >= new Date(end_datetime)) {
     return res.send(
-      '<p class="text-red-500">La date de début doit être avant la date de fin.</p>'
+      '<p class="text-red-500">The start date must be before the end date.</p>'
     );
   }
 
   if (isNaN(new Date(start_datetime)) || isNaN(new Date(end_datetime))) {
     return res.send(
-      '<p class="text-red-500">Les dates fournies ne sont pas valides.</p>'
+      '<p class="text-red-500">The dates provided are not valid.</p>'
     );
   }
 
@@ -255,7 +255,7 @@ module.exports.createEvent = async (req, res) => {
 
     // Insérer dans la base de données
     const result = await queryDB(
-      `INSERT INTO events (title, description, players_count, is_approved, start_datetime, end_datetime, user_id) 
+      `INSERT INTO events (title, description, players_count, is_approved, start_datetime, end_datetime, user_id)
        VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
       [
         title,
@@ -271,7 +271,7 @@ module.exports.createEvent = async (req, res) => {
     res
       .status(200)
       .send(
-        `<p class="text-green-500">Événement créé avec succès !<br>(en attente de modération)</p>`
+        `<p class="text-green-500">Event created successfully!<br>(pending moderation)</p>`
       );
   } catch (err) {
     console.error(err);
@@ -281,23 +281,23 @@ module.exports.createEvent = async (req, res) => {
     if (err.code === "P0001") {
       // Custom PostgreSQL error code for overlap
       return res.send(`<div class="text-red-500">
-        Il existe déjà un événement qui se chevauche avec celui-ci.
+        An event already overlaps with this one.
       </div>`);
     } else if (err.code === "23505") {
       return res.send(
-        '<p class="text-red-500">Un événement similaire existe déjà.</p>'
+        '<p class="text-red-500">A similar event already exists.</p>'
       );
     } else if (err.code === "23514") {
       return res.send(
-        '<p class="text-red-500">Les données fournies ne respectent pas les contraintes.</p>'
+        '<p class="text-red-500">The provided data does not meet the constraints.</p>'
       );
     } else if (err.code === "23503") {
       return res.send(
-        '<p class="text-red-500">Utilisateur non trouvé. Veuillez vous reconnecter.</p>'
+        '<p class="text-red-500">User not found. Please log in again.</p>'
       );
     } else {
       return res.send(
-        '<p class="text-red-500">Erreur interne du serveur. Veuillez réessayer plus tard.</p>'
+        '<p class="text-red-500">Internal server error. Please try again later.</p>'
       );
     }
   }
@@ -321,7 +321,7 @@ module.exports.getMyEvents = async (req, res) => {
   try {
     console.log("userId :", userId);
     const sortField = req.query.sort || "start_datetime"; // Tri par défaut : date
-    const validSortFields = ["players_count", "start_datetime", "organisateur"];
+    const validSortFields = ["start_datetime", "organisateur"];
     const orderBy = validSortFields.includes(sortField)
       ? sortField
       : "start_datetime";
@@ -355,7 +355,7 @@ module.exports.getMyEvents = async (req, res) => {
     } else {
       // Génère du HTML pour chaque événement
       events.forEach((event) => {
-        const approvalStatus = event.is_approved ? "Accepté" : "En attente"; // Affiche le statut d'acceptation
+        const approvalStatus = event.is_approved ? "Approved" : "Pending";
         eventsHtml += `
         <div class="flex flex-col justify-between bg-[#26232A] border 
         border-[#E5E7EB] p-4 rounded-lg w-64 shadow-md hover:shadow-lg motion-safe:transition-transform motion-safe:hover:scale-105 cursor-pointer flex-shrink-0 gap-0.5" 
@@ -370,16 +370,16 @@ module.exports.getMyEvents = async (req, res) => {
             </h2>
           </div>
           <div>
-            <p class="text-sm text-gray-400">Participants : ${
-              event.players_count
+            <p class="text-sm text-gray-400">Capacity: ${
+              event.players_count ?? "unlimited"
             }</p>
-            <p class="text-sm">Début : ${new Date(
+            <p class="text-sm">Start: ${new Date(
               event.start_datetime
             ).toLocaleString()}</p>
-            <p class="text-sm">Fin : ${new Date(
+            <p class="text-sm">End: ${new Date(
               event.end_datetime
             ).toLocaleString()}</p>
-            <p class="text-sm text-yellow-600">Statut : ${approvalStatus}</p>  <!-- Affiche le statut d'acceptation -->
+            <p class="text-sm text-yellow-600">Status: ${approvalStatus}</p>
           </div>
         </div>
       `;
@@ -414,7 +414,7 @@ module.exports.myEventById = async (req, res) => {
       [eventId]
     );
     if (result.rows.length === 0) {
-      return res.status(404).send("<p>Événement non trouvé</p>");
+      return res.status(404).send("<p>Event not found</p>");
     }
     const event = result.rows[0];
 
@@ -436,7 +436,7 @@ module.exports.myEventById = async (req, res) => {
     <!-- Titre -->
     <div>
       <label for="title" class="block text-sm mb-1 font-medium"
-        >Titre</label
+        >Title</label
       >
       <input
         type="text"
@@ -459,25 +459,25 @@ module.exports.myEventById = async (req, res) => {
       >${event.description}</textarea>
     </div>
 
-    <!-- Nombre de participants -->
+    <!-- Capacité -->
     <div>
       <label for="players_count" class="block my-1 text-sm font-medium"
-        >Nombre de participants</label
+        >Capacity (optional)</label
       >
       <input
         type="number"
         id="players_count"
         name="players_count"
-        min="2"
         class="bg-[#161215] text-text w-full border rounded px-3 py-2"
-        value="${event.players_count}"
+        placeholder="Leave empty for unlimited"
+        value="${event.players_count ?? ""}"
       />
     </div>
 
     <!-- Date et heure de début -->
     <div>
       <label for="start_datetime" class="block mb-1 mt-2 text-sm font-medium"
-        >Date et heure de début</label
+        >Start date and time</label
       >
       <input
         type="datetime-local"
@@ -491,7 +491,7 @@ module.exports.myEventById = async (req, res) => {
     <!-- Date et heure de fin -->
     <div>
       <label for="end_datetime" class="block mb-1 mt-2 text-sm font-medium"
-        >Date et heure de fin</label
+        >End date and time</label
       >
       <input
         type="datetime-local"
@@ -508,26 +508,26 @@ module.exports.myEventById = async (req, res) => {
         type="submit"
         class="w-full bg-[#5e3554] hover:bg-yellow-600 hover:text-shadow px-4 py-2 mt-5 rounded transition-colors select-none"
       >
-        Mettre à jour
+        Update
       </button>
     </div>
     <!-- Supprimer -->
-    
+
       <button
         type="button"
         class="ml-auto bg-red-800 px-2 py-1 mb-1 mr-1 rounded hover:bg-red-900 transition-colors select-none"
         hx-delete="${backendUrl}/api/events/deleteMy/${
           event.id
         }"
-        hx-confirm="Êtes-vous sûr de vouloir supprimer cet événement ?"
+        hx-confirm="Are you sure you want to delete this event?"
         hx-on::after-request="htmx.trigger('body', 'refresh')"
         hx-target="#form-messageup"
         hx-swap="innerHTML"
       >
-        Supprimer
+        Delete
       </button>
-      
-    
+
+
     </div>
     <!-- Message de retour -->
     <div id="form-messageup" class="text-sm text-center my-1"></div>
@@ -552,8 +552,8 @@ module.exports.myEventById = async (req, res) => {
 
 module.exports.updateEvent = async (req, res) => {
   console.log("POST updateEvent");
-  const { title, description, players_count, start_datetime, end_datetime } =
-    req.body;
+  const { title, description, start_datetime, end_datetime } = req.body;
+  const players_count = req.body.players_count ? req.body.players_count : null;
   const { userId, role } = req.user;
   console.log(userId);
   const eventId = req.params.eventId;
@@ -562,13 +562,13 @@ module.exports.updateEvent = async (req, res) => {
   // Validation des données
   if (new Date(start_datetime) >= new Date(end_datetime)) {
     return res.send(
-      '<p class="text-red-500">La date de début doit être avant la date de fin.</p>'
+      '<p class="text-red-500">The start date must be before the end date.</p>'
     );
   }
 
   if (isNaN(new Date(start_datetime)) || isNaN(new Date(end_datetime))) {
     return res.send(
-      '<p class="text-red-500">Les dates fournies ne sont pas valides.</p>'
+      '<p class="text-red-500">The dates provided are not valid.</p>'
     );
   }
 
@@ -580,12 +580,12 @@ module.exports.updateEvent = async (req, res) => {
     );
     if (eventResult.rowCount === 0) {
       return res.send(
-        '<p class="text-red-500">Événement non trouvé ou vous n\'êtes pas autorisé à le modifier.</p>'
+        '<p class="text-red-500">Event not found or you are not authorized to edit it.</p>'
       );
     }
 
     const overlappingEvents = await queryDB(
-      `SELECT * FROM events 
+      `SELECT * FROM events
        WHERE user_id = $4 AND id != $1 AND (
          (start_datetime < $2 AND end_datetime > $2) OR
          (start_datetime < $3 AND end_datetime > $3) OR
@@ -595,18 +595,18 @@ module.exports.updateEvent = async (req, res) => {
     );
     if (overlappingEvents.rowCount > 0) {
       return res.send(
-        '<p class="text-red-500">Il existe déjà un événement qui se chevauche avec celui-ci.</p>'
+        '<p class="text-red-500">An event already overlaps with this one.</p>'
       );
     }
     if (new Date(start_datetime) >= new Date(end_datetime)) {
-      return res.send("La date de début doit être avant la date de fin.");
+      return res.send("The start date must be before the end date.");
     }
     // Déterminer la valeur de is_approved
     const is_approved = role === "admin" ? true : false;
 
     // Mettre à jour l'événement
     const updateResult = await queryDB(
-      `UPDATE events 
+      `UPDATE events
        SET title = $1, description = $2, players_count = $3, is_approved = $4, start_datetime = $5, end_datetime = $6
        WHERE id = $7 AND user_id = $8 RETURNING id`,
       [
@@ -623,14 +623,14 @@ module.exports.updateEvent = async (req, res) => {
 
     if (updateResult.rowCount === 0) {
       return res.send(
-        '<p class="text-red-500">Erreur lors de la mise à jour de l\'événement.</p>'
+        '<p class="text-red-500">Error updating the event.</p>'
       );
     }
 
     res
       .status(200)
       .send(
-        '<p class="text-green-500">Événement mis à jour avec succès !<br/>(en attente de modération)</p>'
+        '<p class="text-green-500">Event updated successfully!<br/>(pending moderation)</p>'
       );
   } catch (err) {
     console.error(err);
@@ -640,23 +640,23 @@ module.exports.updateEvent = async (req, res) => {
     if (err.code === "P0001") {
       // Custom PostgreSQL error code for overlap
       return res.send(`<div class="text-red-500">
-        Il existe déjà un événement qui se chevauche avec celui-ci.É
+        An event already overlaps with this one.
       </div>`);
     } else if (err.code === "23505") {
       return res.send(
-        '<p class="text-red-500">Un événement similaire existe déjà.</p>'
+        '<p class="text-red-500">A similar event already exists.</p>'
       );
     } else if (err.code === "23514") {
       return res.send(
-        '<p class="text-red-500">Les données fournies ne respectent pas les contraintes.</p>'
+        '<p class="text-red-500">The provided data does not meet the constraints.</p>'
       );
     } else if (err.code === "23503") {
       return res.send(
-        '<p class="text-red-500">Utilisateur non trouvé. Veuillez vous reconnecter.</p>'
+        '<p class="text-red-500">User not found. Please log in again.</p>'
       );
     } else {
       return res.send(
-        '<p class="text-red-500">Erreur interne du serveur. Veuillez réessayer plus tard.</p>'
+        '<p class="text-red-500">Internal server error. Please try again later.</p>'
       );
     }
   }
@@ -675,9 +675,9 @@ module.exports.deleteMy = async (req, res) => {
       [eventId]
     );
 
-    res.send('<p class="text-red-500">Événement supprimé.</p>');
+    res.send('<p class="text-red-500">Event deleted.</p>');
   } catch (err) {
     console.error("Erreur dans rejectEvent :", err);
-    res.status(500).send("Erreur serveur lors du refus de l'événement");
+    res.status(500).send("Server error while rejecting the event");
   }
 };

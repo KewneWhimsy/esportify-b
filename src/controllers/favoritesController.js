@@ -106,7 +106,7 @@ module.exports.showFavorited = async (req, res) => {
 
   try {
     const sortField = req.query.sort || "start_datetime";
-    const validSortFields = ["players_count", "start_datetime", "organisateur"];
+    const validSortFields = ["start_datetime", "organisateur"];
     const orderBy = validSortFields.includes(sortField)
       ? sortField
       : "start_datetime";
@@ -141,7 +141,7 @@ module.exports.showFavorited = async (req, res) => {
       // Si aucun événement favori n'est trouvé, afficher un message
       eventsHtml = `
         <div class="flex text-center mx-auto">
-          <p>Pas encore d'événement favoris</p>
+          <p>No favorited events yet</p>
         </div>
       `;
     } else {
@@ -159,9 +159,9 @@ module.exports.showFavorited = async (req, res) => {
               <h2 class="text-lg font-heading text-heading leading-tight mb-2">${event.title}</h2>
             </div>
             <div>
-              <p class="text-sm text-gray-400">Participants : ${event.players_count}</p>
-              <p class="text-sm">Début : ${new Date(event.start_datetime).toLocaleString()}</p>
-              <p class="text-sm">Fin : ${new Date(event.end_datetime).toLocaleString()}</p>
+              <p class="text-sm text-gray-400">Capacity: ${event.players_count ?? "unlimited"}</p>
+              <p class="text-sm">Start: ${new Date(event.start_datetime).toLocaleString()}</p>
+              <p class="text-sm">End: ${new Date(event.end_datetime).toLocaleString()}</p>
             </div>
           </div>
         `;
