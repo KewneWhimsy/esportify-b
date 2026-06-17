@@ -31,8 +31,8 @@ async function startServer() {
     console.log("Connexion aux bases de données réussie.");
 
     // Étape 2: Initialisation de la base de données avec les données nécessaires
-    //await initializeDbPg();
-    //console.log("Initialisation de la base de données postgres terminée.");
+    await initializeDbPg();
+    console.log("Initialisation de la base de données postgres terminée.");
 
     // Étape 3: Montage des routes
     app.use("/", routes);
