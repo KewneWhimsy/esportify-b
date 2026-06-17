@@ -63,7 +63,7 @@ module.exports.getAllEvents = async (req, res) => {
     console.error("Erreur dans getAllEvents :", err);
     res
       .status(500)
-      .json({ error: "Erreur serveur lors de la récupération des événements" });
+      .json({ error: "Server error while retrieving events" });
   }
 };
 
@@ -224,7 +224,7 @@ module.exports.getEventById = async (req, res) => {
       err
     );
     res.status(500).json({
-      error: "Erreur lors de la récupération des détails de l'événement",
+      error: "Error while retrieving event details",
     });
   }
 };
@@ -392,7 +392,7 @@ module.exports.getMyEvents = async (req, res) => {
   } catch (err) {
     console.error("Erreur dans getMyEvents :", err);
     res.status(500).json({
-      error: "Erreur serveur lors de la récupération de vos événements",
+      error: "Server error while retrieving your events",
     });
   }
 };
@@ -545,7 +545,7 @@ module.exports.myEventById = async (req, res) => {
       err
     );
     res.status(500).json({
-      error: "Erreur lors de la récupération des détails de l'événement",
+      error: "Error while retrieving event details",
     });
   }
 };

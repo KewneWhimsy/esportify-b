@@ -55,7 +55,7 @@ module.exports.toggleFavorite = async (req, res) => {
           hx-swap="innerHTML"
           class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 tranistion-colors select-none"
         >
-          Plus intéressé
+          Forget it
         </button>
         <div class="contents" hx-get="${backendUrl}/api/favorites" hx-trigger="load" hx-target=#favoritesContainer></div>
       `
@@ -74,7 +74,7 @@ module.exports.toggleFavorite = async (req, res) => {
           hx-swap="innerHTML"
           class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors select-none"
         >
-          Je participe
+          I'm in
         </button>
         <div class="contents" hx-get="${backendUrl}/api/favorites" hx-trigger="load" hx-target=#favoritesContainer></div>
       `;
@@ -172,7 +172,7 @@ module.exports.showFavorited = async (req, res) => {
   } catch (err) {
     console.error("Erreur dans showFavorited :", err);
     res.status(500).json({
-      error: "Erreur serveur lors de la récupération des événements favoris",
+      error: "Server error while retrieving favorited events",
     });
   }
 };

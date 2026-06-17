@@ -58,7 +58,7 @@ module.exports.getPendingEvents = async (req, res) => {
     res.send(eventsHtml);
   } catch (err) {
     console.error("Erreur dans getPendingEvents :", err);
-    res.status(500).send("Erreur serveur lors de la récupération des événements");
+    res.status(500).send("Server error while retrieving events");
   }
 };
 
@@ -110,7 +110,7 @@ module.exports.getApprovedEvents = async (req, res) => {
     res.send(eventsHtml);
   } catch (err) {
     console.error("Erreur dans getApprovedEvents :", err);
-    res.status(500).send("Erreur serveur lors de la récupération des événements");
+    res.status(500).send("Server error while retrieving events");
   }
 };
 
@@ -173,7 +173,7 @@ module.exports.approveEvent = async (req, res) => {
     `);
   } catch (err) {
     console.error("Erreur dans approveEvent :", err);
-    res.status(500).send("Erreur serveur lors de l'approbation de l'événement");
+    res.status(500).send("Server error while approving the event");
   }
 };
 
@@ -191,7 +191,7 @@ module.exports.rejectEvent = async (req, res) => {
     res.send("");
   } catch (err) {
     console.error("Erreur dans rejectEvent :", err);
-    res.status(500).send("Erreur serveur lors du refus de l'événement");
+    res.status(500).send("Server error while rejecting the event");
   }
 };
 
@@ -266,7 +266,7 @@ module.exports.suspendEvent = async (req, res) => {
     `);
   } catch (err) {
     console.error("Erreur dans suspendEvent :", err);
-    res.status(500).send("Erreur serveur lors de la suspension de l'événement");
+    res.status(500).send("Server error while suspending the event");
   }
 };
 
@@ -374,7 +374,7 @@ module.exports.getUsersWithRoles = async (req, res) => {
     res.send(usersHtml);
   } catch (err) {
     console.error("Erreur dans getUsersWithRoles :", err);
-    res.status(500).send("Erreur serveur lors de la récupération des utilisateurs");
+    res.status(500).send("Server error while retrieving users");
   }
 };
 
@@ -397,11 +397,11 @@ module.exports.promoteUser = async (req, res) => {
     );
 
     if (result.rows.length === 0) {
-      return res.status(404).send("Utilisateur introuvable");
+      return res.status(404).send("User not found");
     }
 
     const user = result.rows[0];
-    
+
     res.send(`
       <tr id="user-${user.id}" class="border-b">
           <td class="px-4 py-3">${user.username}</td>
@@ -415,7 +415,7 @@ module.exports.promoteUser = async (req, res) => {
     `);
   } catch (err) {
     console.error("Erreur dans promoteUser :", err);
-    res.status(500).send("Erreur serveur lors de la promotion");
+    res.status(500).send("Server error while promoting the user");
   }
 };
 
@@ -425,7 +425,7 @@ module.exports.demoteUser = async (req, res) => {
   const { userId, newRole } = req.params;
   console.log(`Rétrogradation de l'utilisateur ${userId} vers le rôle ${newRole}`);
   if (userId == 1) {
-    return res.send("Utilisateur super admin");
+    return res.send("Super admin user");
   }
   try {
     // Met à jour le rôle
@@ -441,9 +441,9 @@ module.exports.demoteUser = async (req, res) => {
     );
 
     if (result.rows.length === 0) {
-      return res.status(404).send("Utilisateur introuvable");
+      return res.status(404).send("User not found");
     }
-    
+
     const user = result.rows[0];
 
     res.send(`
@@ -459,6 +459,6 @@ module.exports.demoteUser = async (req, res) => {
     `);
   } catch (err) {
     console.error("Erreur dans demoteUser :", err);
-    res.status(500).send("Erreur serveur lors de la rétrogradation");
+    res.status(500).send("Server error while demoting the user");
   }
 };

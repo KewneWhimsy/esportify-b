@@ -14,12 +14,12 @@ module.exports.register = async (req, res) => {
   const result = await queryDB("SELECT * FROM users WHERE email = $1", [finalEmail]);
   /// Si l'email existe déjà : return
   if (result.rows.length > 0) {
-    return res.status(400).json({ error: "Email déjà utilisé" });
+    return res.status(400).json({ error: "Email already in use" });
   }
   const resultUsername = await queryDB("SELECT * FROM users WHERE username = $1", [username]);
   /// Si le nom d'utilisateur existe déjà : return
   if (resultUsername.rows.length > 0) {
-    return res.status(400).json({ error: "Nom d'utilisateur déjà pris" });
+    return res.status(400).json({ error: "Username already taken" });
   }
 
   // Hashage du mot de passe
@@ -31,7 +31,7 @@ module.exports.register = async (req, res) => {
     [username, finalEmail, hashedPassword]
   );
 
-  res.status(201).json({ message: "Utilisateur créé avec succès" });
+  res.status(201).json({ message: "User created successfully" });
 };
 
 // CONNEXION
@@ -42,7 +42,7 @@ module.exports.login = async (req, res) => {
   const result = await queryDB("SELECT * FROM users WHERE username = $1", [username]);
   // Si le résultat n'est pas conforme aux données attendus : return
   if (result.rows.length === 0) {
-    return res.status(400).json({ error: "Nom d'utilisateur ou mot de passe incorrect" });
+    return res.status(400).json({ error: "Incorrect username or password" });
   }
 
   const user = result.rows[0];
@@ -50,7 +50,7 @@ module.exports.login = async (req, res) => {
   // Compare le mot de passe haché et non-haché
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
-    return res.status(400).json({ error: "Mot de passe incorrect" });
+    return res.status(400).json({ error: "Incorrect password" });
   }
 
   // Crée le token pour la session
@@ -61,5 +61,5 @@ module.exports.login = async (req, res) => {
   );
 
   // Renvoi le token au front dans la réponse
-  res.json({ message: "Connexion réussie", token });
+  res.json({ message: "Login successful", token });
 };

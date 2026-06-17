@@ -7,7 +7,7 @@ function checkRole(allowedRoles) {
 
     // Vérifie si le rôle de l'utilisateur est dans la liste des rôles autorisés
     if (!allowedRoles.includes(req.user.role)) {
-      return res.status(403).json({ error: "Accès refusé" });
+      return res.status(403).json({ error: "Access denied" });
     }
 
     next();

@@ -21,7 +21,7 @@ module.exports.getEventRoom = async (req, res) => {
     );
 
     if (result.rows.length === 0) {
-      return res.status(404).send("<p>Événement non trouvé</p>");
+      return res.status(404).send("<p>Event not found</p>");
     }
 
     const event = result.rows[0];
@@ -33,7 +33,7 @@ module.exports.getEventRoom = async (req, res) => {
     if (!isOngoing) {
       return res
         .status(403)
-        .send("<p>Accès refusé : L'événement n'est pas en cours</p>");
+        .send("<p>Access denied: the event is not currently ongoing</p>");
     }
 
     const specialPageHtml = `
@@ -42,10 +42,10 @@ module.exports.getEventRoom = async (req, res) => {
         <div class="bg-[#1e1b1f] p-3 rounded-lg shadow-lg mb-2 max-w-md">
           <div class="flex justify-between">
             <h1 class="text-xl font-bold mb-2 text-[#e4e4e4]">${event.title} - Room</h1>
-            <p><strong class="text-[#e4e4e4]">Organisateur :</strong> ${event.organisateur}</p>
+            <p><strong class="text-[#e4e4e4]">Organizer:</strong> ${event.organisateur}</p>
           </div>
-          <p><strong class="text-[#e4e4e4]">Début :</strong> ${new Date(event.start_datetime).toLocaleString()}</p>
-          <p><strong class="text-[#e4e4e4]">Fin :</strong> ${new Date(event.end_datetime).toLocaleString()}</p>
+          <p><strong class="text-[#e4e4e4]">Start:</strong> ${new Date(event.start_datetime).toLocaleString()}</p>
+          <p><strong class="text-[#e4e4e4]">End:</strong> ${new Date(event.end_datetime).toLocaleString()}</p>
         </div>
 
         <!-- Zone du Chat -->
@@ -61,10 +61,10 @@ module.exports.getEventRoom = async (req, res) => {
           <form id="chatForm" ws-send class="flex items-center mt-4 gap-3">
             <input class="bg-[#161215] border p-3 rounded w-full focus:outline-none" 
             id="messageInput" autocomplete="off" name="chat_message" 
-            placeholder="Écrivez votre message..." required
+            placeholder="Write your message..." required
             >
             <button class="bg-[#4d2d45] font-bold rounded p-3 transition-colors hover:bg-[#532447]" type="submit">
-              Envoyer
+              Send
             </button>
           </form>
         </div>
@@ -92,7 +92,7 @@ module.exports.getEventRoom = async (req, res) => {
       "Erreur lors de la récupération de la page spéciale :",
       error
     );
-    res.status(500).send("<p>Erreur interne du serveur</p>");
+    res.status(500).send("<p>Internal server error</p>");
   }
 };
 
