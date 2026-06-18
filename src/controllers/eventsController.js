@@ -14,14 +14,18 @@ module.exports.getAllEvents = async (req, res) => {
     const sortColumn =
       orderBy === "organisateur" ? "u.username" : `e.${orderBy}`;
 
+    // Cache les événements terminés depuis plus d'1h (même marge que l'accès au chat, cf. roomController.js)
+    const now = Date.now() + 7200000; // +2h en millisecondes (CEST UTC+2)
+    const hideEndedBefore = new Date(now - 3600000);
+
     // Récupére les événements depuis PostgreSQL
     const result = await queryDB(`
       SELECT e.id, e.title, e.description, e.players_count, e.start_datetime, e.end_datetime, u.username AS organisateur
       FROM events e
       JOIN users u ON e.user_id = u.id
-      WHERE e.is_approved = TRUE
+      WHERE e.is_approved = TRUE AND e.end_datetime >= $1
       ORDER BY ${sortColumn} ASC
-    `);
+    `, [hideEndedBefore]);
 
     const events = result.rows; // Récupére les événements sous forme d'un tableau d'objets JavaScript
     let eventsHtml = "";
