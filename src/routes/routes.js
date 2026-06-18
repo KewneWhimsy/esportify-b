@@ -19,6 +19,7 @@ router.get("/api/event/:id", eventsController.getEventById);
 // === Routes d'authentification ===
 router.post("/api/register", authController.register);
 router.post("/api/login", authController.login);
+router.post("/api/quicklogin", authController.quickLogin);
 
 // === Routes protégées ===
 // Routes joueur+
