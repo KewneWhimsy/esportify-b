@@ -1,6 +1,7 @@
 const { queryDB } = require("../../config/dbConnection.js");
 const ChatMessage = require("../../models/chatmessage.js");
 const chatRooms = new Map(); // Stocker les rooms en mémoire
+const CHAT_ACCESS_WINDOW_MS = 3600000; // 1h de marge avant/après l'événement, doit matcher eventsController.js
 
 // --- Route obtention de chatroom ---
 module.exports.getEventRoom = async (req, res) => {
@@ -26,7 +27,6 @@ module.exports.getEventRoom = async (req, res) => {
 
     const event = result.rows[0];
     const now = Date.now() + 7200000; // +2h en millisecondes (CEST UTC+2)
-    const CHAT_ACCESS_WINDOW_MS = 3600000; // 1h de marge avant/après l'événement
     const chatOpensAt =
       new Date(event.start_datetime).getTime() - CHAT_ACCESS_WINDOW_MS;
     const chatClosesAt =
@@ -109,15 +109,17 @@ module.exports.setupChatWebSocket = (app) => {
       `[WS] Connexion ouverte pour la room ${roomId} | Utilisateur : ${userId}`
     );
 
-    // Date de fin de l'événement, pour purger automatiquement l'historique du chat une fois l'événement terminé
-    let eventEndDatetime = null;
+    // Date d'expiration des messages : fin de l'événement + marge d'accès au chat (doit matcher chatClosesAt dans getEventRoom)
+    let messagesExpiresAt = null;
     try {
       const eventResult = await queryDB(
         "SELECT end_datetime FROM events WHERE id = $1",
         [roomId]
       );
       if (eventResult.rows.length > 0) {
-        eventEndDatetime = eventResult.rows[0].end_datetime;
+        messagesExpiresAt = new Date(
+          new Date(eventResult.rows[0].end_datetime).getTime() + CHAT_ACCESS_WINDOW_MS
+        );
       }
     } catch (err) {
       console.log("Erreur lors de la récupération de la fin de l'événement:", err);
@@ -191,7 +193,7 @@ module.exports.setupChatWebSocket = (app) => {
           roomId,
           chat_message: chatMessage,
           username: username,
-          expiresAt: eventEndDatetime,
+          expiresAt: messagesExpiresAt,
         });
         await newMessage.save();
 
