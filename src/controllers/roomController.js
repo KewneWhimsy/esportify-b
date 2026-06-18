@@ -26,14 +26,19 @@ module.exports.getEventRoom = async (req, res) => {
 
     const event = result.rows[0];
     const now = Date.now() + 7200000; // +2h en millisecondes (CEST UTC+2)
-    const isOngoing =
-      new Date(event.start_datetime) <= now &&
-      now <= new Date(event.end_datetime);
+    const CHAT_ACCESS_WINDOW_MS = 3600000; // 1h de marge avant/après l'événement
+    const chatOpensAt =
+      new Date(event.start_datetime).getTime() - CHAT_ACCESS_WINDOW_MS;
+    const chatClosesAt =
+      new Date(event.end_datetime).getTime() + CHAT_ACCESS_WINDOW_MS;
+    const isChatAccessible = chatOpensAt <= now && now <= chatClosesAt;
 
-    if (!isOngoing) {
+    if (!isChatAccessible) {
       return res
         .status(403)
-        .send("<p>Access denied: the event is not currently ongoing</p>");
+        .send(
+          "<p>Access denied: the chat is only accessible from 1 hour before until 1 hour after the event</p>"
+        );
     }
 
     const specialPageHtml = `

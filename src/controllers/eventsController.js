@@ -116,8 +116,11 @@ module.exports.getEventById = async (req, res) => {
     const now = Date.now() + 7200000; // +2h en millisecondes (CEST UTC+2)
     const startTime = new Date(event.start_datetime).getTime();
     const endTime = new Date(event.end_datetime).getTime();
+    const CHAT_ACCESS_WINDOW_MS = 3600000; // 1h de marge avant/après l'événement, doit matcher roomController.js
 
-    const isOngoing = startTime <= now && now <= endTime;
+    const isOngoing =
+      startTime - CHAT_ACCESS_WINDOW_MS <= now &&
+      now <= endTime + CHAT_ACCESS_WINDOW_MS;
 
     console.log("isOngoing :", isOngoing);
     console.log("start_datetime (DB):", event.start_datetime);
