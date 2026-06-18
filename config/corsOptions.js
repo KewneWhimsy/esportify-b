@@ -1,5 +1,5 @@
 module.exports = {
-    origin: ["http://localhost:4321", "https://kewnewhimsy.github.io", "https://w3.jkw.ovh", "https://w3chathub.dot.li", "http://localhost:3000"],
+    origin: ["http://localhost:4321", "https://kewnewhimsy.github.io", "https://w3.jkw.ovh", "https://w3chathub.app.dot.li", "http://localhost:3000"],
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     allowedHeaders: [
       "Content-Type",
